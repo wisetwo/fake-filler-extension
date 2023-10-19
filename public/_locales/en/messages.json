@@ -625,17 +625,5 @@
   },
   "account_manageAccount": {
     "message": "Manage Account"
-  },
-  "account_showSupportTitle": {
-    "message": "Buy Fake Filler Pro"
-  },
-  "account_showSupportMessage": {
-    "message": "Hello there! If Fake Filler makes you more productive, please consider showing your support by subscribing to the Pro edition. Subscriptions help to support the continued development of Fake Filler. I hate ads as much as you do so charging for a subscription is the only way I make money. So go ahead and hit the buy button now."
-  },
-  "account_showSupportButton": {
-    "message": "Buy Pro"
-  },
-  "upgradeToFakeFillerPro": {
-    "message": "Upgrade to Fake Filler Pro"
   }
 }

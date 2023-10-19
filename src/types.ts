@@ -166,15 +166,10 @@ export type MessageRequest = {
   data?: any;
 };
 
-export type CustomClaims = {
-  subscribed: boolean;
-};
-
 export type User = {
   emailAddress: string;
   stripeCustomerId: string;
   stripeSubscriptionId: string;
-  claims: CustomClaims;
   claimsUpdatedAt: firebase.firestore.FieldValue;
 };
 

@@ -68,7 +68,7 @@ const LoginPage = () => {
       <h2>Login to your account</h2>
       <div className="row">
         <div className="col-lg-4 col-md-6">
-          <p>Enter your email address and password below to activate Fake Filler Pro.</p>
+          <p>Enter your email address and password below to activate an account.</p>
           <p>
             Logging in will enable Settings Sync. Your data is never used for anything other than Sync. For more
             information, please refer to our{" "}
@@ -89,24 +89,6 @@ const LoginPage = () => {
               </Form>
             )}
           </Formik>
-        </div>
-        <div className="col-lg-7 offset-lg-1 col-md-6">
-          <div className="bg-light p-3 rounded mt-4 mt-md-0">
-            <p>
-              <b>Don’t have an account?</b>
-            </p>
-            <p>Subscribe to Fake Filler Pro to unlock these features:</p>
-            <ul>
-              <li>Unlimited custom fields</li>
-              <li>Synchronize settings across all your browsers</li>
-              <li>Create URL-specific custom fields (multiple profiles)</li>
-            </ul>
-            <p>
-              <a href="https://fakefiller.com/#pricing" className="btn btn-primary">
-                Subscribe Now
-              </a>
-            </p>
-          </div>
         </div>
       </div>
     </>

@@ -47,14 +47,10 @@ const MyAccountPage = () => {
 
             <dt>{GetMessage("account_edition")}</dt>
             <dd>
-              {claims.subscribed ? (
-                <span className="badge badge-success">PRO</span>
-              ) : (
-                <span className="badge badge-secondary">Free</span>
-              )}
+              <span className="badge badge-success">Community</span>
             </dd>
 
-            {claims.subscribed && optionsLastUpdatedTimestamp && (
+            {optionsLastUpdatedTimestamp && (
               <>
                 <dt>{GetMessage("account_settingsLastUpdated")}</dt>
                 <dd>
@@ -73,7 +69,7 @@ const MyAccountPage = () => {
           </dl>
         </div>
         <div className="col-md-4">
-          {claims.subscribed && !optionsLastUpdatedTimestamp && (
+          {!optionsLastUpdatedTimestamp && (
             <div>
               <div className="d-flex">
                 <img src="images/sync.svg" width="24" height="24" alt="Sync" />
@@ -89,31 +85,13 @@ const MyAccountPage = () => {
             </div>
           )}
 
-          {!claims.subscribed && (
-            <>
-              <h3 className="h6">{GetMessage("account_showSupportTitle")}</h3>
-              <p>
-                <span role="img" aria-label="">
-                  👋
-                </span>{" "}
-                {GetMessage("account_showSupportMessage")}
-              </p>
-              <div>
-                <a href="https://fakefiller.com/#pricing" className="btn btn-sm btn-primary">
-                  {GetMessage("account_showSupportButton")}
-                </a>
-              </div>
-            </>
-          )}
         </div>
       </div>
 
       <div className="mt-5">
-        {claims.subscribed && (
-          <a className="btn btn-secondary btn-sm mr-3" href="http://fakefiller.com/account/">
-            {GetMessage("account_manageAccount")}
-          </a>
-        )}
+        <a className="btn btn-secondary btn-sm mr-3" href="http://fakefiller.com/account/">
+          {GetMessage("account_manageAccount")}
+        </a>
         <button type="button" className="btn btn-outline-secondary btn-sm" onClick={handleLogout}>
           {GetMessage("account_logout")}
         </button>

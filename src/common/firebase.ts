@@ -122,7 +122,7 @@ export function logout() {
 }
 
 export async function saveOptionsToDb(options: IFakeFillerOptions) {
-  if (firebaseUser && firebaseClaims && firebaseClaims.subscribed) {
+  if (firebaseUser && firebaseClaims) {
     const updatedAt = firebase.firestore.FieldValue.serverTimestamp();
 
     await db
