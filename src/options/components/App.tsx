@@ -23,7 +23,7 @@ function App() {
   const dispatch = useDispatch();
   const isLoggedIn = useSelector<IAppState, boolean>((state) => !!state.authData.user);
 
-  const sendFeedbackMessage = chrome.i18n.getMessage("leftNav_sendFeedback", ["hussein@fakefiller.com"]);
+  const sendFeedbackMessage = chrome.i18n.getMessage("leftNav_sendFeedback", ["james.thomas.hays@gmail.com"]);
 
   function handleResetSettings(event: React.SyntheticEvent): void {
     event.preventDefault();
