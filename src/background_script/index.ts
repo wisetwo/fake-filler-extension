@@ -10,15 +10,13 @@ import {
 } from "src/common/helpers";
 import { MessageRequest, IProfile, IFakeFillerOptions, FirebaseUser, FirebaseCustomClaims } from "src/types";
 
-let isProEdition = false;
-
 function NotifyTabsOfNewOptions(options: IFakeFillerOptions) {
   chrome.tabs.query({}, (tabs) => {
     tabs.forEach((tab) => {
       if (tab && tab.id && tab.id !== chrome.tabs.TAB_ID_NONE) {
         chrome.tabs.sendMessage(
           tab.id,
-          { type: "receiveNewOptions", data: { options, isProEdition } },
+          { type: "receiveNewOptions", data: { options } },
           () => chrome.runtime.lastError
         );
       }
@@ -27,20 +25,13 @@ function NotifyTabsOfNewOptions(options: IFakeFillerOptions) {
 }
 
 function handleOptionsChange(options: IFakeFillerOptions) {
-  if (isProEdition) {
-    chrome.storage.local.set({ options }, () => {
-      CreateContextMenus(options.enableContextMenu);
-      NotifyTabsOfNewOptions(options);
-    });
-  }
+  chrome.storage.local.set({ options }, () => {
+    CreateContextMenus(options.enableContextMenu);
+    NotifyTabsOfNewOptions(options);
+  });
 }
 
 function handleAuthStateChange(user: FirebaseUser, claims: FirebaseCustomClaims) {
-  if (user && claims) {
-    isProEdition = claims.subscribed;
-  } else {
-    isProEdition = false;
-  }
   GetFakeFillerOptions().then((result) => {
     NotifyTabsOfNewOptions(result);
   });
@@ -57,7 +48,7 @@ function handleMessage(
   switch (request.type) {
     case "getOptions": {
       GetFakeFillerOptions().then((result) => {
-        sendResponse({ options: result, isProEdition });
+        sendResponse({ options: result });
       });
       return true;
     }

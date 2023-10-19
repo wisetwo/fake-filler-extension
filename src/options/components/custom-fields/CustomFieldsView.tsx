@@ -8,13 +8,12 @@ import CustomFieldsList from "src/options/components/custom-fields/CustomFieldsL
 import { ICustomField, ICustomFieldForm } from "src/types";
 
 type Props = {
-  isProEdition: boolean;
   profileIndex: number;
   customFields: ICustomField[];
 };
 
 export default function CustomFieldsView(props: Props): JSX.Element {
-  const { isProEdition, profileIndex, customFields } = props;
+  const { profileIndex, customFields } = props;
 
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [customFieldIndex, setCustomFieldIndex] = useState(-1);
@@ -23,8 +22,8 @@ export default function CustomFieldsView(props: Props): JSX.Element {
 
   const dispatch = useDispatch();
 
-  const allowAdd = isProEdition || profileIndex === -1;
-  const allowEdit = isProEdition || profileIndex === -1;
+  const allowAdd = true; 
+  const allowEdit = true;
 
   function closeModal(): void {
     setModalIsOpen(false);

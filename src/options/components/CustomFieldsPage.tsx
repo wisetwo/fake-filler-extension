@@ -18,10 +18,6 @@ export default function CustomFieldsPage(): JSX.Element {
   const isFetching = useSelector<IAppState, boolean>((state) => state.optionsData.isFetching);
   const options = useSelector<IAppState, IFakeFillerOptions | null>((state) => state.optionsData.options);
 
-  const isProEdition = useSelector<IAppState, boolean>((state) =>
-    state.authData.claims ? state.authData.claims.subscribed : false
-  );
-
   useEffect(() => {
     dispatch(getOptions());
   }, [dispatch]);
@@ -45,8 +41,8 @@ export default function CustomFieldsPage(): JSX.Element {
       <h2>{GetMessage("customFields_title")}</h2>
       <Introduction />
       <hr />
-      <ProfilesView isProEdition={isProEdition} profileIndex={profileIndex} profiles={options.profiles || []}>
-        <CustomFieldsView isProEdition={isProEdition} customFields={customFieldsList} profileIndex={profileIndex} />
+      <ProfilesView profileIndex={profileIndex} profiles={options.profiles || []}>
+        <CustomFieldsView customFields={customFieldsList} profileIndex={profileIndex} />
       </ProfilesView>
     </>
   );
