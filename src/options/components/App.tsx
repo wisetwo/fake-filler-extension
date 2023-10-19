@@ -97,7 +97,7 @@ function App() {
             <Link to="/changelog">{GetMessage("leftNav_changelog")}</Link>
           </li>
           <li className="list-inline-item">
-            <ExternalLink url="https://github.com/FakeFiller/fake-filler-extension/issues">
+            <ExternalLink url="https://github.com/calvinballing/fake-filler-extension/issues">
               {GetMessage("leftNav_issueTracker")}
             </ExternalLink>
           </li>
