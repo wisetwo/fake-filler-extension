@@ -10,7 +10,6 @@ import ChangeLogPage from "src/options/components/ChangeLogPage";
 import CustomFieldsPage from "src/options/components/CustomFieldsPage";
 import GeneralSettingsPage from "src/options/components/GeneralSettingsPage";
 import KeyboardShortcutsPage from "src/options/components/KeyboardShortcutsPage";
-import MyAccountPage from "src/options/components/MyAccountPage";
 import ExternalLink from "src/options/components/common/ExternalLink";
 import HtmlPhrase from "src/options/components/common/HtmlPhrase";
 import ScrollToTop from "src/options/components/common/ScrollToTop";
@@ -71,7 +70,6 @@ function App() {
         <Route path="/keyboard-shortcuts" component={KeyboardShortcutsPage} />
         <Route path="/backup" component={BackupAndRestorePage} />
         <Route path="/changelog" component={ChangeLogPage} />
-        <Route path="/account" component={MyAccountPage} />
       </div>
       <footer id="main-footer" className="container">
         <HtmlPhrase phrase={sendFeedbackMessage} as="p" />
