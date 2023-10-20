@@ -58,8 +58,7 @@ const KeyboardShortcutsReducer: Reducer<IKeyboardShortcutsState> = (
 };
 
 const authInitialState: IAuthState = {
-  user: null,
-  claims: null,
+  user: null
 };
 
 const AuthReducer: Reducer<IAuthState> = (state = authInitialState, action: MyActions) => {
@@ -67,7 +66,6 @@ const AuthReducer: Reducer<IAuthState> = (state = authInitialState, action: MyAc
     switch (action.type) {
       case "UPDATE_AUTH_STATE": {
         draft.user = action.user;
-        draft.claims = action.claims;
         return draft;
       }
 

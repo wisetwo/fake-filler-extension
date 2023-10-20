@@ -8,7 +8,7 @@ import {
   SaveFakeFillerOptions,
   DEFAULT_EMAIL_CUSTOM_FIELD,
 } from "src/common/helpers";
-import { MessageRequest, IProfile, IFakeFillerOptions, FirebaseUser, FirebaseCustomClaims } from "src/types";
+import { MessageRequest, IProfile, IFakeFillerOptions, FirebaseUser } from "src/types";
 
 function NotifyTabsOfNewOptions(options: IFakeFillerOptions) {
   chrome.tabs.query({}, (tabs) => {
@@ -31,7 +31,7 @@ function handleOptionsChange(options: IFakeFillerOptions) {
   });
 }
 
-function handleAuthStateChange(user: FirebaseUser, claims: FirebaseCustomClaims) {
+function handleAuthStateChange(user: FirebaseUser) {
   GetFakeFillerOptions().then((result) => {
     NotifyTabsOfNewOptions(result);
   });

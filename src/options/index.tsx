@@ -7,10 +7,10 @@ import { onAuthStateChange, onOptionsChange } from "src/common/firebase";
 import { updateAuthState } from "src/options/actions";
 import App from "src/options/components/App";
 import Store from "src/options/store";
-import { FirebaseUser, FirebaseCustomClaims, IFakeFillerOptions } from "src/types";
+import { FirebaseUser, IFakeFillerOptions } from "src/types";
 
-function handleAuthStateChange(user: FirebaseUser, claims: FirebaseCustomClaims) {
-  Store.dispatch(updateAuthState(user, claims));
+function handleAuthStateChange(user: FirebaseUser) {
+  Store.dispatch(updateAuthState(user));
 }
 
 async function handleOptionsChange(options: IFakeFillerOptions) {

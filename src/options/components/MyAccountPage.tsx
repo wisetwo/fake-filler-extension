@@ -5,11 +5,10 @@ import { Redirect, useHistory } from "react-router-dom";
 import { logout, getOptionsLastUpdatedTimestamp, saveOptionsToDb } from "src/common/firebase";
 import { GetFakeFillerOptions, GetMessage } from "src/common/helpers";
 import HtmlPhrase from "src/options/components/common/HtmlPhrase";
-import { IAppState, FirebaseUser, FirebaseCustomClaims } from "src/types";
+import { IAppState, FirebaseUser } from "src/types";
 
 const MyAccountPage = () => {
   const user = useSelector<IAppState, FirebaseUser>((state) => state.authData.user);
-  const claims = useSelector<IAppState, FirebaseCustomClaims>((state) => state.authData.claims);
   const [optionsLastUpdatedTimestamp, setOptionsLastUpdatedTimestamp] = useState<Date>();
   const history = useHistory();
 
@@ -31,7 +30,7 @@ const MyAccountPage = () => {
     setOptionsLastUpdatedTimestamp(new Date());
   }
 
-  if (!user || !claims) {
+  if (!user) {
     return <Redirect to="/login" />;
   }
 

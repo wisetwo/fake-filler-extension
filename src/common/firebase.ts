@@ -3,9 +3,9 @@ import * as firebase from "firebase/app";
 import "firebase/auth";
 import "firebase/firestore";
 
-import { FirebaseUser, FirebaseCustomClaims, IFakeFillerOptions, User } from "src/types";
+import { FirebaseUser, IFakeFillerOptions, User } from "src/types";
 
-type AuthStateChangeCallback = (user: FirebaseUser, claims: FirebaseCustomClaims) => void;
+type AuthStateChangeCallback = (user: FirebaseUser) => void;
 type OptionsChangeCallback = (options: IFakeFillerOptions) => void;
 type SettingsSchema = {
   options: string;
@@ -24,8 +24,6 @@ const auth = firebase.auth();
 const db = firebase.firestore();
 
 let firebaseUser: FirebaseUser | null = null;
-let firebaseClaims: FirebaseCustomClaims | null = null;
-let userClaimsUpdatedAt: firebase.firestore.FieldValue | null = null;
 let optionsUpdatedAt: firebase.firestore.FieldValue | null = null;
 let userSnapshotUnsubscribe: firebase.Unsubscribe | null = null;
 let authStateChangeCallback: AuthStateChangeCallback | null = null;
@@ -55,17 +53,6 @@ function onNewSettings(snapshot: firebase.firestore.DocumentSnapshot<Partial<Set
   }
 }
 
-async function onNewClaims(snapshot: firebase.firestore.DocumentSnapshot<Partial<User>>) {
-  const data = snapshot.data();
-
-  if (firebaseUser && data && data.claimsUpdatedAt) {
-    if (userClaimsUpdatedAt && !data.claimsUpdatedAt.isEqual(userClaimsUpdatedAt)) {
-      await firebaseUser.getIdToken(true);
-    }
-
-    userClaimsUpdatedAt = data.claimsUpdatedAt;
-  }
-}
 
 auth.onAuthStateChanged((user) => {
   firebaseUser = user;
@@ -73,13 +60,12 @@ auth.onAuthStateChanged((user) => {
   if (user) {
     unsubscribeAllSnapshots();
 
-    userSnapshotUnsubscribe = db.collection("users").doc(user.uid).onSnapshot(onNewClaims);
     optionsSnapshotUnsubscribe = db.collection("settings").doc(user.uid).onSnapshot(onNewSettings);
   } else {
     unsubscribeAllSnapshots();
 
     if (authStateChangeCallback) {
-      authStateChangeCallback(null, null);
+      authStateChangeCallback(null);
     }
   }
 });
@@ -88,10 +74,9 @@ auth.onIdTokenChanged(async (user) => {
   if (authStateChangeCallback) {
     if (user) {
       const result = await user.getIdTokenResult(false);
-      firebaseClaims = result.claims as FirebaseCustomClaims;
-      authStateChangeCallback(user, firebaseClaims);
+      authStateChangeCallback(user);
     } else {
-      authStateChangeCallback(null, null);
+      authStateChangeCallback(null);
     }
   }
 });
@@ -122,7 +107,7 @@ export function logout() {
 }
 
 export async function saveOptionsToDb(options: IFakeFillerOptions) {
-  if (firebaseUser && firebaseClaims) {
+  if (firebaseUser) {
     const updatedAt = firebase.firestore.FieldValue.serverTimestamp();
 
     await db

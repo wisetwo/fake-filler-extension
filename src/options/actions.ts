@@ -18,7 +18,6 @@ import {
   ICustomFieldForm,
   IProfile,
   FirebaseUser,
-  FirebaseCustomClaims,
 } from "src/types";
 
 export interface IFetchingOptionsAction {
@@ -42,7 +41,6 @@ export interface IReceivedKeyboardShortcutsAction {
 export interface IUpdateAuthStateAction {
   type: "UPDATE_AUTH_STATE";
   user: FirebaseUser;
-  claims: FirebaseCustomClaims;
 }
 
 export type MyActions =
@@ -56,8 +54,8 @@ type MyThunkResult<R> = ThunkAction<Promise<R>, IAppState, unknown, MyActions>;
 type MyDefaultThunkResult = MyThunkResult<void>;
 export type MyThunkDispatch = ThunkDispatch<IAppState, unknown, MyActions>;
 
-export function updateAuthState(user: FirebaseUser, claims: FirebaseCustomClaims): MyActions {
-  return { type: "UPDATE_AUTH_STATE", user, claims };
+export function updateAuthState(user: FirebaseUser): MyActions {
+  return { type: "UPDATE_AUTH_STATE", user };
 }
 
 export function getOptions(): MyDefaultThunkResult {

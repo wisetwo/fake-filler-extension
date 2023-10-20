@@ -147,7 +147,6 @@ export interface IKeyboardShortcutsState {
 
 export interface IAuthState {
   user: FirebaseUser;
-  claims: FirebaseCustomClaims;
 }
 
 export interface IAppState {
@@ -170,8 +169,6 @@ export type User = {
   emailAddress: string;
   stripeCustomerId: string;
   stripeSubscriptionId: string;
-  claimsUpdatedAt: firebase.firestore.FieldValue;
 };
 
 export type FirebaseUser = firebase.User | null;
-export type FirebaseCustomClaims = CustomClaims | null;
