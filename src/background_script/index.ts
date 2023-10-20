@@ -5,7 +5,6 @@ import {
   GetFakeFillerOptions,
   GetMessage,
   SaveFakeFillerOptions,
-  DEFAULT_EMAIL_CUSTOM_FIELD,
 } from "src/common/helpers";
 import { MessageRequest, IProfile, IFakeFillerOptions } from "src/types";
 
@@ -23,14 +22,6 @@ function NotifyTabsOfNewOptions(options: IFakeFillerOptions) {
   });
 }
 
-function handleOptionsChange(options: IFakeFillerOptions) {
-  chrome.storage.local.set({ options }, () => {
-    CreateContextMenus(options.enableContextMenu);
-    NotifyTabsOfNewOptions(options);
-  });
-}
-
-onOptionsChange(handleOptionsChange);
 
 function handleMessage(
   request: MessageRequest,
