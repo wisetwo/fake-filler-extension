@@ -57,11 +57,6 @@ function App() {
               Help
             </Nav.Link>
           </Nav>
-          <Nav>
-            <Nav.Link as={NavLink} to="/account">
-              My Account
-            </Nav.Link>
-          </Nav>
         </Navbar.Collapse>
       </Navbar>
       <div id="main-content" className="container">
