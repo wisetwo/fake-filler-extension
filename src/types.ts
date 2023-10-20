@@ -146,7 +146,6 @@ export interface IKeyboardShortcutsState {
 }
 
 export interface IAppState {
-  authData: IAuthState;
   optionsData: IOptionsState;
   keyboardShortcutsData: IKeyboardShortcutsState;
 }
