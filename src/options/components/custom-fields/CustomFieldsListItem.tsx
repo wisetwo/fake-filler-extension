@@ -44,7 +44,7 @@ const CustomFieldsListItem = (props: Props) => {
         <div ref={provided.innerRef} {...provided.draggableProps}>
           <div className="card custom-field">
             <div className="card-header">
-              <strong>{customField.name}</strong>
+      <strong>{`${props.itemIndex + 1} - `}{customField.name}</strong>
               <div className={`custom-field-buttons ${props.allowEdit ? "" : "invisible"}`}>
                 <div className="btn btn-sm btn-link drag-handle" {...provided.dragHandleProps}>
                   <img src="images/move.svg" width="12" height="12" alt={GetMessage("move")} />
