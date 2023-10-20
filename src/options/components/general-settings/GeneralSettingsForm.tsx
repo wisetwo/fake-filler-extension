@@ -3,7 +3,6 @@ import React from "react";
 
 import { GetMessage } from "src/common/helpers";
 import CheckboxField from "src/options/components/common/CheckboxField";
-import HtmlPhrase from "src/options/components/common/HtmlPhrase";
 import RadioButtonField from "src/options/components/common/RadioButtonField";
 import TextField from "src/options/components/common/TextField";
 import { IFakeFillerOptionsForm, IFakeFillerOptions } from "src/types";
@@ -107,11 +106,6 @@ const GeneralSettingsForm = (props: Props) => {
               <CheckboxField
                 name="ignoreFieldsWithContent"
                 label={GetMessage("generalSettings_ignoreFieldsWithContentLabel")}
-              />
-              <HtmlPhrase
-                phrase={GetMessage("generalSettings_ignoreFieldsWithContentHelp")}
-                as="div"
-                className="form-text text-muted"
               />
             </div>
           </div>

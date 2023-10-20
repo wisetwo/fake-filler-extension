@@ -60,7 +60,7 @@ class ElementFiller {
   }
 
   private shouldIgnoreElement(element: FillableElement): boolean {
-    if (["button", "submit", "reset", "file", "hidden", "image"].indexOf(element.type) > -1) {
+    if (["button", "submit", "reset", "file", "image"].indexOf(element.type) > -1) {
       return true;
     }
 

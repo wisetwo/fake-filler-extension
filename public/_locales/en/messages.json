@@ -452,9 +452,6 @@
   "generalSettings_note": {
     "message": "Note"
   },
-  "generalSettings_ignoreFieldsWithContentHelp": {
-    "message": "Inputs with <i>type=&quot;hidden&quot;</i> are always ignored."
-  },
   "generalSettings_confirmationFieldsMatch": {
     "message": "Confirmation Fields Match"
   },
