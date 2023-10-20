@@ -1,4 +1,4 @@
-This was forked from FakeFiller/fake-filler-extension, which is not actively maintained, and drops the free-version's restrictions.
+This was forked from FakeFiller/fake-filler-extension, which was developed by Hussein Shabbir under the MIT license.  The original FakeFiller is no longer actively maintained, so this version drops the free-version's restrictions on number of field inputs and ability to create profiles.  It does not have the ability to sync settings across devices.
 
 # <img src="public/images/logo.svg" height="53" alt="Fake Filler" title="Fake Filler" />
 
