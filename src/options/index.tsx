@@ -5,8 +5,6 @@ import { HashRouter, Route } from "react-router-dom";
 
 import App from "src/options/components/App";
 import Store from "src/options/store";
-import { IFakeFillerOptions } from "src/types";
-
 
 
 const optionsApp = (
