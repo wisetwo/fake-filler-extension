@@ -78,6 +78,7 @@ export default function CustomFieldsView(props: Props): JSX.Element {
 
   return (
     <>
+      <em>Items listed earlier match earlier.</em> 
       <CustomFieldsList
         customFields={customFields}
         allowAdd={allowAdd}
@@ -87,7 +88,7 @@ export default function CustomFieldsView(props: Props): JSX.Element {
         onDelete={handleDelete}
         onSort={handleSort}
       />
-
+      <em>Items listed later match later.</em> 
       <CustomFieldModal isOpen={modalIsOpen} customField={customField} onClose={closeModal} onSave={handleSave} />
     </>
   );
