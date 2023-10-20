@@ -17,7 +17,6 @@ import {
   ICustomField,
   ICustomFieldForm,
   IProfile,
-  FirebaseUser,
 } from "src/types";
 
 export interface IFetchingOptionsAction {
@@ -38,25 +37,15 @@ export interface IReceivedKeyboardShortcutsAction {
   shortcuts: chrome.commands.Command[];
 }
 
-export interface IUpdateAuthStateAction {
-  type: "UPDATE_AUTH_STATE";
-  user: FirebaseUser;
-}
-
 export type MyActions =
   | IFetchingOptionsAction
   | IReceivedOptionsAction
   | IFetchingKeyboardShortcutsAction
-  | IReceivedKeyboardShortcutsAction
-  | IUpdateAuthStateAction;
+  | IReceivedKeyboardShortcutsAction;
 
 type MyThunkResult<R> = ThunkAction<Promise<R>, IAppState, unknown, MyActions>;
 type MyDefaultThunkResult = MyThunkResult<void>;
 export type MyThunkDispatch = ThunkDispatch<IAppState, unknown, MyActions>;
-
-export function updateAuthState(user: FirebaseUser): MyActions {
-  return { type: "UPDATE_AUTH_STATE", user };
-}
 
 export function getOptions(): MyDefaultThunkResult {
   return (dispatch) => {

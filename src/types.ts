@@ -145,10 +145,6 @@ export interface IKeyboardShortcutsState {
   shortcuts: chrome.commands.Command[];
 }
 
-export interface IAuthState {
-  user: FirebaseUser;
-}
-
 export interface IAppState {
   authData: IAuthState;
   optionsData: IOptionsState;
@@ -170,5 +166,3 @@ export type User = {
   stripeCustomerId: string;
   stripeSubscriptionId: string;
 };
-
-export type FirebaseUser = firebase.User | null;
