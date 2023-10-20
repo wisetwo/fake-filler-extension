@@ -79,6 +79,14 @@ const FakeFillerDefaultOptions = (): IFakeFillerOptions => {
   });
 
   options.fields.push({
+    type: "regex",
+    name: "Credit Card",
+    match: ["creditcard"],
+    template:
+      "((42){7}0|4000056655665550|5{12}4440|2223003122003220|520082{5}10|(510){5}0|378282246310005|371449635398431|6011(11|98)1{9}0|6011000990139420|3056930009020000|36227206271667|6555900000604100|3566002020360500|620{12}(4|0)0|620550{14}|(40{5}|5{6})2500001001|4000050360000001|5555050360000080)",
+  });
+
+  options.fields.push({
     type: "telephone",
     name: "Telephone Number",
     match: ["phone", "fax"],
