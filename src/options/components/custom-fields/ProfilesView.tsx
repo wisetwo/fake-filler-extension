@@ -58,10 +58,6 @@ const ProfilesView: React.FC<Props> = (props) => {
     closeModal();
   }
 
-  if (profiles.length === 0) {
-    return <>{props.children}</>;
-  }
-
   return (
     <>
       <div className="row">
