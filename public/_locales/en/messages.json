@@ -267,7 +267,7 @@
     "message": "Comma-separated values or a regular expression."
   },
   "customFields_label_match_helpText": {
-    "message": "Enter comma separated values (in lowercase) to match, or a regular expression. Make sure your regular expression does not have a comma."
+    "message": "Enter comma separated values (in lowercase) to match, or a regular expression. Make sure your regular expression does not have a comma. Strip all non-alphanumeric characters from your matchers, including spaces."
   },
   "customFields_label_template": {
     "message": "Template"
