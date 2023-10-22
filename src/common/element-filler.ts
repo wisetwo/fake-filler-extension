@@ -42,7 +42,7 @@ class ElementFiller {
 
   private isAnyMatch(haystack: string, needles: string[]): boolean {
     for (let i = 0, count = needles.length; i < count; i += 1) {
-      if (new RegExp(needles[i], "i").test(haystack)) {
+      if (new RegExp(needles[i], "iu").test(haystack)) {
         return true;
       }
     }
