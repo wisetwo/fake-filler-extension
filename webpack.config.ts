@@ -10,8 +10,11 @@ const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const webpackConfig: webpack.Configuration = {
   cache: false,
   entry: {
-    "background-script": path.join(__dirname, "src/background_script/index.ts"),
-    "content-script": path.join(__dirname, "src/content_script/index.ts"),
+    "service_worker": [
+      path.join(__dirname, "src/background/regeneratorRuntime.js"),
+      path.join(__dirname, "src/service_worker/index.ts")
+    ],
+    "build/content-script": path.join(__dirname, "src/content_script/index.ts"),
     options: path.join(__dirname, "src/options/index.tsx"),
   },
   module: {
@@ -52,7 +55,7 @@ const webpackConfig: webpack.Configuration = {
   },
   output: {
     filename: "[name].js",
-    path: path.join(__dirname, "dist/build"),
+    path: path.join(__dirname, "dist"),
   },
   plugins: [
     new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
