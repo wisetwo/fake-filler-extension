@@ -1,6 +1,6 @@
 {
   "name": "fake-filler",
-  "version": "3.0.0",
+  "version": "4.0.0",
   "description": "Fills all inputs in a page with dummy data.",
   "scripts": {
     "start": "npm run-script watch",
@@ -11,7 +11,7 @@
     "clean": "rimraf ./dist",
     "lint": "eslint src/**/*"
   },
-  "author": "Hussein Shabbir",
+  "author": "Jim Hays",
   "license": "MIT",
   "private": true,
   "dependencies": {
