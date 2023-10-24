@@ -4,11 +4,11 @@ This was forked from FakeFiller/fake-filler-extension, which was developed by Hu
 
 This extension allows you to fill all form inputs (textboxes, textareas, radio buttons, dropdowns, etc.) with dummy data. It is a must for developers and testers who work with forms as it avoids the need for manually entering values in fields.
 
-## Install
+## Install Links 
 
-- [**Chrome** extension](https://chrome.google.com/webstore/detail/bnjjngeaknajbdcgpfkgnonkmififhfo)
-- [**Edge** extension](https://microsoftedge.microsoft.com/addons/detail/bdcjobafgkjgckiikonbfcdocnhnaaii)
-- [**Firefox** add-on](https://addons.mozilla.org/en-US/firefox/addon/fake-filler/)
+- **Chrome** extension - TBD
+- **Edge** extension - TBD
+- **Firefox** add-on - TBD
 
 ## Default shortcut
 
