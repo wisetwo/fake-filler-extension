@@ -14,7 +14,6 @@
     "128": "images/icon-128.png"
   },
   "permissions": ["contextMenus", "activeTab", "storage", "scripting"],
-  "host_permissions": ["<all_urls>"],
   "action": {
     "default_icon": {
       "16": "images/icon-16.png",
