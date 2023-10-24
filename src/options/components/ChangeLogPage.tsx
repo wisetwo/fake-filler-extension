@@ -5,7 +5,20 @@ import ExternalLink from "src/options/components/common/ExternalLink";
 const ChangeLogPage = () => {
   return (
     <div>
-      <h2>Fake Filler Changelog</h2>
+      <h2>Fake Filler 2 Changelog</h2>
+      <p>
+        <strong>Version 4.0.0</strong>
+      </p>
+      <ul>
+        <li>Re-launch extension as <mark>Fake Filler 2</mark>.</li>
+        <li>Make Profiles and unlimited custom fields free features.</li>
+        <li>Respect 'step' values in number fields.</li>
+        <li>Drop support for settings syncing.</li>
+        <li>Add unicode support to field matching.</li>
+        <li>Allow matching hidden elements.</li>
+        <li>Upgrade manifest file to v3.</li>
+      </ul>
+      <hr />
       <p>
         <strong>Version 3.3.0</strong>
       </p>
