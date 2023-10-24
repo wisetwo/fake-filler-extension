@@ -497,8 +497,20 @@ class ElementFiller {
             max = Number(element.max) < max ? Number(element.max) : max;
           }
         }
-
-        element.value = String(this.generator.randomNumber(min, max));
+        
+        let decimalPlaces = 0; 
+        
+        if (element.step) {
+          console.info("if (element.step) {");
+          // Doesn't work properly for non-powers of 10
+          decimalPlaces = Math.floor(-Math.log10(Number(element.step)));
+        } else if (numberCustomField) {
+          console.info("} else if (numberCustomField) {");
+          decimalPlaces = numberCustomField.decimalPlaces || 0 ;
+        }
+      
+        console.info(decimalPlaces);
+        element.value = String(this.generator.randomNumber(min, max, decimalPlaces));
         break;
       }
 
