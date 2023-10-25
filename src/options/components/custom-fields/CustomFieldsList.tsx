@@ -20,8 +20,6 @@ function reorder(list: ICustomField[], startIndex: number, endIndex: number): IC
 
 type Props = {
   customFields: ICustomField[];
-  allowAdd: boolean;
-  allowEdit: boolean;
   onAdd: CustomFieldAddFunction;
   onDelete: CustomFieldDeleteFunction;
   onEdit: CustomFieldEditFunction;
@@ -40,7 +38,7 @@ const CustomFieldsList = (props: Props) => {
 
   return (
     <>
-      {props.allowAdd && <AddFieldButton index={0} onClick={props.onAdd} disabled={!props.allowAdd} />}
+      <AddFieldButton index={0} onClick={props.onAdd} />
       <DragDropContext onDragEnd={onSortEnd}>
         <Droppable droppableId="droppable">
           {(provided) => (
@@ -51,8 +49,6 @@ const CustomFieldsList = (props: Props) => {
                   key={index}
                   customField={item}
                   itemIndex={index}
-                  allowAdd={props.allowAdd}
-                  allowEdit={props.allowEdit}
                   onAdd={props.onAdd}
                   onEdit={props.onEdit}
                   onDelete={props.onDelete}

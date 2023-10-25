@@ -22,9 +22,6 @@ export default function CustomFieldsView(props: Props): JSX.Element {
 
   const dispatch = useDispatch();
 
-  const allowAdd = true; 
-  const allowEdit = true;
-
   function closeModal(): void {
     setModalIsOpen(false);
     setCustomField(null);
@@ -33,47 +30,37 @@ export default function CustomFieldsView(props: Props): JSX.Element {
   }
 
   function newCustomField(index: number): void {
-    if (allowEdit) {
-      setCustomFieldIndex(index);
-      setActionType("create");
-      setCustomField(null);
-      setModalIsOpen(true);
-    }
+    setCustomFieldIndex(index);
+    setActionType("create");
+    setCustomField(null);
+    setModalIsOpen(true);
   }
 
   function handleEdit(currentCustomField: ICustomField, index: number): void {
-    if (allowEdit) {
-      setCustomFieldIndex(index);
-      setCustomField(currentCustomField);
-      setActionType("edit");
-      setModalIsOpen(true);
-    }
+    setCustomFieldIndex(index);
+    setCustomField(currentCustomField);
+    setActionType("edit");
+    setModalIsOpen(true);
   }
 
   function handleDelete(index: number): void {
-    if (allowEdit) {
-      // eslint-disable-next-line no-alert
-      if (window.confirm(GetMessage("customFields_delete_confirm_message"))) {
-        dispatch(deleteCustomField(index, profileIndex));
-      }
+    // eslint-disable-next-line no-alert
+    if (window.confirm(GetMessage("customFields_delete_confirm_message"))) {
+      dispatch(deleteCustomField(index, profileIndex));
     }
   }
 
   function handleSort(sortedCustomFields: ICustomField[]): void {
-    if (allowEdit) {
-      dispatch(saveSortedCustomFields(sortedCustomFields, profileIndex));
-    }
+    dispatch(saveSortedCustomFields(sortedCustomFields, profileIndex));
   }
 
   function handleSave(formValues: ICustomFieldForm): void {
-    if (allowEdit) {
-      if (actionType === "edit") {
-        dispatch(saveCustomField(formValues, customFieldIndex, profileIndex));
-      } else {
-        dispatch(createCustomField(formValues, customFieldIndex, profileIndex));
-      }
-      closeModal();
+    if (actionType === "edit") {
+      dispatch(saveCustomField(formValues, customFieldIndex, profileIndex));
+    } else {
+      dispatch(createCustomField(formValues, customFieldIndex, profileIndex));
     }
+    closeModal();
   }
 
   return (
@@ -81,8 +68,6 @@ export default function CustomFieldsView(props: Props): JSX.Element {
       <b>Items listed earlier match earlier.</b> 
       <CustomFieldsList
         customFields={customFields}
-        allowAdd={allowAdd}
-        allowEdit={allowEdit}
         onAdd={newCustomField}
         onEdit={handleEdit}
         onDelete={handleDelete}
