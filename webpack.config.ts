@@ -15,7 +15,7 @@ const webpackConfig: webpack.Configuration = {
       path.join(__dirname, "src/service_worker/index.ts")
     ],
     "build/content-script": path.join(__dirname, "src/content_script/index.ts"),
-    options: path.join(__dirname, "src/options/index.tsx"),
+    "build/options": path.join(__dirname, "src/options/index.tsx"),
   },
   module: {
     rules: [
