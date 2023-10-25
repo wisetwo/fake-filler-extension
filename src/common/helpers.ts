@@ -15,7 +15,7 @@ export const DEFAULT_EMAIL_CUSTOM_FIELD: ICustomField = {
   emailUsernameList: ["jack", "jill"],
   emailUsernameRegEx: "",
   emailHostname: "list",
-  emailHostnameList: ["mailinator.com"],
+  emailHostnameList: ["example.com"],
 };
 
 const FakeFillerDefaultOptions = (): IFakeFillerOptions => {
