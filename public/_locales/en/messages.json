@@ -578,9 +578,6 @@
   "profile_url_matching_expression": {
     "message": "URL Matching Expression"
   },
-  "profile_thisProfileDisabled": {
-    "message": "This profile is disabled."
-  },
   "matchedProfile": {
     "message": "Matched Profile"
   }
