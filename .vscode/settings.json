@@ -17,6 +17,8 @@
   "editor.formatOnSave": true,
   "files.exclude": {
     "**/.git": true,
+    "**/.crx": true,
+    "**/.pem": true,
     "**/.DS_Store": true,
     "**/node_modules": true
   },
