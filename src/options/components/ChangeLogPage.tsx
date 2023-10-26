@@ -7,6 +7,17 @@ const ChangeLogPage = () => {
     <div>
       <h2>Fake Filler 2 Changelog</h2>
       <p>
+        <strong>Version 4.1.0</strong>
+      </p>
+      <ul>
+        <li>Add URL blocklisting</li>
+        <li>Allow matching of custom attributes</li>
+        <li>Fix options page not displaying</li>
+        <li>Support some Docassemble inputs</li>
+        <li>Other minor improvements and bugfixes</li>
+      </ul>
+      <hr />
+      <p>
         <strong>Version 4.0.0</strong>
       </p>
       <ul>
