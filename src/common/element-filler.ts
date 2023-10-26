@@ -421,11 +421,28 @@ class ElementFiller {
 
     switch (elementType) {
       case "checkbox": {
+        // standard version of this selector:
         if (this.isAnyMatch(element.name.toLowerCase(), this.options.agreeTermsFields)) {
           element.checked = true;
         } else {
           element.checked = Math.random() > 0.5;
         }
+
+        // docassemble version of this selector:
+        /*
+        if (this.isAnyMatch(element.name.toLowerCase(), this.options.agreeTermsFields)) {
+          let label: HTMLElement = element.nextElementSibling as HTMLElement;
+          if (label) {
+            label.click();
+          }
+        } else {
+          let label: HTMLElement = element.nextElementSibling as HTMLElement;
+          if (label) {
+            label.click();
+          } 
+        }
+        */
+
         break;
       }
 
