@@ -149,8 +149,8 @@
   "customFields_validation_missingName": {
     "message": "Please enter a name for this custom field."
   },
-  "customFields_validation_missingMatch": {
-    "message": "Please enter comma-separated values or a regular expression."
+  "customFields_validation_missingTextMatch": {
+    "message": "Please enter either a text match or a regular expression match."
   },
   "customFields_validation_missingTelephoneTemplate": {
     "message": "Please enter a template for the telephone number."
@@ -260,14 +260,23 @@
   "customFields_label_friendlyName": {
     "message": "Friendly Name"
   },
-  "customFields_label_match": {
-    "message": "Match"
+  "customFields_label_text_match": {
+    "message": "Text Match"
   },
-  "customFields_label_match_placeholder": {
-    "message": "Comma-separated values or a regular expression."
+  "customFields_label_text_match_placeholder": {
+    "message": "Comma-separated values"
   },
-  "customFields_label_match_helpText": {
-    "message": "Enter comma separated values (in lowercase) to match, or a regular expression. Make sure your regular expression does not have a comma. Strip all non-alphanumeric characters from your matchers, including spaces."
+  "customFields_label_text_match_helpText": {
+    "message": "Enter comma separated values to match. Non-alphanumeric characters will be stripped from your match strings and from potential matches before attempting to match."
+  },
+  "customFields_label_regex_match": {
+    "message": "Regex Match"
+  },
+  "customFields_label_regex_match_placeholder": {
+    "message": "Comma-separated regular expressions"
+  },
+  "customFields_label_regex_match_helpText": {
+    "message": "Enter comma separated regular expressions to match. Ensure your regular expressions do not contain any commas."
   },
   "customFields_label_template": {
     "message": "Template"

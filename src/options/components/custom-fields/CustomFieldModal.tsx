@@ -2,7 +2,7 @@ import { Form, Formik, FormikErrors } from "formik";
 import React from "react";
 import { Modal } from "react-bootstrap";
 
-import { GetMessage, DEFAULT_EMAIL_CUSTOM_FIELD } from "src/common/helpers";
+import { CsvToArray, GetMessage, DEFAULT_EMAIL_CUSTOM_FIELD } from "src/common/helpers";
 import TextField from "src/options/components/common/TextField";
 import DataTypeSelectField from "src/options/components/custom-fields/DataTypeSelectField";
 import AlphanumericOptions from "src/options/components/custom-fields/data-types/AlphanumericOptions";
@@ -28,8 +28,13 @@ const validate = (values: ICustomFieldForm): FormikErrors<ICustomFieldForm> => {
     errors.name = GetMessage("customFields_validation_missingName");
   }
 
-  if (!values.match || values.match.trim().length === 0) {
-    errors.match = GetMessage("customFields_validation_missingMatch");
+  if (
+      !values.textMatch && !values.regexMatch || 
+      !values.textMatch && CsvToArray(values.regexMatch, false).length === 0 ||
+      CsvToArray(values.textMatch, true).length === 0 && !values.regexMatch ||
+      CsvToArray(values.textMatch, true).length === 0 && CsvToArray(values.regexMatch, false).length === 0
+      ) {
+    errors.regexMatch = GetMessage("customFields_validation_missingMatch");
   }
 
   if (hasValidType) {
@@ -166,7 +171,8 @@ const CustomFieldModal = (props: Props) => {
   const { customField } = props;
 
   const initialValues: Partial<ICustomFieldForm> = {
-    match: "",
+    textMatch: "",
+    regexMatch: "",
     name: "",
     numberMin: "",
     numberMax: "",
@@ -196,7 +202,7 @@ const CustomFieldModal = (props: Props) => {
   if (customField) {
     initialValues.name = customField.name;
     initialValues.type = customField.type;
-    initialValues.match = customField.match.join(", ");
+    initialValues.regexMatch = customField.match.join(", ");
 
     switch (initialValues.type) {
       case "alphanumeric":
@@ -279,10 +285,16 @@ const CustomFieldModal = (props: Props) => {
               <DataTypeSelectField />
               <TextField name="name" label={GetMessage("customFields_label_friendlyName")} />
               <TextField
-                name="match"
-                label={GetMessage("customFields_label_match")}
-                placeholder={GetMessage("customFields_label_match_placeholder")}
-                helpText={GetMessage("customFields_label_match_helpText")}
+                name="textMatch"
+                label={GetMessage("customFields_label_text_match")}
+                placeholder={GetMessage("customFields_label_text_match_placeholder")}
+                helpText={GetMessage("customFields_label_text_match_helpText")}
+              />
+              <TextField
+                name="regexMatch"
+                label={GetMessage("customFields_label_regex_match")}
+                placeholder={GetMessage("customFields_label_regex_match_placeholder")}
+                helpText={GetMessage("customFields_label_regex_match_helpText")}
               />
               {values.type === "alphanumeric" && <AlphanumericOptions />}
               {values.type === "date" && <DateOptions />}

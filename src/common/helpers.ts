@@ -223,12 +223,17 @@ const SaveFakeFillerOptions = (options: IFakeFillerOptions): void => {
   CreateContextMenus(options.enableContextMenu);
 };
 
-const CsvToArray = (csvString: string): string[] => {
+const CsvToArray = (csvString: string, sanitize: boolean = false): string[] => {
   const splitValues = csvString && csvString.length > 0 ? csvString.split(",") : [];
   const arrayData: string[] = [];
 
   for (let i = 0; i < splitValues.length; i += 1) {
     splitValues[i] = splitValues[i].replace(/^\s*/, "").replace(/\s*$/, "");
+
+    if (sanitize) {
+      splitValues[i] = SanitizeText(splitValues[i])
+    }
+
     if (splitValues[i].length > 0) {
       arrayData.push(splitValues[i]);
     }

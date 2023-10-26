@@ -49,7 +49,8 @@ export interface ICustomField {
 }
 
 export interface ICustomFieldForm {
-  match: string;
+  textMatch: string;
+  regexMatch: string;
   name: string;
   numberMin: string;
   numberMax: string;
