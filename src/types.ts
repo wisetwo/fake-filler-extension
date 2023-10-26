@@ -112,6 +112,7 @@ export interface IFakeFillerOptions {
   passwordSettings: IPasswordSettings;
   profiles: IProfile[];
   triggerClickEvents: boolean;
+  urlMatchesToBlock: string[];
 }
 
 export interface IFakeFillerOptionsForm {
@@ -134,6 +135,7 @@ export interface IFakeFillerOptionsForm {
   passwordSettingsMode: PasswordModeType;
   passwordSettingsPassword: string;
   triggerClickEvents: boolean;
+  urlMatchesToBlock: string;
 }
 
 export interface IOptionsState {

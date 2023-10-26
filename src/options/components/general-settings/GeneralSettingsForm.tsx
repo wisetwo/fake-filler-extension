@@ -6,6 +6,7 @@ import CheckboxField from "src/options/components/common/CheckboxField";
 import RadioButtonField from "src/options/components/common/RadioButtonField";
 import TextField from "src/options/components/common/TextField";
 import { IFakeFillerOptionsForm, IFakeFillerOptions } from "src/types";
+import TextAreaField from "../common/TextAreaField";
 
 const validate = (values: IFakeFillerOptionsForm): FormikErrors<IFakeFillerOptionsForm> => {
   const errors: FormikErrors<IFakeFillerOptionsForm> = {};
@@ -63,6 +64,7 @@ const GeneralSettingsForm = (props: Props) => {
   initialValues.fieldMatchPlaceholder = props.options.fieldMatchSettings.matchPlaceholder;
   initialValues.fieldMatchAriaLabel = props.options.fieldMatchSettings.matchAriaLabel;
   initialValues.fieldMatchAriaLabelledBy = props.options.fieldMatchSettings.matchAriaLabelledBy;
+  initialValues.urlMatchesToBlock = props.options.urlMatchesToBlock.join(", ");
 
   return (
     <Formik
@@ -152,6 +154,14 @@ const GeneralSettingsForm = (props: Props) => {
             type="number"
             label={GetMessage("generalSettings_defaultMaxLength")}
             helpText={GetMessage("generalSettings_defaultMaxLength_help")}
+          />
+
+          <h2>{GetMessage("generalSettings_urlBlocking")}</h2>
+          <TextAreaField
+            name="urlMatchesToBlock"
+            type="paragraph"
+            label={GetMessage("generalSettings_urlBlockingLabel")}
+            helpText={GetMessage("generalSettings_urlBlockingHelp")}
           />
 
           <h2>{GetMessage("generalSettings")}</h2>

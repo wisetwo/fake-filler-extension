@@ -55,6 +55,17 @@ function handleMessage(
       return true;
     }
 
+    case "setBlockedBadge": {
+      const urlToBlock = request.data as string;
+      chrome.action.setBadgeText({ text: "X", tabId: sender.tab?.id });
+      chrome.action.setBadgeBackgroundColor({ color: "#880000", tabId: sender.tab?.id });
+      chrome.action.setTitle({
+        title: `${GetMessage("actionTitle")}\n${GetMessage("matchedBlockedURL")}: ${urlToBlock}`,
+        tabId: sender.tab?.id,
+      });
+      return true;
+    }
+
     case "clearProfileBadge": {
       chrome.action.setBadgeText({ text: "", tabId: sender.tab?.id });
       return true;

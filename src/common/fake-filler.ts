@@ -4,12 +4,34 @@ import { IFakeFillerOptions } from "src/types";
 class FakeFiller {
   private elementFiller: ElementFiller;
   private clickedElement: HTMLElement | undefined;
+  private urlMatchesToBlock: string[];
 
   constructor(options: IFakeFillerOptions, profileIndex = -1) {
     this.elementFiller = new ElementFiller(options, profileIndex);
+    this.urlMatchesToBlock = options.urlMatchesToBlock;
+  }
+
+  private urlMatchesBlockList(): Boolean {
+    const url = window.location.href;
+    
+    if (url && this.urlMatchesToBlock && this.urlMatchesToBlock.length > 0) {
+      for (let i = 0; i < this.urlMatchesToBlock.length; i += 1) {
+        const currentURL = this.urlMatchesToBlock[i];
+
+        if (url.match(new RegExp(currentURL))) {
+          return true;
+        }
+      }
+    }
+
+    return false;
   }
 
   private fillAllElements(container: Document | HTMLElement): void {
+    if (this.urlMatchesBlockList()) {
+      return;
+    }
+
     container.querySelectorAll("input:not(:disabled):not([readonly])").forEach((element) => {
       this.elementFiller.fillInputElement(element as HTMLInputElement);
     });
@@ -36,6 +58,10 @@ class FakeFiller {
   }
 
   public fillThisInput(): void {
+    if (this.urlMatchesBlockList()) {
+      return;
+    }
+
     const element = this.clickedElement || document.activeElement;
 
     if (element) {

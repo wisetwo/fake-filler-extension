@@ -473,8 +473,14 @@
   "generalSettings_agreeToTermsMatchHelp": {
     "message": "Checkboxes matching any of these values will always be checked."
   },
-  "generalSettings": {
-    "message": "General Settings"
+  "generalSettings_urlBlocking": {
+    "message": "URL Blocking"
+  },
+  "generalSettings_urlBlockingLabel": {
+    "message": "URLs to Block"
+  },
+  "generalSettings_urlBlockingHelp": {
+    "message": "Enter a comma separated list of regular expressions to match URLs. Fields on these URLs will never be matched by Fake Filler 2."
   },
   "generalSettings_triggerEvents": {
     "message": "Trigger Events"
@@ -580,6 +586,9 @@
   },
   "matchedProfile": {
     "message": "Matched Profile"
+  },
+  "matchedBlockedURL": {
+    "message": "Matched a Blocked URL"
   }
 }
     

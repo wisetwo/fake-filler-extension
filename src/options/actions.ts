@@ -79,6 +79,11 @@ export function saveOptions(options: IFakeFillerOptions, formValues?: IFakeFille
         draft.ignoreHiddenFields = formValues.ignoreHiddenFields;
         draft.ignoredFields = CsvToArray(formValues.ignoredFields);
         draft.triggerClickEvents = formValues.triggerClickEvents;
+        if (!formValues.urlMatchesToBlock) {
+          draft.urlMatchesToBlock = [];  
+        } else {
+          draft.urlMatchesToBlock = CsvToArray(formValues.urlMatchesToBlock)
+        }
 
         draft.passwordSettings = {
           mode: formValues.passwordSettingsMode,

@@ -9,11 +9,24 @@ declare global {
 
 function initialize(options: IFakeFillerOptions) {
   let profileIndex = -1;
+  let urlIsBlocked = false;
   const url = window.location.href;
 
   chrome.runtime.sendMessage({ type: "clearProfileBadge" }, () => chrome.runtime.lastError);
 
-  if (url && options.profiles && options.profiles.length > 0) {
+  if (url && options.urlMatchesToBlock && options.urlMatchesToBlock.length > 0) {
+    for (let i = 0; i < options.urlMatchesToBlock.length; i += 1) {
+      const currentURL = options.urlMatchesToBlock[i];
+
+      if (url.match(new RegExp(currentURL))) {
+        chrome.runtime.sendMessage({ type: "setBlockedBadge", data: currentURL }, () => chrome.runtime.lastError);
+        urlIsBlocked = true;
+        break;
+      }
+    }
+  }
+  
+  if (url && !urlIsBlocked && options.profiles && options.profiles.length > 0) {
     for (let i = 0; i < options.profiles.length; i += 1) {
       const currentProfile = options.profiles[i];
 

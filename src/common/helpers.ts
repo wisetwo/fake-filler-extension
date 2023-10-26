@@ -44,6 +44,7 @@ const FakeFillerDefaultOptions = (): IFakeFillerOptions => {
     },
     profiles: [],
     triggerClickEvents: true,
+    urlMatchesToBlock: ["trello"],
   };
 
   options.fields.push({
