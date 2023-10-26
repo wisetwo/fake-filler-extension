@@ -63,16 +63,16 @@ const CustomFieldsListItem = (props: Props) => {
               <tbody>
                 <tr>
                   <td className="col-3">{GetMessage("customFields_label_dataType")}</td>
-                  <td>{customField.type}</td>
+                  <td className="text-break">{customField.type}</td>
                 </tr>
                 <tr>
                   <td>{GetMessage("customFields_label_match")}</td>
-                  <td>{customField.match.join(", ")}</td>
+                  <td className="text-break">{customField.match.join(", ")}</td>
                 </tr>
                 {customField.template && (
                   <tr>
                     <td>{GetMessage("customFields_label_template")}</td>
-                    <td>{customField.template}</td>
+                    <td className="text-break">{customField.template}</td>
                   </tr>
                 )}
                 {isNotEmpty(customField.min) && (
