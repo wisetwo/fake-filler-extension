@@ -187,6 +187,12 @@ class ElementFiller {
       normalizedName += ` ${SanitizeText(element.getAttribute("placeholder") || "")}`;
     }
 
+    if (this.options.fieldMatchSettings.customAttributes && this.options.fieldMatchSettings.customAttributes.length > 0) {
+      for (let customAttribute of this.options.fieldMatchSettings.customAttributes) {
+        normalizedName += ` ${SanitizeText(element.getAttribute(customAttribute)|| "")}`;
+      }
+    }
+
     if (this.options.fieldMatchSettings.matchLabel) {
       const normalizedId = cssesc(element.id);
       const labels = document.querySelectorAll(`label[for='${normalizedId}']`);

@@ -33,6 +33,7 @@ const FakeFillerDefaultOptions = (): IFakeFillerOptions => {
       matchName: true,
       matchClass: false,
       matchPlaceholder: false,
+      customAttributes: [],
     },
     fields: [],
     ignoredFields: ["captcha", "hipinputtext"],

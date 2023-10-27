@@ -84,12 +84,18 @@ export function saveOptions(options: IFakeFillerOptions, formValues?: IFakeFille
         } else {
           draft.urlMatchesToBlock = CsvToArray(formValues.urlMatchesToBlock)
         }
-
+        
         draft.passwordSettings = {
           mode: formValues.passwordSettingsMode,
           password: formValues.passwordSettingsPassword,
         };
 
+        let draftCustomAttributes: string[] = [];
+        
+        if (formValues.fieldMatchCustomAttributes) {
+          draftCustomAttributes = CsvToArray(formValues.fieldMatchCustomAttributes);
+        }
+        
         draft.fieldMatchSettings = {
           matchClass: formValues.fieldMatchClass,
           matchId: formValues.fieldMatchId,
@@ -98,6 +104,7 @@ export function saveOptions(options: IFakeFillerOptions, formValues?: IFakeFille
           matchAriaLabelledBy: formValues.fieldMatchAriaLabelledBy,
           matchName: formValues.fieldMatchName,
           matchPlaceholder: formValues.fieldMatchPlaceholder,
+          customAttributes: draftCustomAttributes,
         };
       }
 

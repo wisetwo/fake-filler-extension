@@ -64,7 +64,18 @@ const GeneralSettingsForm = (props: Props) => {
   initialValues.fieldMatchPlaceholder = props.options.fieldMatchSettings.matchPlaceholder;
   initialValues.fieldMatchAriaLabel = props.options.fieldMatchSettings.matchAriaLabel;
   initialValues.fieldMatchAriaLabelledBy = props.options.fieldMatchSettings.matchAriaLabelledBy;
-  initialValues.urlMatchesToBlock = props.options.urlMatchesToBlock.join(", ");
+  
+  if (!props.options.fieldMatchSettings.customAttributes) {
+    initialValues.fieldMatchCustomAttributes = "";
+  } else {
+    initialValues.fieldMatchCustomAttributes = props.options.fieldMatchSettings.customAttributes.join(", ");
+  }
+  
+  if (!props.options.urlMatchesToBlock) {
+    initialValues.urlMatchesToBlock = "";
+  } else {
+    initialValues.urlMatchesToBlock = props.options.urlMatchesToBlock.join(", ");
+  }
 
   return (
     <Formik
@@ -148,6 +159,13 @@ const GeneralSettingsForm = (props: Props) => {
               <div className="form-text text-muted">{GetMessage("generalSettings_matchFields_help")}</div>
             </div>
           </div>
+          
+          <TextField
+            name="fieldMatchCustomAttributes"
+            label={GetMessage("generalSettings_customAttributes")}
+            placeholder={GetMessage("generalSettings_customAttributes_placeholder")}
+            helpText={GetMessage("generalSettings_customAttributesHelp")}
+          />
 
           <TextField
             name="defaultMaxLength"

@@ -84,6 +84,7 @@ export interface IFieldMatchSettings {
   matchPlaceholder: boolean;
   matchAriaLabel: boolean;
   matchAriaLabelledBy: boolean;
+  customAttributes: string[]
 }
 
 export interface IPasswordSettings {
@@ -129,6 +130,7 @@ export interface IFakeFillerOptionsForm {
   fieldMatchAriaLabelledBy: boolean;
   fieldMatchClass: boolean;
   fieldMatchPlaceholder: boolean;
+  fieldMatchCustomAttributes: string;
   ignoreFieldsWithContent: boolean;
   ignoreHiddenFields: boolean;
   ignoredFields: string;

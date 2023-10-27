@@ -473,6 +473,15 @@
   "generalSettings_agreeToTermsMatchHelp": {
     "message": "Checkboxes matching any of these values will always be checked."
   },
+  "generalSettings_customAttributes": {
+    "message": "Custom Attributes"
+  },
+  "generalSettings_customAttributes_placeholder": {
+    "message": "Custom Attributes"
+  },
+  "generalSettings_customAttributesHelp": {
+    "message": "Enter a comma separated list of custom attributes to match"
+  },
   "generalSettings_urlBlocking": {
     "message": "URL Blocking"
   },
