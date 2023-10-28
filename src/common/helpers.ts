@@ -90,6 +90,15 @@ const FakeFillerDefaultOptions = (): IFakeFillerOptions => {
   });
 
   options.fields.push({
+    type: "number",
+    name: "Extension",
+    match: ["extension"],
+    min: 100,
+    max: 999,
+    decimalPlaces: 0,
+  });
+
+  options.fields.push({
     type: "telephone",
     name: "Telephone Number",
     match: ["phone", "fax"],
@@ -99,7 +108,7 @@ const FakeFillerDefaultOptions = (): IFakeFillerOptions => {
   options.fields.push({
     type: "number",
     name: "A Random Number between 1 and 1000",
-    match: ["integer", "number", "numeric", "income", "price", "qty", "quantity"],
+    match: ["integer", "number", "numeric", "income", "price", "qty", "quantity", "amount"],
     min: 1,
     max: 1000,
     decimalPlaces: 0,
@@ -137,7 +146,7 @@ const FakeFillerDefaultOptions = (): IFakeFillerOptions => {
     name: "Year",
     match: ["year"],
     min: 1970,
-    max: 2019,
+    max: 2022,
     decimalPlaces: 0,
   });
 
@@ -168,7 +177,7 @@ const FakeFillerDefaultOptions = (): IFakeFillerOptions => {
   options.fields.push({
     type: "regex",
     name: "P.O. Box",
-    match: ["pobox", "postbox"],
+    match: ["pobox", "postbox", "postofficebox"],
     template: "((P\\.O\\.)|(PO)) Box [1-9][0-9]{0,4}",
   });
 
