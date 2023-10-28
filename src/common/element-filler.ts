@@ -432,6 +432,9 @@ class ElementFiller {
         // standard version of this selector:
         if (this.isAnyMatch(this.getElementName(element), this.options.agreeTermsFields)) {
           element.checked = true;
+          if (element.value && element.value == "false") {
+            element.value = "true";
+          }
         } else {
           element.checked = Math.random() > 0.5;
         }
@@ -442,6 +445,9 @@ class ElementFiller {
           let label: HTMLElement = element.nextElementSibling as HTMLElement;
           if (label) {
             label.click();
+          }
+          if (element.value && element.value == "false") {
+            element.value = "true";
           }
         } else {
           let label: HTMLElement = element.nextElementSibling as HTMLElement;
