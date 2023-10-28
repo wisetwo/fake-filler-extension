@@ -2,7 +2,7 @@ import { Form, Formik, FormikErrors } from "formik";
 import React from "react";
 import { Modal } from "react-bootstrap";
 
-import { CsvToArray, GetMessage, DEFAULT_EMAIL_CUSTOM_FIELD } from "src/common/helpers";
+import { CsvToArray, GetMessage, DEFAULT_EMAIL_CUSTOM_FIELD, SanitizeText } from "src/common/helpers";
 import TextField from "src/options/components/common/TextField";
 import DataTypeSelectField from "src/options/components/custom-fields/DataTypeSelectField";
 import AlphanumericOptions from "src/options/components/custom-fields/data-types/AlphanumericOptions";
@@ -202,7 +202,9 @@ const CustomFieldModal = (props: Props) => {
   if (customField) {
     initialValues.name = customField.name;
     initialValues.type = customField.type;
-    initialValues.regexMatch = customField.match.join(", ");
+    
+    initialValues.textMatch = customField.match.filter((match) => match == SanitizeText(match)).join(", ");
+    initialValues.regexMatch = customField.match.filter((match) => match != SanitizeText(match)).join(", ");
 
     switch (initialValues.type) {
       case "alphanumeric":
