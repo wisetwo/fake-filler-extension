@@ -156,7 +156,7 @@ class DataGenerator {
     const wordCount = this.randomNumber(minWords, maxWords);
     const resultPhrase = this.words(wordCount, maxLength);
 
-    return resultPhrase.replace(/[?.!,;]?$/, ".");
+    return resultPhrase.replace(/[?.!,;]? ?[^ ]*$/, ".");
   }
 
   public phrase(maxLength: number): string {
