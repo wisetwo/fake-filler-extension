@@ -430,7 +430,7 @@ class ElementFiller {
     switch (elementType) {
       case "checkbox": {
         // standard version of this selector:
-        if (this.isAnyMatch(element.name.toLowerCase(), this.options.agreeTermsFields)) {
+        if (this.isAnyMatch(this.getElementName(element), this.options.agreeTermsFields)) {
           element.checked = true;
         } else {
           element.checked = Math.random() > 0.5;
@@ -438,7 +438,7 @@ class ElementFiller {
 
         // docassemble version of this selector:
         /*
-        if (this.isAnyMatch(element.name.toLowerCase(), this.options.agreeTermsFields)) {
+        if (this.isAnyMatch(this.getElementName(element), this.options.agreeTermsFields)) {
           let label: HTMLElement = element.nextElementSibling as HTMLElement;
           if (label) {
             label.click();
@@ -505,7 +505,7 @@ class ElementFiller {
         break;
 
       case "email": {
-        if (this.isAnyMatch(element.name.toLowerCase(), this.options.confirmFields)) {
+        if (this.isAnyMatch(this.getElementName(element), this.options.confirmFields)) {
           element.value = this.previousValue;
         } else {
           let emailCustomField = this.findCustomField(this.getElementName(element), ["email"]);
@@ -550,7 +550,7 @@ class ElementFiller {
       }
 
       case "password": {
-        if (this.isAnyMatch(element.name.toLowerCase(), this.options.confirmFields)) {
+        if (this.isAnyMatch(this.getElementName(element), this.options.confirmFields)) {
           element.value = this.previousPassword;
         } else {
           if (this.options.passwordSettings.mode === "defined") {
@@ -607,7 +607,7 @@ class ElementFiller {
       }
 
       default: {
-        if (this.isAnyMatch(element.name.toLowerCase(), this.options.confirmFields)) {
+        if (this.isAnyMatch(this.getElementName(element), this.options.confirmFields)) {
           element.value = this.previousValue;
         } else {
           const customField = this.findCustomField(this.getElementName(element));
