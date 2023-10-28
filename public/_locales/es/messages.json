@@ -260,6 +260,9 @@
     "customFields_label_friendlyName": {
         "message": "Nombre amigable"
     },
+    "customFields_label_match": {
+        "message": "Coincidencia"
+      },
     "customFields_label_text_match": {
         "message": "Coincidencia de texto"
     },

@@ -260,6 +260,9 @@
     "customFields_label_friendlyName": {
         "message": "标识名称"
     },
+    "customFields_label_match": {
+        "message": "匹配"
+    },
     "customFields_label_text_match": {
         "message": "匹配"
     },

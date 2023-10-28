@@ -260,6 +260,9 @@
   "customFields_label_friendlyName": {
     "message": "Friendly Name"
   },
+  "customFields_label_match": {
+    "message": "Match"
+  },
   "customFields_label_text_match": {
     "message": "Text Match"
   },
