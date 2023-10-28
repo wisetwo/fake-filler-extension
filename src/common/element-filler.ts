@@ -168,28 +168,40 @@ class ElementFiller {
     return foundField;
   }
 
+  private NormalizeTextForElementName(text: string): string {
+    let sanitizedText = SanitizeText(text);
+
+    if (sanitizedText == text) {
+      return sanitizedText;
+    }
+
+    return sanitizedText + ` ` + text;
+  }
+
   private getElementName(element: FillableElement): string {
     let normalizedName = "";
 
     if (this.options.fieldMatchSettings.matchName) {
-      normalizedName += ` ${SanitizeText(element.name)}`;
+
+
+      normalizedName += ` ${this.NormalizeTextForElementName(element.name)}`;
     }
 
     if (this.options.fieldMatchSettings.matchId) {
-      normalizedName += ` ${SanitizeText(element.id)}`;
+      normalizedName += ` ${this.NormalizeTextForElementName(element.id)}`;
     }
 
     if (this.options.fieldMatchSettings.matchClass) {
-      normalizedName += ` ${SanitizeText(element.className)}`;
+      normalizedName += ` ${this.NormalizeTextForElementName(element.className)}`;
     }
 
     if (this.options.fieldMatchSettings.matchPlaceholder) {
-      normalizedName += ` ${SanitizeText(element.getAttribute("placeholder") || "")}`;
+      normalizedName += ` ${this.NormalizeTextForElementName(element.getAttribute("placeholder") || "")}`;
     }
 
     if (this.options.fieldMatchSettings.customAttributes && this.options.fieldMatchSettings.customAttributes.length > 0) {
       for (let customAttribute of this.options.fieldMatchSettings.customAttributes) {
-        normalizedName += ` ${SanitizeText(element.getAttribute(customAttribute)|| "")}`;
+        normalizedName += ` ${this.NormalizeTextForElementName(element.getAttribute(customAttribute)|| "")}`;
       }
     }
 
@@ -197,12 +209,12 @@ class ElementFiller {
       const normalizedId = cssesc(element.id);
       const labels = document.querySelectorAll(`label[for='${normalizedId}']`);
       for (let i = 0; i < labels.length; i += 1) {
-        normalizedName += ` ${SanitizeText(labels[i].innerHTML)}`;
+        normalizedName += ` ${this.NormalizeTextForElementName(labels[i].innerHTML)}`;
       }
     }
 
     if (this.options.fieldMatchSettings.matchAriaLabel) {
-      normalizedName += ` ${SanitizeText(element.getAttribute("aria-label") || "")}`;
+      normalizedName += ` ${this.NormalizeTextForElementName(element.getAttribute("aria-label") || "")}`;
     }
 
     if (this.options.fieldMatchSettings.matchAriaLabelledBy) {
@@ -210,7 +222,7 @@ class ElementFiller {
       for (let i = 0; i < labelIds.length; i += 1) {
         const labelElement = document.getElementById(labelIds[i]);
         if (labelElement) {
-          normalizedName += ` ${SanitizeText(labelElement.innerHTML || "")}`;
+          normalizedName += ` ${this.NormalizeTextForElementName(labelElement.innerHTML || "")}`;
         }
       }
     }
