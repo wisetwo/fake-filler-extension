@@ -592,7 +592,18 @@ class ElementFiller {
       }
 
       case "url": {
-        element.value = this.generator.website();
+        const urlCustomField = this.findCustomField(this.getElementName(element), [
+          "alphanumeric",
+          "url",
+          "regex",
+          "randomized-list",
+        ]);
+
+        if (urlCustomField) {
+          element.value = this.generateDummyDataForCustomField(urlCustomField, element);
+        } else {
+          element.value = this.generator.website();
+        }
         break;
       }
 
