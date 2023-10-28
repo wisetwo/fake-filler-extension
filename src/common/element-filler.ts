@@ -337,9 +337,11 @@ class ElementFiller {
       case "organization": {
         return this.generator.organizationName();
       }
+
       case "telephone": {
         return this.generator.phoneNumber(customField.template);
       }
+
       case "number": {
         const minValue = customField.min === 0 ? 0 : customField.min || 1;
         const maxValue = customField.max || 100;
