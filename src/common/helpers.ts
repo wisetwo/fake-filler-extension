@@ -57,13 +57,13 @@ const FakeFillerDefaultOptions = (): IFakeFillerOptions => {
   options.fields.push({
     type: "first-name",
     name: "First Name",
-    match: ["firstname"],
+    match: ["firstname", "givenname"],
   });
 
   options.fields.push({
     type: "last-name",
     name: "Last Name",
-    match: ["lastname", "surname", "secondname"],
+    match: ["lastname", "surname", "secondname", "familyname"],
   });
 
   options.fields.push(DEFAULT_EMAIL_CUSTOM_FIELD);
