@@ -189,6 +189,14 @@ const FakeFillerDefaultOptions = (): IFakeFillerOptions => {
   });
 
   options.fields.push({
+    type: "regex",
+    name: "Address Line 2",
+    match: ["address2", "addressline2"],
+    template:
+      "(Suite|Apartment|Apt\.?|#|Number|No|) [1-9][0-9]{0,2}[A-G]?",
+  });
+
+  options.fields.push({
     type: "randomized-list",
     name: "City",
     match: ["city"],
