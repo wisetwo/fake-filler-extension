@@ -57,7 +57,14 @@ const FakeFillerDefaultOptions = (): IFakeFillerOptions => {
   options.fields.push({
     type: "first-name",
     name: "First Name",
-    match: ["firstname", "givenname"],
+    match: ["firstname", "givenname", "middlename"],
+  });
+
+  options.fields.push({
+    type: "alphanumeric",
+    name: "Middle Initial",
+    match: ["initial"],
+    template: "L",
   });
 
   options.fields.push({
