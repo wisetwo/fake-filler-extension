@@ -73,6 +73,13 @@ const FakeFillerDefaultOptions = (): IFakeFillerOptions => {
     match: ["lastname", "surname", "secondname", "familyname"],
   });
 
+  options.fields.push({
+    type: "randomized-list",
+    name: "Suffix",
+    match: ["suffix"],
+    list: ["Sr", "Senior", "Sr.", "Junior", "Jr", "Jr.", "I", "II", "III", "IV"],
+  });
+
   options.fields.push(DEFAULT_EMAIL_CUSTOM_FIELD);
 
   options.fields.push({
