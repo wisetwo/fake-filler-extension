@@ -23,7 +23,7 @@ const CheckboxField = React.forwardRef((props: Props, ref: React.Ref<HTMLInputEl
   const componentId = id || name;
 
   const controlMarkup = (
-    <div className={`custom-control custom-switch ${className}`}>
+    <div className={`custom-control custom-checkbox ${className}`}>
       <input
         id={componentId}
         type="checkbox"
