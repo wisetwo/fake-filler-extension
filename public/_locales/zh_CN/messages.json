@@ -404,6 +404,9 @@
     "customFields_delete_confirm_message": {
         "message": "Are you sure you want to delete this custom field?"
     },
+    "customFields_ordering_help": {
+        "message": "Inputs will be filled by the first rule they match."
+      },
     "customFields_label_hostName_randomLabel": {
         "message": "使用一个随机生成的域名"
     },

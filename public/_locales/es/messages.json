@@ -404,6 +404,9 @@
     "customFields_delete_confirm_message": {
         "message": "¿Está seguro de que desea eliminar este campo personalizado?"
     },
+    "customFields_ordering_help": {
+        "message": "Inputs will be filled by the first rule they match."
+      },
     "customFields_label_hostName_randomLabel": {
         "message": "Utilice un nombre de host generado aleatoriamente"
     },
