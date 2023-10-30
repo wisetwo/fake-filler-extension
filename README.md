@@ -8,7 +8,7 @@ This extension allows you to fill all form inputs (textboxes, textareas, radio b
 
 The Chrome extension is actively being developed. For the others, for the time being you'll need to compile them yourself.
 
-- **Chrome** extension - TBD
+- **Chrome** extension - https://chrome.google.com/webstore/detail/fake-filler-2/cjikmgjafbapgbmlaobilpfjhoimmblo
 - **Edge** extension - TBD
 - **Firefox** add-on - TBD
 
