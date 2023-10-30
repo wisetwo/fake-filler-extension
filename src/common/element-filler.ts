@@ -77,7 +77,6 @@ class ElementFiller {
       "button", 
       "submit", 
       "reset", 
-    //  "file", 
       "image"
     ].indexOf(element.type) > -1) {
       return true;
