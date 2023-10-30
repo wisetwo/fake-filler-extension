@@ -55,6 +55,7 @@ const GeneralSettingsForm = (props: Props) => {
   initialValues.ignoreHiddenFields = props.options.ignoreHiddenFields;
   initialValues.ignoredFields = props.options.ignoredFields.join(", ");
   initialValues.triggerClickEvents = props.options.triggerClickEvents;
+  initialValues.uploadFiles = props.options.uploadFiles;
   initialValues.passwordSettingsMode = props.options.passwordSettings.mode;
   initialValues.passwordSettingsPassword = props.options.passwordSettings.password;
   initialValues.fieldMatchId = props.options.fieldMatchSettings.matchId;
@@ -187,6 +188,11 @@ const GeneralSettingsForm = (props: Props) => {
             name="triggerClickEvents"
             label={GetMessage("generalSettings_triggerEventsLabel")}
             title={GetMessage("generalSettings_triggerEvents")}
+          />
+          <CheckboxField
+            name="uploadFiles"
+            label={GetMessage("generalSettings_uploadFilesLabel")}
+            title={GetMessage("generalSettings_uploadFiles")}
           />
           <CheckboxField
             name="enableContextMenu"

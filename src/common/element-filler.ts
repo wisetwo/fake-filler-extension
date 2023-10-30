@@ -73,7 +73,13 @@ class ElementFiller {
   }
 
   private shouldIgnoreElement(element: FillableElement): boolean {
-    if (["button", "submit", "reset", "file", "image"].indexOf(element.type) > -1) {
+    if ([
+      "button", 
+      "submit", 
+      "reset", 
+    //  "file", 
+      "image"
+    ].indexOf(element.type) > -1) {
       return true;
     }
 
@@ -632,6 +638,42 @@ class ElementFiller {
 
       case "search": {
         element.value = this.generator.words(1);
+        break;
+      }
+
+      case "file": {
+        if (this.options.uploadFiles) {
+          const dataTransfer = new DataTransfer()
+
+          // es-lint-disable-next-line:max-line-length
+          const pngFile = new File(['data:image/png;base64,R0lGODlhDAAMAKIFAF5LAP/zxAAAANyuAP/gaP///wAAAAAAACH5BAEAAAUALAAAAAAMAAwAAAMlWLPcGjDKFYi9lxKBOaGcF35DhWHamZUW0K4mAbiwWtuf0uxFAgA7'], 'testFile.png', {type: 'image/png'})
+          // es-lint-disable-next-line:max-line-length
+          const pdfFile = new File(['data:application/pdf;base64,JVBERi0xLjAKMSAwIG9iajw8L1BhZ2VzIDIgMCBSPj5lbmRvYmogMiAwIG9iajw8L0tpZHNbMyAw\nIFJdL0NvdW50IDE+PmVuZG9iaiAzIDAgb2JqPDwvTWVkaWFCb3hbMCAwIDMgM10+PmVuZG9iagp0\ncmFpbGVyPDwvUm9vdCAxIDAgUj4+Cg=='], 'testFile.pdf', {type: 'application/pdf'})
+          const txtFile = new File(['Hello world!'], 'testFile.txt', {type: 'text/plain'})
+
+          if (element.accept == "image/*" || element.accept.includes("png")) {
+            dataTransfer.items.add(pngFile);
+            if (!element.multiple) { 
+              element.files = dataTransfer.files
+              break; 
+            }
+          } else if ( element.accept.includes("pdf")) {
+            dataTransfer.items.add(pdfFile);
+            if (!element.multiple) { 
+              element.files = dataTransfer.files
+              break; 
+            }
+          } else {
+            dataTransfer.items.add(txtFile);
+            if (!element.multiple) { 
+              element.files = dataTransfer.files
+              break; 
+            }
+            dataTransfer.items.add(txtFile);
+          }
+
+         element.files = dataTransfer.files
+        }
         break;
       }
 

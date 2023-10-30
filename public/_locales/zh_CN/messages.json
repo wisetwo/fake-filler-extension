@@ -500,6 +500,12 @@
     "generalSettings_triggerEventsLabel": {
         "message": "对input字段触发click/change 事件"
     },
+    "generalSettings_uploadFiles": {
+      "message": "Upload Files"
+    },
+    "generalSettings_uploadFilesLabel": {
+      "message": "Upload example files on file input fields"
+    },
     "generalSettings_contextMenu": {
         "message": "右击菜单"
     },
