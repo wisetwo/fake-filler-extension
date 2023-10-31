@@ -7,6 +7,15 @@ const ChangeLogPage = () => {
     <div>
       <h2>Fake Filler 2 Changelog</h2>
       <p>
+        <strong>Version 4.2.0</strong>
+      </p>
+      <ul>
+        <li>Add rudimentary file uploading</li>
+        <li>Add Address Line 2, Middle Name/Initial, and Suffix default fields</li>
+        <li>Other minor improvements and bugfixes</li>
+      </ul>
+      <hr />
+      <p>
         <strong>Version 4.1.0</strong>
       </p>
       <ul>
