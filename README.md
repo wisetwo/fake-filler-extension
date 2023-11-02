@@ -34,3 +34,9 @@ Use **_CTRL+SHIFT+F_** on Windows and **_CMD+SHIFT+F_** on Mac to fire the exten
 ### View extension console log
 
 In the [this firefox](about:debugging#/runtime/this-firefox) page, next to the add-on, click the "inspect" button.
+
+# Support
+
+Your support helps me to maintain the extension and continue developing new features.
+
+[!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/calvinballing)
