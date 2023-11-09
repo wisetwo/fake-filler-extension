@@ -116,14 +116,14 @@ const FakeFillerDefaultOptions = (): IFakeFillerOptions => {
   options.fields.push({
     type: "telephone",
     name: "Telephone Number",
-    match: ["phone", "fax"],
+    match: ["phone", "fax", "mobile", "cell"],
     template: "+1 (XxX) XxX-XxxX",
   });
 
   options.fields.push({
     type: "number",
     name: "A Random Number between 1 and 1000",
-    match: ["integer", "number", "numeric", "income", "price", "qty", "quantity", "amount"],
+    match: ["integer", "number", "numeric", "income", "price", "qty", "quantity", "amount", "numof", "noof"],
     min: 1,
     max: 1000,
     decimalPlaces: 0,
@@ -182,24 +182,24 @@ const FakeFillerDefaultOptions = (): IFakeFillerOptions => {
 
   options.fields.push({
     type: "regex",
+    name: "Address Line 2",
+    match: ["address2", "addressline2", "street2"],
+    template: "(Suite|Apartment|Apt.?|#|Number|No|) [1-9][0-9]{0,2}[A-G]?",
+  });
+
+  options.fields.push({
+    type: "regex",
     name: "Address Line 1",
-    match: ["address1", "addressline1"],
+    match: ["address", "street"],
     template:
       // tslint:disable-next-line:max-line-length
       "([1-9][0-9][0-9]?) (North |East |West |South |||||)(Green |White |Rocky ||||||||)(Nobel|Fabien|Hague|Oak|Second|First|Cowley|Clarendon|New|Old|Milton) (Avenue|Boulevard|Court|Drive|Extension|Freeway|Lane|Parkway|Road|Street)",
   });
 
   options.fields.push({
-    type: "regex",
-    name: "Address Line 2",
-    match: ["address2", "addressline2"],
-    template: "(Suite|Apartment|Apt.?|#|Number|No|) [1-9][0-9]{0,2}[A-G]?",
-  });
-
-  options.fields.push({
     type: "randomized-list",
     name: "City",
-    match: ["city"],
+    match: ["city", "location"],
     list: [
       "New York",
       "Los Angeles",
