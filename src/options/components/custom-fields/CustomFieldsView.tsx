@@ -65,7 +65,7 @@ export default function CustomFieldsView(props: Props): JSX.Element {
 
   return (
     <>
-      <b>{GetMessage("customFields_ordering_help")}</b> 
+      <b>{GetMessage("customFields_ordering_help")}</b>
       <CustomFieldsList
         customFields={customFields}
         onAdd={newCustomField}

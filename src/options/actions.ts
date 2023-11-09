@@ -81,22 +81,22 @@ export function saveOptions(options: IFakeFillerOptions, formValues?: IFakeFille
         draft.triggerClickEvents = formValues.triggerClickEvents;
         draft.uploadFiles = formValues.uploadFiles;
         if (!formValues.urlMatchesToBlock) {
-          draft.urlMatchesToBlock = [];  
+          draft.urlMatchesToBlock = [];
         } else {
-          draft.urlMatchesToBlock = CsvToArray(formValues.urlMatchesToBlock)
+          draft.urlMatchesToBlock = CsvToArray(formValues.urlMatchesToBlock);
         }
-        
+
         draft.passwordSettings = {
           mode: formValues.passwordSettingsMode,
           password: formValues.passwordSettingsPassword,
         };
 
         let draftCustomAttributes: string[] = [];
-        
+
         if (formValues.fieldMatchCustomAttributes) {
           draftCustomAttributes = CsvToArray(formValues.fieldMatchCustomAttributes);
         }
-        
+
         draft.fieldMatchSettings = {
           matchClass: formValues.fieldMatchClass,
           matchId: formValues.fieldMatchId,
@@ -159,8 +159,8 @@ export function saveSortedCustomFields(customFields: ICustomField[], profileInde
 }
 
 function createCustomFieldFromFormData(formData: ICustomFieldForm): ICustomField {
-  let textMatchArray = CsvToArray(formData.textMatch, true)
-  let regexMatchArray = CsvToArray(formData.regexMatch, false)
+  const textMatchArray = CsvToArray(formData.textMatch, true);
+  const regexMatchArray = CsvToArray(formData.regexMatch, false);
 
   const customField: ICustomField = {
     match: textMatchArray.concat(regexMatchArray),

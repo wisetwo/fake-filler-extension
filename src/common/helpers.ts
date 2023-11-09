@@ -193,8 +193,7 @@ const FakeFillerDefaultOptions = (): IFakeFillerOptions => {
     type: "regex",
     name: "Address Line 2",
     match: ["address2", "addressline2"],
-    template:
-      "(Suite|Apartment|Apt\.?|#|Number|No|) [1-9][0-9]{0,2}[A-G]?",
+    template: "(Suite|Apartment|Apt.?|#|Number|No|) [1-9][0-9]{0,2}[A-G]?",
   });
 
   options.fields.push({
@@ -252,7 +251,7 @@ const FakeFillerDefaultOptions = (): IFakeFillerOptions => {
       "Wichita",
       "New Orleans",
       "Arlington",
-    ]
+    ],
   });
 
   options.fields.push({
@@ -306,8 +305,6 @@ const CreateContextMenus = (enableContextMenu: boolean): void => {
 };
 
 const SaveFakeFillerOptions = (options: IFakeFillerOptions): void => {
-
-
   chrome.storage.local.set({
     options,
   });
@@ -316,7 +313,11 @@ const SaveFakeFillerOptions = (options: IFakeFillerOptions): void => {
   CreateContextMenus(options.enableContextMenu);
 };
 
-const CsvToArray = (csvString: string, sanitize: boolean = false): string[] => {
+const SanitizeText = (text: string): string => {
+  return text.replace(/[^a-zA-Z0-9]+/g, "").toLowerCase();
+};
+
+const CsvToArray = (csvString: string, sanitize = false): string[] => {
   const splitValues = csvString && csvString.length > 0 ? csvString.split(",") : [];
   const arrayData: string[] = [];
 
@@ -324,7 +325,7 @@ const CsvToArray = (csvString: string, sanitize: boolean = false): string[] => {
     splitValues[i] = splitValues[i].replace(/^\s*/, "").replace(/\s*$/, "");
 
     if (sanitize) {
-      splitValues[i] = SanitizeText(splitValues[i])
+      splitValues[i] = SanitizeText(splitValues[i]);
     }
 
     if (splitValues[i].length > 0) {
@@ -362,10 +363,6 @@ const GetKeyboardShortcuts = (): Promise<chrome.commands.Command[]> => {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const GetMessage = (key: string, parameters?: any): string => {
   return chrome.i18n.getMessage(key, parameters);
-};
-
-const SanitizeText = (text: string): string => {
-  return text.replace(/[^a-zA-Z0-9]+/g, "").toLowerCase();
 };
 
 export {

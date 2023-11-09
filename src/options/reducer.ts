@@ -57,7 +57,6 @@ const KeyboardShortcutsReducer: Reducer<IKeyboardShortcutsState> = (
   });
 };
 
-
 export default combineReducers<IAppState>({
   optionsData: OptionsReducer,
   keyboardShortcutsData: KeyboardShortcutsReducer,

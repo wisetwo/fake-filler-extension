@@ -1,12 +1,16 @@
 import { Form, Formik, FormikErrors, FormikHelpers } from "formik";
+
 import React from "react";
 
+import TextAreaField from "../common/TextAreaField";
+
 import { GetMessage } from "src/common/helpers";
+
 import CheckboxField from "src/options/components/common/CheckboxField";
 import RadioButtonField from "src/options/components/common/RadioButtonField";
 import TextField from "src/options/components/common/TextField";
+
 import { IFakeFillerOptionsForm, IFakeFillerOptions } from "src/types";
-import TextAreaField from "../common/TextAreaField";
 
 const validate = (values: IFakeFillerOptionsForm): FormikErrors<IFakeFillerOptionsForm> => {
   const errors: FormikErrors<IFakeFillerOptionsForm> = {};
@@ -65,13 +69,13 @@ const GeneralSettingsForm = (props: Props) => {
   initialValues.fieldMatchPlaceholder = props.options.fieldMatchSettings.matchPlaceholder;
   initialValues.fieldMatchAriaLabel = props.options.fieldMatchSettings.matchAriaLabel;
   initialValues.fieldMatchAriaLabelledBy = props.options.fieldMatchSettings.matchAriaLabelledBy;
-  
+
   if (!props.options.fieldMatchSettings.customAttributes) {
     initialValues.fieldMatchCustomAttributes = "";
   } else {
     initialValues.fieldMatchCustomAttributes = props.options.fieldMatchSettings.customAttributes.join(", ");
   }
-  
+
   if (!props.options.urlMatchesToBlock) {
     initialValues.urlMatchesToBlock = "";
   } else {
@@ -160,7 +164,7 @@ const GeneralSettingsForm = (props: Props) => {
               <div className="form-text text-muted">{GetMessage("generalSettings_matchFields_help")}</div>
             </div>
           </div>
-          
+
           <TextField
             name="fieldMatchCustomAttributes"
             label={GetMessage("generalSettings_customAttributes")}

@@ -51,10 +51,16 @@ class ElementFiller {
 
   private isElementVisible(element: FillableElement): boolean {
     // BEGIN Docassemble specific code
-    if (element.className.includes("labelauty")) { // this tells us it's a Docassemble input
+    if (element.className.includes("labelauty")) {
+      // this tells us it's a Docassemble input
       // it's visible unless it's behind a showif
-      if (element.parentNode && element.parentNode.parentNode && element.parentNode.parentNode.parentNode && element.parentNode.parentNode.parentNode.parentNode) {
-        let showifContainer = element.parentNode.parentNode.parentNode.parentNode as FillableElement;
+      if (
+        element.parentNode &&
+        element.parentNode.parentNode &&
+        element.parentNode.parentNode.parentNode &&
+        element.parentNode.parentNode.parentNode.parentNode
+      ) {
+        const showifContainer = element.parentNode.parentNode.parentNode.parentNode as FillableElement;
         if (showifContainer.className.includes("dashowif")) {
           return this.isElementVisible(showifContainer); // check to see if the 4th grandparent container is visible
         }
@@ -73,12 +79,7 @@ class ElementFiller {
   }
 
   private shouldIgnoreElement(element: FillableElement): boolean {
-    if ([
-      "button", 
-      "submit", 
-      "reset", 
-      "image"
-    ].indexOf(element.type) > -1) {
+    if (["button", "submit", "reset", "image"].indexOf(element.type) > -1) {
       return true;
     }
 
@@ -174,9 +175,9 @@ class ElementFiller {
   }
 
   private NormalizeTextForElementName(text: string): string {
-    let sanitizedText = SanitizeText(text);
+    const sanitizedText = SanitizeText(text);
 
-    if (sanitizedText == text) {
+    if (sanitizedText === text) {
       return sanitizedText;
     }
 
@@ -187,8 +188,6 @@ class ElementFiller {
     let normalizedName = "";
 
     if (this.options.fieldMatchSettings.matchName) {
-
-
       normalizedName += ` ${this.NormalizeTextForElementName(element.name)}`;
     }
 
@@ -204,10 +203,13 @@ class ElementFiller {
       normalizedName += ` ${this.NormalizeTextForElementName(element.getAttribute("placeholder") || "")}`;
     }
 
-    if (this.options.fieldMatchSettings.customAttributes && this.options.fieldMatchSettings.customAttributes.length > 0) {
-      for (let customAttribute of this.options.fieldMatchSettings.customAttributes) {
-        normalizedName += ` ${this.NormalizeTextForElementName(element.getAttribute(customAttribute)|| "")}`;
-      }
+    if (
+      this.options.fieldMatchSettings.customAttributes &&
+      this.options.fieldMatchSettings.customAttributes.length > 0
+    ) {
+      this.options.fieldMatchSettings.customAttributes.forEach((customAttribute) => {
+        normalizedName += ` ${this.NormalizeTextForElementName(element.getAttribute(customAttribute) || "")}`;
+      });
     }
 
     if (this.options.fieldMatchSettings.matchLabel) {
@@ -449,7 +451,7 @@ class ElementFiller {
         // standard version of this selector:
         if (this.isAnyMatch(this.getElementName(element), this.options.agreeTermsFields)) {
           element.checked = true;
-          if (element.value && element.value == "false") {
+          if (element.value && element.value === "false") {
             element.value = "true";
           }
         } else {
@@ -558,16 +560,16 @@ class ElementFiller {
             max = Number(element.max) < max ? Number(element.max) : max;
           }
         }
-        
-        let decimalPlaces = 0; 
-        
+
+        let decimalPlaces = 0;
+
         if (element.step) {
           // Doesn't work properly for non-powers of 10
           decimalPlaces = Math.floor(-Math.log10(Number(element.step)));
         } else if (numberCustomField) {
-          decimalPlaces = numberCustomField.decimalPlaces || 0 ;
+          decimalPlaces = numberCustomField.decimalPlaces || 0;
         }
-      
+
         element.value = String(this.generator.randomNumber(min, max, decimalPlaces));
         break;
       }
@@ -642,36 +644,48 @@ class ElementFiller {
 
       case "file": {
         if (this.options.uploadFiles) {
-          const dataTransfer = new DataTransfer()
+          const dataTransfer = new DataTransfer();
 
           // es-lint-disable-next-line:max-line-length
-          const pngFile = new File(['data:image/png;base64,R0lGODlhDAAMAKIFAF5LAP/zxAAAANyuAP/gaP///wAAAAAAACH5BAEAAAUALAAAAAAMAAwAAAMlWLPcGjDKFYi9lxKBOaGcF35DhWHamZUW0K4mAbiwWtuf0uxFAgA7'], 'testFile.png', {type: 'image/png'})
+          const pngFile = new File(
+            [
+              "data:image/png;base64,R0lGODlhDAAMAKIFAF5LAP/zxAAAANyuAP/gaP///wAAAAAAACH5BAEAAAUALAAAAAAMAAwAAAMlWLPcGjDKFYi9lxKBOaGcF35DhWHamZUW0K4mAbiwWtuf0uxFAgA7",
+            ],
+            "testFile.png",
+            { type: "image/png" }
+          );
           // es-lint-disable-next-line:max-line-length
-          const pdfFile = new File(['data:application/pdf;base64,JVBERi0xLjAKMSAwIG9iajw8L1BhZ2VzIDIgMCBSPj5lbmRvYmogMiAwIG9iajw8L0tpZHNbMyAw\nIFJdL0NvdW50IDE+PmVuZG9iaiAzIDAgb2JqPDwvTWVkaWFCb3hbMCAwIDMgM10+PmVuZG9iagp0\ncmFpbGVyPDwvUm9vdCAxIDAgUj4+Cg=='], 'testFile.pdf', {type: 'application/pdf'})
-          const txtFile = new File(['Hello world!'], 'testFile.txt', {type: 'text/plain'})
+          const pdfFile = new File(
+            [
+              "data:application/pdf;base64,JVBERi0xLjAKMSAwIG9iajw8L1BhZ2VzIDIgMCBSPj5lbmRvYmogMiAwIG9iajw8L0tpZHNbMyAw\nIFJdL0NvdW50IDE+PmVuZG9iaiAzIDAgb2JqPDwvTWVkaWFCb3hbMCAwIDMgM10+PmVuZG9iagp0\ncmFpbGVyPDwvUm9vdCAxIDAgUj4+Cg==",
+            ],
+            "testFile.pdf",
+            { type: "application/pdf" }
+          );
+          const txtFile = new File(["Hello world!"], "testFile.txt", { type: "text/plain" });
 
-          if (element.accept == "image/*" || element.accept.includes("png")) {
+          if (element.accept === "image/*" || element.accept.includes("png")) {
             dataTransfer.items.add(pngFile);
-            if (!element.multiple) { 
-              element.files = dataTransfer.files
-              break; 
+            if (!element.multiple) {
+              element.files = dataTransfer.files;
+              break;
             }
-          } else if ( element.accept.includes("pdf")) {
+          } else if (element.accept.includes("pdf")) {
             dataTransfer.items.add(pdfFile);
-            if (!element.multiple) { 
-              element.files = dataTransfer.files
-              break; 
+            if (!element.multiple) {
+              element.files = dataTransfer.files;
+              break;
             }
           } else {
             dataTransfer.items.add(txtFile);
-            if (!element.multiple) { 
-              element.files = dataTransfer.files
-              break; 
+            if (!element.multiple) {
+              element.files = dataTransfer.files;
+              break;
             }
             dataTransfer.items.add(txtFile);
           }
 
-         element.files = dataTransfer.files
+          element.files = dataTransfer.files;
         }
         break;
       }

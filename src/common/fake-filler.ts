@@ -11,9 +11,9 @@ class FakeFiller {
     this.urlMatchesToBlock = options.urlMatchesToBlock;
   }
 
-  private urlMatchesBlockList(): Boolean {
+  private urlMatchesBlockList(): boolean {
     const url = window.location.href;
-    
+
     if (url && this.urlMatchesToBlock && this.urlMatchesToBlock.length > 0) {
       for (let i = 0; i < this.urlMatchesToBlock.length; i += 1) {
         const currentURL = this.urlMatchesToBlock[i];

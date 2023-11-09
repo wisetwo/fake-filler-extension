@@ -29,11 +29,11 @@ const validate = (values: ICustomFieldForm): FormikErrors<ICustomFieldForm> => {
   }
 
   if (
-      !values.textMatch && !values.regexMatch || 
-      !values.textMatch && CsvToArray(values.regexMatch, false).length === 0 ||
-      CsvToArray(values.textMatch, true).length === 0 && !values.regexMatch ||
-      CsvToArray(values.textMatch, true).length === 0 && CsvToArray(values.regexMatch, false).length === 0
-      ) {
+    (!values.textMatch && !values.regexMatch) ||
+    (!values.textMatch && CsvToArray(values.regexMatch, false).length === 0) ||
+    (CsvToArray(values.textMatch, true).length === 0 && !values.regexMatch) ||
+    (CsvToArray(values.textMatch, true).length === 0 && CsvToArray(values.regexMatch, false).length === 0)
+  ) {
     errors.regexMatch = GetMessage("customFields_validation_missingMatch");
   }
 
@@ -202,9 +202,9 @@ const CustomFieldModal = (props: Props) => {
   if (customField) {
     initialValues.name = customField.name;
     initialValues.type = customField.type;
-    
-    initialValues.textMatch = customField.match.filter((match) => match == SanitizeText(match)).join(", ");
-    initialValues.regexMatch = customField.match.filter((match) => match != SanitizeText(match)).join(", ");
+
+    initialValues.textMatch = customField.match.filter((match) => match === SanitizeText(match)).join(", ");
+    initialValues.regexMatch = customField.match.filter((match) => match !== SanitizeText(match)).join(", ");
 
     switch (initialValues.type) {
       case "alphanumeric":

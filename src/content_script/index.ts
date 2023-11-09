@@ -25,7 +25,7 @@ function initialize(options: IFakeFillerOptions) {
       }
     }
   }
-  
+
   if (url && !urlIsBlocked && options.profiles && options.profiles.length > 0) {
     for (let i = 0; i < options.profiles.length; i += 1) {
       const currentProfile = options.profiles[i];

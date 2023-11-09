@@ -35,7 +35,6 @@ const ProfilesView: React.FC<Props> = (props) => {
   }
 
   function handleEdit(): void {
-    
     setProfile(profiles[profileIndex]);
     setActionType("edit");
     setModalIsOpen(true);
