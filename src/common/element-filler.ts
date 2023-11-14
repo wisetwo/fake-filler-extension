@@ -244,12 +244,19 @@ class ElementFiller {
     return this.options.defaultMaxLength;
   }
 
+  private getElementMinLength(element: HTMLInputElement | HTMLTextAreaElement | undefined): number {
+    if (element && element.minLength && element.minLength > 0) {
+      return element.minLength;
+    }
+    return 0;
+  }
+
   private generateDummyDataForCustomField(
     customField: ICustomField | undefined,
     element: HTMLInputElement | HTMLTextAreaElement | undefined = undefined
   ): string {
     if (!customField) {
-      return this.generator.phrase(this.getElementMaxLength(element));
+      return this.generator.phrase(this.getElementMinLength(element), this.getElementMaxLength(element));
     }
 
     switch (customField.type) {
@@ -412,7 +419,11 @@ class ElementFiller {
         if (element && element.maxLength && element.maxLength < maxLength) {
           maxLength = element.maxLength;
         }
-        return this.generator.paragraph(minWords, maxWords, maxWords);
+        let minLength = 0;
+        if (element && element.minLength) {
+          minLength = element.minLength;
+        }
+        return this.generator.paragraph(minWords, maxWords, minLength, maxLength);
       }
 
       case "alphanumeric": {
@@ -433,7 +444,7 @@ class ElementFiller {
       }
 
       default: {
-        return this.generator.phrase(this.getElementMaxLength(element));
+        return this.generator.phrase(this.getElementMinLength(element), this.getElementMaxLength(element));
       }
     }
   }
@@ -802,7 +813,7 @@ class ElementFiller {
 
   public fillContentEditableElement(element: HTMLElement): void {
     if ((element as HTMLElement).isContentEditable) {
-      element.textContent = this.generator.paragraph(5, 100, this.options.defaultMaxLength);
+      element.textContent = this.generator.paragraph(5, 100, 0, this.options.defaultMaxLength);
     }
   }
 }

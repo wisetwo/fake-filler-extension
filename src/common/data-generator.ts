@@ -33,13 +33,15 @@ class DataGenerator {
     return resultWord;
   }
 
-  public words(wordCount: number, maxLength = 0): string {
+  public words(wordCount: number, minLength = 0, maxLength = 0): string {
     let resultPhrase = "";
     let word = "";
+    let phraseLength = 0;
 
-    for (let i = 0; i < wordCount; i += 1) {
+    // If the wordCount is insufficient to reach the minLength, the minLength takes precedence
+    for (let i = 0; i < wordCount || phraseLength < minLength; i += 1) {
       word = data.wordBank[Math.floor(Math.random() * (data.wordBank.length - 1))];
-      const phraseLength = resultPhrase.length;
+      phraseLength = resultPhrase.length;
 
       if (
         phraseLength === 0 ||
@@ -152,18 +154,31 @@ class DataGenerator {
     return returnValue;
   }
 
-  public paragraph(minWords: number, maxWords: number, maxLength: number): string {
+  public paragraph(minWords: number, maxWords: number, minLength: number, maxLength: number): string {
     const wordCount = this.randomNumber(minWords, maxWords);
-    const resultPhrase = this.words(wordCount, maxLength);
+    let resultPhrase = this.words(wordCount, minLength, maxLength);
 
-    return resultPhrase.replace(/[?.!,;]? ?[^ ]*$/, ".");
+    resultPhrase = resultPhrase.replace(/[?.!,;]? ?[^ ]*$/, "!");
+
+    while (resultPhrase.length < minLength) {
+      resultPhrase += "!";
+    }
+
+    return resultPhrase;
   }
 
-  public phrase(maxLength: number): string {
+  public phrase(minLength: number, maxLength: number): string {
     const length = this.randomNumber(5, 20);
-    const resultPhrase = this.words(length, maxLength);
+    let resultPhrase = this.words(length, minLength, maxLength);
 
-    return resultPhrase.replace(/[^\w\s]|_/g, "").replace(/\s+/g, " ");
+    resultPhrase = resultPhrase.replace(/[^\w\s]|_/g, "").replace(/\s+/g, " ");
+
+    if (resultPhrase.length < minLength) {
+      const missingLength = minLength - resultPhrase.length;
+      resultPhrase += this.scrambledWord(missingLength, missingLength);
+    }
+
+    return resultPhrase;
   }
 
   public website(): string {
