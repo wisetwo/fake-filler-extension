@@ -181,7 +181,7 @@ class ElementFiller {
       return sanitizedText;
     }
 
-    return sanitizedText + ` ` + text;
+    return `${sanitizedText} ${text}`;
   }
 
   private getElementName(element: FillableElement): string {
