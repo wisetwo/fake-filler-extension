@@ -1,6 +1,6 @@
-import RandExp from "randexp";
 import React, { useState } from "react";
 
+import DataGenerator from "src/common/data-generator";
 import { GetMessage } from "src/common/helpers";
 import HtmlPhrase from "src/options/components/common/HtmlPhrase";
 import TextField from "src/options/components/common/TextField";
@@ -12,26 +12,18 @@ type Props = {
 const RegExOptions = (props: Props) => {
   const [regExSample, setRegExSample] = useState("");
 
-  function generateRandomRegExString() {
-    let randomValue = "";
+  const generator = new DataGenerator();
 
+  function generateAndSetRandomRegExString() {
     if (props.regexTemplate) {
-      try {
-        const regExGenerator = new RandExp(props.regexTemplate);
-        regExGenerator.defaultRange.add(0, 65535);
-        randomValue = regExGenerator.gen();
-      } catch (e) {
-        randomValue = e.toString();
-      }
+      setRegExSample(generator.generateRandomStringFromRegExTemplate(props.regexTemplate));
     }
-
-    setRegExSample(randomValue);
   }
 
   const regexTypeHelpText = (
     <div>
       <HtmlPhrase phrase={GetMessage("customFields_regExHelp")} as="p" />
-      <button type="button" className="btn btn-sm btn-outline-primary" onClick={generateRandomRegExString}>
+      <button type="button" className="btn btn-sm btn-outline-primary" onClick={generateAndSetRandomRegExString}>
         {GetMessage("testMe")}
       </button>
     </div>

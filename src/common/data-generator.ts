@@ -1,3 +1,5 @@
+import RandExp from "randexp";
+
 import * as data from "src/common/dummy-data";
 import { DEFAULT_TELEPHONE_TEMPLATE } from "src/common/helpers";
 
@@ -266,6 +268,22 @@ class DataGenerator {
     return `#${Math.floor(Math.random() * 16777215)
       .toString(16)
       .padStart(6, "0")}`;
+  }
+
+  public generateRandomStringFromRegExTemplate(regexTemplate: string): string {
+    let randomValue = "";
+
+    if (regexTemplate) {
+      try {
+        const regExGenerator = new RandExp(regexTemplate);
+        regExGenerator.defaultRange.add(0, 65535);
+        randomValue = regExGenerator.gen();
+      } catch (e) {
+        randomValue = e.toString();
+      }
+    }
+
+    return randomValue;
   }
 }
 

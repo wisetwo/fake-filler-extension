@@ -256,6 +256,10 @@ class ElementFiller {
     element: HTMLInputElement | HTMLTextAreaElement | undefined = undefined
   ): string {
     if (!customField) {
+      if (element && element instanceof HTMLInputElement && element.pattern) {
+        return this.generator.generateRandomStringFromRegExTemplate(element.pattern);
+      }
+
       return this.generator.phrase(this.getElementMinLength(element), this.getElementMaxLength(element));
     }
 
@@ -413,6 +417,10 @@ class ElementFiller {
       }
 
       case "text": {
+        if (element && element instanceof HTMLInputElement && element.pattern) {
+          return this.generator.generateRandomStringFromRegExTemplate(element.pattern);
+        }
+
         const minWords = customField.min || 10;
         const maxWords = customField.max || 30;
         let maxLength = customField.maxLength || this.options.defaultMaxLength;
