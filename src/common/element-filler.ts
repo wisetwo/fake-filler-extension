@@ -525,27 +525,77 @@ class ElementFiller {
       }
 
       case "datetime": {
-        element.value = `${this.generator.date()}T${this.generator.time()}Z`;
+        const datetimeCustomField = this.findCustomField(this.getElementName(element), [
+          "alphanumeric",
+          "regex",
+          "randomized-list",
+        ]);
+
+        if (datetimeCustomField) {
+          element.value = this.generateDummyDataForCustomField(datetimeCustomField, element);
+        } else {
+          element.value = `${this.generator.date()}T${this.generator.time()}Z`;
+        }
         break;
       }
 
       case "datetime-local": {
-        element.value = `${this.generator.date()}T${this.generator.time()}`;
+        const datetimeLocalCustomField = this.findCustomField(this.getElementName(element), [
+          "alphanumeric",
+          "regex",
+          "randomized-list",
+        ]);
+
+        if (datetimeLocalCustomField) {
+          element.value = this.generateDummyDataForCustomField(datetimeLocalCustomField, element);
+        } else {
+          element.value = `${this.generator.date()}T${this.generator.time()}`;
+        }
         break;
       }
 
       case "time": {
-        element.value = this.generator.time();
+        const timeCustomField = this.findCustomField(this.getElementName(element), [
+          "alphanumeric",
+          "regex",
+          "randomized-list",
+        ]);
+
+        if (timeCustomField) {
+          element.value = this.generateDummyDataForCustomField(timeCustomField, element);
+        } else {
+          element.value = this.generator.time();
+        }
         break;
       }
 
       case "month": {
-        element.value = `${this.generator.year()}-${this.generator.month()}`;
+        const monthCustomField = this.findCustomField(this.getElementName(element), [
+          "alphanumeric",
+          "regex",
+          "randomized-list",
+        ]);
+
+        if (monthCustomField) {
+          element.value = this.generateDummyDataForCustomField(monthCustomField, element);
+        } else {
+          element.value = `${this.generator.year()}-${this.generator.month()}`;
+        }
         break;
       }
 
       case "week":
-        element.value = `${this.generator.year()}-W${this.generator.weekNumber()}`;
+        const weekCustomField = this.findCustomField(this.getElementName(element), [
+          "alphanumeric",
+          "regex",
+          "randomized-list",
+        ]);
+
+        if (weekCustomField) {
+          element.value = this.generateDummyDataForCustomField(weekCustomField, element);
+        } else {
+          element.value = `${this.generator.year()}-W${this.generator.weekNumber()}`;
+        }
         break;
 
       case "email": {
@@ -652,12 +702,33 @@ class ElementFiller {
       }
 
       case "color": {
-        element.value = this.generator.color();
+        const colorCustomField = this.findCustomField(this.getElementName(element), [
+          "alphanumeric",
+          "regex",
+          "randomized-list",
+        ]);
+
+        if (colorCustomField) {
+          element.value = this.generateDummyDataForCustomField(colorCustomField, element);
+        } else {
+          element.value = this.generator.color();
+        }
         break;
       }
 
       case "search": {
-        element.value = this.generator.words(1);
+        const searchCustomField = this.findCustomField(this.getElementName(element), [
+          "alphanumeric",
+          "regex",
+          "randomized-list",
+          "text",
+        ]);
+
+        if (searchCustomField) {
+          element.value = this.generateDummyDataForCustomField(searchCustomField, element);
+        } else {
+          element.value = this.generator.words(1);
+        }
         break;
       }
 
