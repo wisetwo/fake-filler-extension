@@ -82,6 +82,10 @@ class FakeFiller {
   }
 
   public fillThisForm(): void {
+    if (this.urlMatchesBlockList()) {
+      return;
+    }
+
     const element = this.clickedElement || document.activeElement;
 
     if (element && element.tagName.toLowerCase() !== "body") {
