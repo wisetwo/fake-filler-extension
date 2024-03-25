@@ -417,7 +417,13 @@
         "message": "列出选项（英文逗号分隔），可以包含 @ 字符."
     },
     "customFields_label_emailUsernamePrefix": {
-        "message": "Username Prefix"
+        "message": "用户名前缀"
+    },
+    "customFields_label_emailUsernameSuffix": {
+        "message": "用户名后缀"
+    },
+     "customFields_label_emailUsernameSuffix_helptext": {
+        "message": "后缀中的“[hostname]”将动态替换为当前站点的主机名"
     },
     "customFields_label_username": {
         "message": "用户名"

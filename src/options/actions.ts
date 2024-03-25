@@ -221,6 +221,7 @@ function createCustomFieldFromFormData(formData: ICustomFieldForm): ICustomField
 
   if (customField.type === "email") {
     customField.emailPrefix = formData.emailPrefix.trim();
+    customField.emailSuffix = formData.emailSuffix.trim();
     customField.emailHostname = formData.emailHostname;
     customField.emailHostnameList = CsvToArray(formData.emailHostnameList);
     customField.emailUsername = formData.emailUsername;

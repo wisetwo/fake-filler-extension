@@ -7,6 +7,13 @@ const ChangeLogPage = () => {
     <div>
       <h2>Fake Filler 2 Changelog</h2>
       <p>
+        <strong>Version 4.3.1</strong>
+      </p>
+      <ul>
+        <li>Add suffix option to Email Address data type with ability to inject current hostname</li>
+      </ul>
+      <hr />
+      <p>
         <strong>Version 4.3.0</strong>
       </p>
       <ul>

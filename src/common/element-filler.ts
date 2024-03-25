@@ -361,7 +361,15 @@ class ElementFiller {
           prefix = customField.emailPrefix;
         }
 
-        return prefix + username + domain;
+        let suffix = "";
+
+        if (customField.emailSuffix) {
+          suffix = customField.emailSuffix;
+        }
+
+        suffix = suffix.replace(/\[hostname\]/g, window.location.hostname);
+
+        return prefix + username + suffix + domain;
       }
 
       case "organization": {

@@ -422,6 +422,12 @@
   "customFields_label_username": {
     "message": "Username"
   },
+  "customFields_label_emailUsernameSuffix": {
+    "message": "Username Suffix"
+  },
+  "customFields_label_emailUsernameSuffix_helptext": {
+    "message": "'[hostname]' in the suffix will be dynamically replaced with the current site's hostname"
+  },
   "customFields_label_username_usernameLabel": {
     "message": "Use a previously generated username"
   },

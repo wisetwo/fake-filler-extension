@@ -419,6 +419,12 @@
     "customFields_label_emailUsernamePrefix": {
         "message": "Prefijo de Nombre de Usuario"
     },
+    "customFields_label_emailUsernameSuffix": {
+        "message": "Sufijo de Nombre de Usuario"
+    },
+     "customFields_label_emailUsernameSuffix_helptext": {
+        "message": "'[hostname]' en el sufijo será reemplazado dinámicamente con el hostname del sitio actual"
+    },
     "customFields_label_username": {
         "message": "Nombre de Usuario"
     },

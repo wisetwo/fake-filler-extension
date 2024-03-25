@@ -23,10 +23,20 @@ options.fields.push({
 });
 
 const EmailOptions = (props: Props) => {
-  const { emailPrefix, emailHostname, emailHostnameList, emailUsername, emailUsernameList, emailUsernameRegEx } = props;
+  const {
+    emailPrefix,
+    emailSuffix,
+    emailHostname,
+    emailHostnameList,
+    emailUsername,
+    emailUsernameList,
+    emailUsernameRegEx,
+  } = props;
+
 
   function generateRandomEmail() {
     options.fields[0].emailPrefix = emailPrefix;
+    options.fields[0].emailSuffix = emailSuffix;
     options.fields[0].emailHostname = emailHostname;
     options.fields[0].emailHostnameList = CsvToArray(emailHostnameList);
     options.fields[0].emailUsername = emailUsername;
@@ -100,6 +110,18 @@ const EmailOptions = (props: Props) => {
             label={GetMessage("customFields_label_username_regExTextPlaceholder")}
           />
           <TextField name="emailUsernameRegEx" placeholder={GetMessage("enterCsv")} />
+        </div>
+      </div>
+
+      <div className="form-group row">
+        <label className="col-sm-3 col-form-label text-sm-right" htmlFor="emailSuffix">
+          {GetMessage("customFields_label_emailUsernameSuffix")}
+        </label>
+        <div className="col-sm-9">
+          <TextField
+            name="emailSuffix"
+            helpText={GetMessage("customFields_label_emailUsernameSuffix_helptext")}
+          />
         </div>
       </div>
 

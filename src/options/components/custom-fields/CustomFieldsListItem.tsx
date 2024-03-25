@@ -140,6 +140,12 @@ const CustomFieldsListItem = (props: Props) => {
                     </td>
                   </tr>
                 )}
+                {!!customField.emailSuffix && (
+                  <tr>
+                    <td>{GetMessage("customFields_label_emailUsernameSuffix")}</td>
+                    <td>{customField.emailSuffix}</td>
+                  </tr>
+                )}
                 {customField.emailHostname && (
                   <tr>
                     <td>{GetMessage("customFields_label_hostname")}</td>

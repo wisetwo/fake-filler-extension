@@ -41,6 +41,7 @@ export interface ICustomField {
   minDate?: string;
   maxDate?: string;
   emailPrefix?: string;
+  emailSuffix?: string;
   emailHostname?: EmailHostnameType;
   emailHostnameList?: string[];
   emailUsername?: EmailUsernameType;
@@ -69,6 +70,7 @@ export interface ICustomFieldForm {
   list: string;
   type: CustomFieldTypes;
   emailPrefix: string;
+  emailSuffix: string;
   emailHostname: EmailHostnameType;
   emailHostnameList: string;
   emailUsername: EmailUsernameType;
