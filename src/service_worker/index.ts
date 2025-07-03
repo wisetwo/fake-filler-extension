@@ -3,10 +3,9 @@ import { CreateContextMenus, GetFakeFillerOptions, GetMessage, SaveFakeFillerOpt
 import { MessageRequest, IProfile, IFakeFillerOptions } from "src/types";
 
 async function getCurrentTabId() {
-  let tab;
   const queryOptions = { active: true, lastFocusedWindow: true };
   // `tab` will either be a `tabs.Tab` instance or `undefined`.
-  [tab] = await chrome.tabs.query(queryOptions);
+  const [tab] = await chrome.tabs.query(queryOptions);
   return tab?.id ?? -1;
 }
 
@@ -86,7 +85,7 @@ if (chrome.runtime.onInstalled) {
             SaveFakeFillerOptions(options);
           });
         }
-      } catch (ex) {
+      } catch (ex: any) {
         // eslint-disable-next-line no-alert
         window.alert(GetMessage("bgPage_errorMigratingOptions", [ex.message]));
       }
