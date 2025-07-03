@@ -1,10 +1,10 @@
-This was forked from FakeFiller/fake-filler-extension, which was developed by Hussein Shabbir under the MIT license.  The original FakeFiller is no longer actively maintained, so this version drops the free-version's restrictions on number of field inputs and ability to create profiles.  It does not have the ability to sync settings across devices.
+This was forked from calvinballing/fake-filler-extension. It does not have the ability to sync settings across devices.
 
 # <img src="public/images/logo.svg" height="53" alt="Fake Filler 2" title="Fake Filler 2" />
 
 This extension allows you to fill all form inputs (textboxes, textareas, radio buttons, dropdowns, etc.) with dummy data. It is a must for developers and testers who work with forms as it avoids the need for manually entering values in fields.
 
-## Install Links 
+## Install Links
 
 The Chrome extension is actively being developed. For the others, for the time being you'll need to compile them yourself.
 
@@ -34,9 +34,3 @@ Use **_CTRL+SHIFT+F_** on Windows and **_CMD+SHIFT+F_** on Mac to fire the exten
 ### View extension console log
 
 In the [this firefox](about:debugging#/runtime/this-firefox) page, next to the add-on, click the "inspect" button.
-
-# Support
-
-Your support helps me to maintain the extension and continue developing new features.
-
-[!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/calvinballing)
