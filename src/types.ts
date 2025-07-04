@@ -176,3 +176,15 @@ export type User = {
   stripeCustomerId: string;
   stripeSubscriptionId: string;
 };
+
+
+export type AIUsageInfo = Record<string, any>;
+
+/**
+ * openai
+ *
+ */
+export enum AIResponseFormat {
+  JSON = 'json_object',
+  TEXT = 'text',
+}
