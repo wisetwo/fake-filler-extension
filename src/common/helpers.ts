@@ -48,6 +48,7 @@ const FakeFillerDefaultOptions = (): IFakeFillerOptions => {
     triggerClickEvents: true,
     uploadFiles: true,
     urlMatchesToBlock: ["trello"],
+    modelEnvConfig: [],
   };
 
   options.fields.push({

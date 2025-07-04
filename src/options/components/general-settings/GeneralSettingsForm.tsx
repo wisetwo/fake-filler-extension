@@ -82,6 +82,12 @@ const GeneralSettingsForm = (props: Props) => {
     initialValues.urlMatchesToBlock = props.options.urlMatchesToBlock.join(", ");
   }
 
+  if (!props.options.modelEnvConfig) {
+    initialValues.modelEnvConfig = "";
+  } else {
+    initialValues.modelEnvConfig = props.options.modelEnvConfig.join("\n");
+  }
+
   return (
     <Formik
       initialValues={initialValues as IFakeFillerOptionsForm}
@@ -185,6 +191,14 @@ const GeneralSettingsForm = (props: Props) => {
             type="paragraph"
             label={GetMessage("generalSettings_urlBlockingLabel")}
             helpText={GetMessage("generalSettings_urlBlockingHelp")}
+          />
+
+          <h2>{GetMessage("generalSettings_modelConfig")}</h2>
+          <TextAreaField
+            name="modelEnvConfig"
+            type="paragraph"
+            label={GetMessage("generalSettings_modelEnvConfigLabel")}
+            helpText={GetMessage("generalSettings_modelEnvConfigHelp")}
           />
 
           <h2>{GetMessage("generalSettings")}</h2>

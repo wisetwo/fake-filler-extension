@@ -503,8 +503,20 @@
   "generalSettings_urlBlockingHelp": {
     "message": "Enter a comma separated list of regular expressions to match URLs. Fields on these URLs will never be matched by Fake Filler 2."
   },
+  "generalSettings_modelConfig": {
+    "message": "Model Config"
+  },
+  "generalSettings_modelEnvConfigLabel": {
+    "message": "Model Env Config"
+  },
+  "generalSettings_modelEnvConfigHelp": {
+    "message": "The format is KEY=VALUE and separated by new lines. These data will be saved locally in your browser."
+  },
   "generalSettings_triggerEvents": {
     "message": "Trigger Events"
+  },
+  "generalSettings": {
+    "message": "General Settings"
   },
   "generalSettings_triggerEventsLabel": {
     "message": "Trigger click/change events on input fields"
@@ -618,4 +630,3 @@
     "message": "Matched a Blocked URL"
   }
 }
-    

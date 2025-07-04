@@ -86,6 +86,12 @@ export function saveOptions(options: IFakeFillerOptions, formValues?: IFakeFille
           draft.urlMatchesToBlock = CsvToArray(formValues.urlMatchesToBlock);
         }
 
+        if (!formValues.modelEnvConfig) {
+          draft.modelEnvConfig = [];
+        } else {
+          draft.modelEnvConfig = MultipleLinesToArray(formValues.modelEnvConfig);
+        }
+
         draft.passwordSettings = {
           mode: formValues.passwordSettingsMode,
           password: formValues.passwordSettingsPassword,
