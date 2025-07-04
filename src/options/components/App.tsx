@@ -10,8 +10,8 @@ import ChangeLogPage from "src/options/components/ChangeLogPage";
 import CustomFieldsPage from "src/options/components/CustomFieldsPage";
 import GeneralSettingsPage from "src/options/components/GeneralSettingsPage";
 import KeyboardShortcutsPage from "src/options/components/KeyboardShortcutsPage";
-import ExternalLink from "src/options/components/common/ExternalLink";
-import HtmlPhrase from "src/options/components/common/HtmlPhrase";
+// import ExternalLink from "src/options/components/common/ExternalLink";
+// import HtmlPhrase from "src/options/components/common/HtmlPhrase";
 import ScrollToTop from "src/options/components/common/ScrollToTop";
 
 import "src/options/components/App.scss";
@@ -19,7 +19,7 @@ import "src/options/components/App.scss";
 function App() {
   const dispatch = useDispatch();
 
-  const sendFeedbackMessage = chrome.i18n.getMessage("leftNav_sendFeedback", ["james.thomas.hays@gmail.com"]);
+  // const sendFeedbackMessage = chrome.i18n.getMessage("leftNav_sendFeedback", ["james.thomas.hays@gmail.com"]);
 
   function handleResetSettings(event: React.SyntheticEvent): void {
     event.preventDefault();
@@ -67,7 +67,7 @@ function App() {
         <Route path="/changelog" component={ChangeLogPage} />
       </div>
       <footer id="main-footer" className="container">
-        <HtmlPhrase phrase={sendFeedbackMessage} as="p" />
+        {/* <HtmlPhrase phrase={sendFeedbackMessage} as="p" /> */}
         <ul className="list-inline">
           <li className="list-inline-item">
             {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
@@ -77,11 +77,6 @@ function App() {
           </li>
           <li className="list-inline-item">
             <Link to="/changelog">{GetMessage("leftNav_changelog")}</Link>
-          </li>
-          <li className="list-inline-item">
-            <ExternalLink url="https://github.com/calvinballing/fake-filler-extension/issues">
-              {GetMessage("leftNav_issueTracker")}
-            </ExternalLink>
           </li>
         </ul>
       </footer>

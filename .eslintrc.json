@@ -10,8 +10,14 @@
     "prettier/@typescript-eslint",
     "plugin:prettier/recommended"
   ],
-  "plugins": ["@typescript-eslint", "react-hooks", "prettier"],
-  "globals": { "chrome": "readonly" },
+  "plugins": [
+    "@typescript-eslint",
+    "react-hooks",
+    "prettier"
+  ],
+  "globals": {
+    "chrome": "readonly"
+  },
   "env": {
     "browser": true,
     "node": true,
@@ -33,27 +39,63 @@
   },
   "rules": {
     "react-hooks/rules-of-hooks": "error",
-    "prettier/prettier": ["error"],
-
-    "@typescript-eslint/ban-ts-comment": ["off"],
-    "@typescript-eslint/explicit-function-return-type": ["off"],
-    "@typescript-eslint/no-explicit-any": ["off"],
-    "@typescript-eslint/ban-ts-ignore": ["off"],
-    "@typescript-eslint/no-var-requires": ["off"],
-    "@typescript-eslint/explicit-module-boundary-types": ["off"],
-    
+    "prettier/prettier": [
+      "error",
+      {
+        "endOfLine": "auto"
+      }
+    ],
+    "@typescript-eslint/ban-ts-comment": [
+      "off"
+    ],
+    "@typescript-eslint/explicit-function-return-type": [
+      "off"
+    ],
+    "@typescript-eslint/no-explicit-any": [
+      "off"
+    ],
+    "@typescript-eslint/ban-ts-ignore": [
+      "off"
+    ],
+    "@typescript-eslint/no-var-requires": [
+      "off"
+    ],
+    "@typescript-eslint/explicit-module-boundary-types": [
+      "off"
+    ],
     "no-use-before-define": "off",
-    "@typescript-eslint/no-use-before-define": ["error"],
-
-    "lines-between-class-members": ["error", "always", { "exceptAfterSingleLine": true }],
-    "class-methods-use-this": ["off"],
-
-    "import/extensions": ["off"],
-    "import/no-extraneous-dependencies": ["error", { "devDependencies": true }],
+    "@typescript-eslint/no-use-before-define": [
+      "error"
+    ],
+    "lines-between-class-members": [
+      "error",
+      "always",
+      {
+        "exceptAfterSingleLine": true
+      }
+    ],
+    "class-methods-use-this": [
+      "off"
+    ],
+    "import/extensions": [
+      "off"
+    ],
+    "import/no-extraneous-dependencies": [
+      "error",
+      {
+        "devDependencies": true
+      }
+    ],
     "import/order": [
       "error",
       {
-        "groups": ["builtin", "external", "parent", "sibling", "index"],
+        "groups": [
+          "builtin",
+          "external",
+          "parent",
+          "sibling",
+          "index"
+        ],
         "newlines-between": "always-and-inside-groups",
         "alphabetize": {
           "order": "asc",
@@ -61,12 +103,38 @@
         }
       }
     ],
-
-    "react/jsx-filename-extension": ["error", { "extensions": [".tsx", ".jsx"] }],
-    "react/prop-types": ["off"],
-    "react/jsx-props-no-spreading": ["off"],
-    "react/destructuring-assignment": ["off"],
-    "react/jsx-one-expression-per-line": ["off"],
-    "react/jsx-wrap-multilines": ["off"]
+    "react/jsx-filename-extension": [
+      "error",
+      {
+        "extensions": [
+          ".tsx",
+          ".jsx"
+        ]
+      }
+    ],
+    "react/prop-types": [
+      "off"
+    ],
+    "react/jsx-props-no-spreading": [
+      "off"
+    ],
+    "react/destructuring-assignment": [
+      "off"
+    ],
+    "react/jsx-one-expression-per-line": [
+      "off"
+    ],
+    "react/jsx-wrap-multilines": [
+      "off"
+    ],
+    "no-unused-vars": "off",
+    "@typescript-eslint/no-unused-vars": [
+      "warn",
+      {
+        "argsIgnorePattern": "^_",
+        "varsIgnorePattern": "^_",
+        "caughtErrorsIgnorePattern": "^_"
+      }
+    ]
   }
 }

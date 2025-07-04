@@ -1,12 +1,12 @@
-import { CreateContextMenus, GetFakeFillerOptions, GetMessage, SaveFakeFillerOptions } from "src/common/helpers";
+import { CreateContextMenus, GetFakeFillerOptions, GetMessage } from "src/common/helpers";
+// , SaveFakeFillerOptions
 
 import { MessageRequest, IProfile, IFakeFillerOptions } from "src/types";
 
 async function getCurrentTabId() {
-  let tab;
   const queryOptions = { active: true, lastFocusedWindow: true };
   // `tab` will either be a `tabs.Tab` instance or `undefined`.
-  [tab] = await chrome.tabs.query(queryOptions);
+  const [tab] = await chrome.tabs.query(queryOptions);
   return tab?.id ?? -1;
 }
 
@@ -77,20 +77,20 @@ function handleMessage(
 }
 
 if (chrome.runtime.onInstalled) {
-  chrome.runtime.onInstalled.addListener((details) => {
-    if (details.reason === "update") {
-      try {
-        if (details.previousVersion && details.previousVersion.startsWith("3.2")) {
-          GetFakeFillerOptions().then((options) => {
-            options.fieldMatchSettings.matchAriaLabelledBy = true;
-            SaveFakeFillerOptions(options);
-          });
-        }
-      } catch (ex) {
-        // eslint-disable-next-line no-alert
-        window.alert(GetMessage("bgPage_errorMigratingOptions", [ex.message]));
-      }
-    }
+  chrome.runtime.onInstalled.addListener((_details) => {
+    // if (details.reason === "update") {
+    //   try {
+    //     if (details.previousVersion && details.previousVersion.startsWith("3.2")) {
+    //       GetFakeFillerOptions().then((options) => {
+    //         options.fieldMatchSettings.matchAriaLabelledBy = true;
+    //         SaveFakeFillerOptions(options);
+    //       });
+    //     }
+    //   } catch (ex: any) {
+    //     // eslint-disable-next-line no-alert
+    //     window.alert(GetMessage("bgPage_errorMigratingOptions", [ex.message]));
+    //   }
+    // }
   });
 }
 

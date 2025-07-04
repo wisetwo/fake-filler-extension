@@ -499,7 +499,7 @@ class ElementFiller {
           let label: HTMLElement = element.nextElementSibling as HTMLElement;
           if (label) {
             label.click();
-          } 
+          }
         }
         */
 
@@ -592,7 +592,7 @@ class ElementFiller {
         break;
       }
 
-      case "week":
+      case "week": {
         const weekCustomField = this.findCustomField(this.getElementName(element), [
           "alphanumeric",
           "regex",
@@ -605,6 +605,7 @@ class ElementFiller {
           element.value = `${this.generator.year()}-W${this.generator.weekNumber()}`;
         }
         break;
+      }
 
       case "email": {
         if (this.isAnyMatch(this.getElementName(element), this.options.confirmFields)) {
