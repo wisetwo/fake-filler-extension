@@ -9,7 +9,7 @@ type Props = {
   disabled?: boolean;
 };
 
-const AddFieldButton = (props: Props) => {
+function AddFieldButton(props: Props) {
   function handleClick() {
     props.onClick(props.index);
   }
@@ -21,7 +21,7 @@ const AddFieldButton = (props: Props) => {
       </button>
     </div>
   );
-};
+}
 
 AddFieldButton.defaultProps = {
   disabled: false,

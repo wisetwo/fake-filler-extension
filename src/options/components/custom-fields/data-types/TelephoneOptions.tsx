@@ -3,7 +3,7 @@ import React from "react";
 import { GetMessage } from "src/common/helpers";
 import TextField from "src/options/components/common/TextField";
 
-const TelephoneOptions = () => {
+function TelephoneOptions() {
   return (
     <TextField
       name="telephoneTemplate"
@@ -11,6 +11,6 @@ const TelephoneOptions = () => {
       helpText={GetMessage("customFields_label_telephoneTemplate_helpText")}
     />
   );
-};
+}
 
 export default TelephoneOptions;

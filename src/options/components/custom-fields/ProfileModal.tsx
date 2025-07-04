@@ -18,7 +18,8 @@ const validate = (values: IProfile): FormikErrors<IProfile> => {
   } else {
     const expression = values.urlMatch.trim();
     try {
-      if (!new RegExp(expression)) {
+      const regex = new RegExp(expression);
+      if (!regex) {
         errors.urlMatch = "Please enter a valid regular expression.";
       }
     } catch (e) {
@@ -36,7 +37,7 @@ type Props = {
   onSave: (formData: IProfile) => void;
 };
 
-const ProfileModal = (props: Props) => {
+function ProfileModal(props: Props) {
   const initialValues: IProfile = {
     name: props.profile ? props.profile.name : "",
     urlMatch: props.profile ? props.profile.urlMatch : "",
@@ -72,7 +73,7 @@ const ProfileModal = (props: Props) => {
       </Formik>
     </Modal>
   );
-};
+}
 
 ProfileModal.defaultProps = {
   profile: undefined,

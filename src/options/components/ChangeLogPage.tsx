@@ -2,7 +2,7 @@ import React from "react";
 
 import ExternalLink from "src/options/components/common/ExternalLink";
 
-const ChangeLogPage = () => {
+function ChangeLogPage() {
   return (
     <div>
       <h2>Fake Filler 2 Changelog</h2>
@@ -458,6 +458,6 @@ const ChangeLogPage = () => {
       <p>&nbsp;</p>
     </div>
   );
-};
+}
 
 export default ChangeLogPage;

@@ -26,7 +26,7 @@ type Props = {
   onSort: CustomFieldSortFunction;
 };
 
-const CustomFieldsList = (props: Props) => {
+function CustomFieldsList(props: Props) {
   function onSortEnd(result: DropResult) {
     if (!result.destination) {
       return;
@@ -61,6 +61,6 @@ const CustomFieldsList = (props: Props) => {
       </DragDropContext>
     </>
   );
-};
+}
 
 export default CustomFieldsList;

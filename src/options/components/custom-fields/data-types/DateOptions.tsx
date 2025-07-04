@@ -4,7 +4,7 @@ import { GetMessage } from "src/common/helpers";
 import HtmlPhrase from "src/options/components/common/HtmlPhrase";
 import TextField from "src/options/components/common/TextField";
 
-const DateOptions = () => {
+function DateOptions() {
   const dateTypeHelpText = <HtmlPhrase phrase={GetMessage("customFields_dateTypeHelp")} />;
 
   return (
@@ -48,6 +48,6 @@ const DateOptions = () => {
       <TextField name="dateTemplate" label={GetMessage("customFields_label_template")} helpText={dateTypeHelpText} />
     </>
   );
-};
+}
 
 export default DateOptions;

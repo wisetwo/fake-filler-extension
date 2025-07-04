@@ -6,7 +6,7 @@ import { saveOptions, MyThunkDispatch, getOptions } from "src/options/actions";
 import GeneralSettingsForm from "src/options/components/general-settings/GeneralSettingsForm";
 import { IFakeFillerOptions, IFakeFillerOptionsForm, IAppState } from "src/types";
 
-const GeneralSettingsPage = () => {
+function GeneralSettingsPage() {
   const [showSavedMessage, setShowSavedMessage] = useState(false);
   const isFetching = useSelector<IAppState, boolean>((state) => state.optionsData.isFetching);
   const options = useSelector<IAppState, IFakeFillerOptions | null>((state) => state.optionsData.options);
@@ -29,6 +29,6 @@ const GeneralSettingsPage = () => {
   }
 
   return <GeneralSettingsForm options={options} showSavedMessage={showSavedMessage} onSave={handleSave} />;
-};
+}
 
 export default GeneralSettingsPage;

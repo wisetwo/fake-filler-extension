@@ -6,7 +6,7 @@ import { getKeyboardShortcuts, MyThunkDispatch } from "src/options/actions";
 import HtmlPhrase from "src/options/components/common/HtmlPhrase";
 import { IAppState } from "src/types";
 
-const KeyboardShortcutsPage = () => {
+function KeyboardShortcutsPage() {
   const isFetching = useSelector<IAppState, boolean>((state) => state.keyboardShortcutsData.isFetching);
   const keyboardShortcuts = useSelector<IAppState, chrome.commands.Command[]>(
     (state) => state.keyboardShortcutsData.shortcuts
@@ -52,6 +52,6 @@ const KeyboardShortcutsPage = () => {
       <HtmlPhrase phrase={GetMessage("kbdShortcuts_changeInstructions")} as="p" />
     </>
   );
-};
+}
 
 export default KeyboardShortcutsPage;

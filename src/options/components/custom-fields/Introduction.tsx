@@ -3,7 +3,7 @@ import React from "react";
 import { GetMessage } from "src/common/helpers";
 import ExternalLink from "src/options/components/common/ExternalLink";
 
-const Introduction = () => {
+function Introduction() {
   return (
     <div>
       <p>
@@ -14,6 +14,6 @@ const Introduction = () => {
       </p>
     </div>
   );
-};
+}
 
 export default Introduction;

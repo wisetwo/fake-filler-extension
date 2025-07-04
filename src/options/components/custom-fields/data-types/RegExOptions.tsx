@@ -9,7 +9,7 @@ type Props = {
   regexTemplate?: string;
 };
 
-const RegExOptions = (props: Props) => {
+function RegExOptions(props: Props) {
   const [regExSample, setRegExSample] = useState("");
 
   const generator = new DataGenerator();
@@ -40,7 +40,7 @@ const RegExOptions = (props: Props) => {
       )}
     </>
   );
-};
+}
 
 RegExOptions.defaultProps = {
   regexTemplate: undefined,

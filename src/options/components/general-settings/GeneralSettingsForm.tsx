@@ -42,7 +42,7 @@ type Props = {
   onSave: (formValues: IFakeFillerOptionsForm) => void;
 };
 
-const GeneralSettingsForm = (props: Props) => {
+function GeneralSettingsForm(props: Props) {
   function handleSubmit(values: IFakeFillerOptionsForm, actions: FormikHelpers<IFakeFillerOptionsForm>) {
     actions.setSubmitting(true);
     props.onSave(values);
@@ -233,6 +233,6 @@ const GeneralSettingsForm = (props: Props) => {
       )}
     </Formik>
   );
-};
+}
 
 export default GeneralSettingsForm;

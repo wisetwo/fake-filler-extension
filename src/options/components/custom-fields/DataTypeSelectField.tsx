@@ -4,7 +4,7 @@ import * as React from "react";
 import { GetMessage } from "src/common/helpers";
 import { ICustomFieldForm, CustomFieldTypes } from "src/types";
 
-const DataTypeSelectField = () => {
+function DataTypeSelectField() {
   const form = useFormikContext<ICustomFieldForm>();
 
   function handleSelectChange(event: React.ChangeEvent<HTMLSelectElement>) {
@@ -101,6 +101,6 @@ const DataTypeSelectField = () => {
       </div>
     </div>
   );
-};
+}
 
 export default DataTypeSelectField;

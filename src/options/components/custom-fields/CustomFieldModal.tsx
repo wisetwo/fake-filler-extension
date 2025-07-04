@@ -167,7 +167,7 @@ type Props = {
   onSave: (formValues: ICustomFieldForm) => void;
 };
 
-const CustomFieldModal = (props: Props) => {
+function CustomFieldModal(props: Props) {
   const { customField } = props;
 
   const initialValues: Partial<ICustomFieldForm> = {
@@ -322,6 +322,6 @@ const CustomFieldModal = (props: Props) => {
       </Formik>
     </Modal>
   );
-};
+}
 
 export default CustomFieldModal;

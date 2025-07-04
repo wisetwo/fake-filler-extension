@@ -25,7 +25,7 @@ type Props = {
   onDelete: CustomFieldDeleteFunction;
 };
 
-const CustomFieldsListItem = (props: Props) => {
+function CustomFieldsListItem(props: Props) {
   const { customField } = props;
 
   function handleEdit() {
@@ -163,6 +163,6 @@ const CustomFieldsListItem = (props: Props) => {
       )}
     </Draggable>
   );
-};
+}
 
 export default CustomFieldsListItem;

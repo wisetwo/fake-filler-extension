@@ -73,14 +73,12 @@ const ProfilesView: React.FC<Props> = (props) => {
               </NavLink>
             ))}
           </nav>
-          <>
-            <p />
-            <div className="text-center">
-              <button type="button" className="btn btn-sm btn-link" onClick={newProfile}>
-                {GetMessage("profiles_create_button_label")}
-              </button>
-            </div>
-          </>
+          <p />
+          <div className="text-center">
+            <button type="button" className="btn btn-sm btn-link" onClick={newProfile}>
+              {GetMessage("profiles_create_button_label")}
+            </button>
+          </div>
         </div>
         <div className="col-9">
           {profileIndex >= 0 && (

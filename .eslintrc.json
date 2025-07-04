@@ -134,6 +134,11 @@
         "varsIgnorePattern": "^_",
         "caughtErrorsIgnorePattern": "^_"
       }
-    ]
+    ],
+    "react/jsx-no-bind": "off",
+    "no-undef": "off",
+    "react/require-default-props": "off",
+    "react/default-props-match-prop-types": "off",
+    "default-param-last": "off"
   }
 }

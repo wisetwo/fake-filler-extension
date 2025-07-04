@@ -14,7 +14,7 @@ function base64ToUtf8(str: string): string {
   return decodeURIComponent(escape(window.atob(str)));
 }
 
-const BackupAndRestorePage = () => {
+function BackupAndRestorePage() {
   const [showSuccess, setShowSuccess] = useState(false);
   const [backupData, setBackupData] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
@@ -162,6 +162,6 @@ const BackupAndRestorePage = () => {
       )}
     </>
   );
-};
+}
 
 export default BackupAndRestorePage;

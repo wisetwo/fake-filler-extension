@@ -22,7 +22,7 @@ options.fields.push({
   match: ["name"],
 });
 
-const EmailOptions = (props: Props) => {
+function EmailOptions(props: Props) {
   const {
     emailPrefix,
     emailSuffix,
@@ -32,7 +32,6 @@ const EmailOptions = (props: Props) => {
     emailUsernameList,
     emailUsernameRegEx,
   } = props;
-
 
   function generateRandomEmail() {
     options.fields[0].emailPrefix = emailPrefix;
@@ -118,10 +117,7 @@ const EmailOptions = (props: Props) => {
           {GetMessage("customFields_label_emailUsernameSuffix")}
         </label>
         <div className="col-sm-9">
-          <TextField
-            name="emailSuffix"
-            helpText={GetMessage("customFields_label_emailUsernameSuffix_helptext")}
-          />
+          <TextField name="emailSuffix" helpText={GetMessage("customFields_label_emailUsernameSuffix_helptext")} />
         </div>
       </div>
 
@@ -173,6 +169,6 @@ const EmailOptions = (props: Props) => {
       </div>
     </div>
   );
-};
+}
 
 export default EmailOptions;
