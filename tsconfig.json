@@ -4,6 +4,11 @@
     "allowUnreachableCode": false,
     "baseUrl": "./",
     "forceConsistentCasingInFileNames": true,
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "es6"
+    ],
     "module": "commonjs",
     "moduleResolution": "node",
     "noFallthroughCasesInSwitch": true,
@@ -11,13 +16,25 @@
     "noImplicitReturns": true,
     "noImplicitThis": true,
     "noUnusedLocals": true,
+    "noUnusedParameters": true,
     "jsx": "react",
-    "target": "esnext",
+    "target": "es2020",
     "outDir": "dist/tsc_output",
     "sourceMap": true,
     "strict": true,
-    "noEmitOnError": true
+    "noEmitOnError": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "resolveJsonModule": true
   },
-  "include": ["src", "webpack.config.ts", "webpack.config.dev.ts", "webpack.config.prod.ts"],
-  "exclude": ["node_modules"]
+  "include": [
+    "src",
+    "webpack.config.ts",
+    "webpack.config.dev.ts",
+    "webpack.config.prod.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist"
+  ]
 }

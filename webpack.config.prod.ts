@@ -1,13 +1,15 @@
 import * as path from "path";
 
-import * as Dotenv from "dotenv-webpack";
-import * as TerserPlugin from "terser-webpack-plugin";
 import * as webpack from "webpack";
 import { merge } from "webpack-merge";
 
 import webpackConfig from "./webpack.config";
 
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const Dotenv = require("dotenv-webpack");
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const TerserPlugin = require("terser-webpack-plugin");
 
 const productionConfig: webpack.Configuration = {
   mode: "production",

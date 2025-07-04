@@ -6,13 +6,15 @@ const autoprefixer = require("autoprefixer");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const cssnano = require("cssnano");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const sass = require("sass");
 
 const webpackConfig: webpack.Configuration = {
   cache: false,
   entry: {
-    "service_worker": [
+    service_worker: [
       path.join(__dirname, "src/background/regeneratorRuntime.js"),
-      path.join(__dirname, "src/service_worker/index.ts")
+      path.join(__dirname, "src/service_worker/index.ts"),
     ],
     "build/content-script": path.join(__dirname, "src/content_script/index.ts"),
     "build/options": path.join(__dirname, "src/options/index.tsx"),
@@ -25,30 +27,40 @@ const webpackConfig: webpack.Configuration = {
         exclude: /node_modules/,
       },
       {
-        test: /\.(scss)$/,
+        test: /\.(scss|sass)$/,
         use: [
           { loader: MiniCssExtractPlugin.loader },
           {
             loader: "css-loader",
+            options: {
+              sourceMap: true,
+            },
           },
           {
             loader: "postcss-loader",
             options: {
+              sourceMap: true,
               postcssOptions: {
-                plugins: () => [autoprefixer(), cssnano()],
+                plugins: [autoprefixer(), cssnano()],
               },
             },
           },
-          { loader: "sass-loader" },
+          {
+            loader: "sass-loader",
+            options: {
+              sourceMap: true,
+              implementation: sass,
+            },
+          },
         ],
       },
       {
+        test: /\.(png|jpe?g|gif|svg|ico)$/,
         loader: "file-loader",
-        exclude: [/\.(html?)$/, /\.(ts|tsx|js|jsx)$/, /\.css$/, /\.scss$/, /\.json$/],
-        query: {
+        options: {
           name: "[hash].[ext]",
           outputPath: "media/",
-          publicPath: "build/",
+          publicPath: "build/media/",
         },
       },
     ],
@@ -58,16 +70,19 @@ const webpackConfig: webpack.Configuration = {
     path: path.join(__dirname, "dist"),
   },
   plugins: [
-    new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
+    new webpack.IgnorePlugin({
+      resourceRegExp: /^\.\/locale$/,
+      contextRegExp: /moment$/,
+    }),
     new MiniCssExtractPlugin({
       filename: "[name].css",
     }),
     new CopyWebpackPlugin({
       patterns: [
         {
-          context: "public",
           from: "**/*",
-          to: path.join(__dirname, "dist/"),
+          context: path.resolve(__dirname, "public"),
+          to: path.resolve(__dirname, "dist"),
         },
       ],
     }),

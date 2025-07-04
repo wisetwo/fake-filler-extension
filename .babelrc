@@ -1,9 +1,23 @@
 {
-  "presets": ["@babel/env", "@babel/react", "@babel/typescript"],
+  "presets": [
+    [
+      "@babel/preset-env",
+      {
+        "targets": {
+          "browsers": [
+            "last 2 versions",
+            "not ie <= 11"
+          ]
+        }
+      }
+    ],
+    "@babel/preset-react",
+    "@babel/preset-typescript"
+  ],
   "plugins": [
     "@babel/plugin-syntax-dynamic-import",
     "@babel/plugin-transform-runtime",
-    "@babel/proposal-class-properties",
-    "@babel/proposal-object-rest-spread"
+    "@babel/plugin-proposal-class-properties",
+    "@babel/plugin-proposal-object-rest-spread"
   ]
 }
