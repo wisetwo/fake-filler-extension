@@ -255,6 +255,9 @@ class ElementFiller {
     customField: ICustomField | undefined,
     element: HTMLInputElement | HTMLTextAreaElement | undefined = undefined
   ): string {
+    console.log("- generateDummyDataForCustomField -");
+    console.log(customField);
+    console.log(element);
     if (!customField) {
       if (element && element instanceof HTMLInputElement && element.pattern) {
         return this.generator.generateRandomStringFromRegExTemplate(element.pattern);

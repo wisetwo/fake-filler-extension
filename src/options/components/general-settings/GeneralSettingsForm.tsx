@@ -85,7 +85,11 @@ function GeneralSettingsForm(props: Props) {
   if (!props.options.modelEnvConfig) {
     initialValues.modelEnvConfig = "";
   } else {
-    initialValues.modelEnvConfig = props.options.modelEnvConfig.join("\n");
+    let configString = "";
+    Object.entries(props.options.modelEnvConfig).forEach(([key, value]) => {
+      configString += `${key}=${value}\n`;
+    });
+    initialValues.modelEnvConfig = configString;
   }
 
   return (

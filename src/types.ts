@@ -117,7 +117,7 @@ export interface IFakeFillerOptions {
   triggerClickEvents: boolean;
   uploadFiles: boolean;
   urlMatchesToBlock: string[];
-  modelEnvConfig: string[];
+  modelEnvConfig: { [key: string]: string };
 }
 
 export interface IFakeFillerOptionsForm {

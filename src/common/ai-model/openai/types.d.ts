@@ -1,1 +1,1 @@
-declare module 'dirty-json';
+declare module "dirty-json";

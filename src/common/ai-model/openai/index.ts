@@ -1,8 +1,9 @@
-import assert from 'node:assert';
-import { type AIUsageInfo } from 'src/types';
+import assert from "node:assert";
+
 // import dJSON from 'dirty-json';
-import OpenAI from 'openai';
-import type { ChatCompletionMessageParam } from 'openai/resources';
+import OpenAI from "openai";
+import type { ChatCompletionMessageParam } from "openai/resources";
+
 import {
   OPENAI_MODEL_NAME,
   OPENAI_API_KEY,
@@ -10,10 +11,11 @@ import {
   // allAIConfig,
   getAIConfig,
   // getAIConfigInJson,
-} from 'src/env';
+} from "src/env";
+import { type AIUsageInfo } from "src/types";
 
 // default model
-const defaultModel = 'gpt-3.5-turbo';
+const defaultModel = "gpt-3.5-turbo";
 export function getModelName() {
   let modelName = defaultModel;
   const nameInConfig = getAIConfig(OPENAI_MODEL_NAME);
@@ -24,8 +26,7 @@ export function getModelName() {
 }
 
 async function createOpenAI() {
-  let openai: OpenAI;
-  openai = new OpenAI({
+  const openai = new OpenAI({
     baseURL: getAIConfig(OPENAI_BASE_URL),
     apiKey: getAIConfig(OPENAI_API_KEY),
     dangerouslyAllowBrowser: true,
@@ -36,9 +37,7 @@ async function createOpenAI() {
 
 export async function complete(
   messages: ChatCompletionMessageParam[],
-  responseFormat?:
-    | OpenAI.ChatCompletionCreateParams['response_format']
-    | OpenAI.ResponseFormatJSONObject,
+  responseFormat?: OpenAI.ChatCompletionCreateParams["response_format"] | OpenAI.ResponseFormatJSONObject
 ): Promise<{ content: string; usage?: AIUsageInfo }> {
   const openai = await createOpenAI();
   // const startTime = Date.now();
@@ -51,7 +50,7 @@ export async function complete(
     stream: false,
   } as any);
   const { content } = completion.choices[0].message;
-  assert(content, 'empty content');
+  assert(content, "empty content");
   return { content, usage: completion.usage };
 }
 

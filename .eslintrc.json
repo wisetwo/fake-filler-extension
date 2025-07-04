@@ -140,6 +140,7 @@
     "react/require-default-props": "off",
     "react/default-props-match-prop-types": "off",
     "default-param-last": "off",
-    "react/function-component-definition": "off"
+    "react/function-component-definition": "off",
+    "no-console": "off"
   }
 }

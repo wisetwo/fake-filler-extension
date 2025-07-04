@@ -10,6 +10,7 @@ import {
   MultipleLinesToArray,
   SaveFakeFillerOptions,
 } from "src/common/helpers";
+import { parseAIConfig } from "src/env";
 import {
   IFakeFillerOptions,
   IAppState,
@@ -87,9 +88,9 @@ export function saveOptions(options: IFakeFillerOptions, formValues?: IFakeFille
         }
 
         if (!formValues.modelEnvConfig) {
-          draft.modelEnvConfig = [];
+          draft.modelEnvConfig = {};
         } else {
-          draft.modelEnvConfig = MultipleLinesToArray(formValues.modelEnvConfig);
+          draft.modelEnvConfig = parseAIConfig(formValues.modelEnvConfig);
         }
 
         draft.passwordSettings = {
