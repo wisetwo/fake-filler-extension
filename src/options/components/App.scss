@@ -25,7 +25,7 @@ $modal-backdrop-opacity: 0.7;
     @include media-breakpoint-up($breakpoint, $grid-breakpoints) {
       @for $i from 1 through $grid-columns {
         &.col#{$infix}-#{$i} {
-          width: 100% / $grid-columns * $i;
+          width: calc(100% / #{$grid-columns} * #{$i});
         }
       }
     }

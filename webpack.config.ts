@@ -50,6 +50,17 @@ const webpackConfig: webpack.Configuration = {
             options: {
               sourceMap: true,
               implementation: sass,
+              sassOptions: {
+                silenceDeprecations: [
+                  "global-builtin",
+                  "import",
+                  "legacy-js-api",
+                  "color-functions",
+                  "abs-percent",
+                  "mixed-decls",
+                  "slash-div"
+                ],
+              },
             },
           },
         ],
