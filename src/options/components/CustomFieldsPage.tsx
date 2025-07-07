@@ -1,19 +1,25 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useParams, Redirect } from "react-router-dom";
+import { useParams, Redirect, useHistory } from "react-router-dom";
 
 import { GetMessage } from "src/common/helpers";
-import { getOptions } from "src/options/actions";
+import { getOptions, createProfile, deleteProfile, saveProfile } from "src/options/actions";
 import CustomFieldsView from "src/options/components/custom-fields/CustomFieldsView";
 import Introduction from "src/options/components/custom-fields/Introduction";
+import ProfileModal from "src/options/components/custom-fields/ProfileModal";
 import ProfilesView from "src/options/components/custom-fields/ProfilesView";
-import { IAppState, IFakeFillerOptions, ICustomField } from "src/types";
+import { IAppState, IFakeFillerOptions, ICustomField, IProfile } from "src/types";
 
 export default function CustomFieldsPage(): JSX.Element {
   const dispatch = useDispatch();
+  const history = useHistory();
 
   const { index } = useParams<{ index: string }>();
   const profileIndex = parseInt(String(index || -1), 10);
+
+  const [modalIsOpen, setModalIsOpen] = useState(false);
+  const [profile, setProfile] = useState<IProfile | undefined>();
+  const [actionType, setActionType] = useState<"create" | "edit" | undefined>();
 
   const isFetching = useSelector<IAppState, boolean>((state) => state.optionsData.isFetching);
   const options = useSelector<IAppState, IFakeFillerOptions | null>((state) => state.optionsData.options);
@@ -36,19 +42,38 @@ export default function CustomFieldsPage(): JSX.Element {
     return <Redirect to="/custom-fields" />;
   }
 
+  const closeModal = () => {
+    setModalIsOpen(false);
+    setProfile(undefined);
+    setActionType(undefined);
+  };
+
   const handleDelete = (idx: number) => {
-    // TODO: Implement delete functionality
-    console.log("Delete profile at index:", idx);
+    if (window.confirm(GetMessage("profile_delete_confirm_message"))) {
+      dispatch(deleteProfile(idx));
+      history.push("/custom-fields");
+    }
   };
 
   const handleEdit = (idx: number) => {
-    // TODO: Implement edit functionality
-    console.log("Edit profile at index:", idx);
+    setProfile(options.profiles[idx]);
+    setActionType("edit");
+    setModalIsOpen(true);
   };
 
   const handleNew = () => {
-    // TODO: Implement new profile functionality
-    console.log("Create new profile");
+    setProfile(undefined);
+    setActionType("create");
+    setModalIsOpen(true);
+  };
+
+  const handleSave = (formValues: IProfile) => {
+    if (actionType === "edit") {
+      dispatch(saveProfile(formValues, profileIndex));
+    } else {
+      dispatch(createProfile(formValues));
+    }
+    closeModal();
   };
 
   return (
@@ -65,6 +90,8 @@ export default function CustomFieldsPage(): JSX.Element {
       >
         <CustomFieldsView customFields={customFieldsList} profileIndex={profileIndex} />
       </ProfilesView>
+
+      <ProfileModal isOpen={modalIsOpen} onClose={closeModal} onSave={handleSave} profile={profile} />
     </>
   );
 }
