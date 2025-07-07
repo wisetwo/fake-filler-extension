@@ -1,12 +1,16 @@
 import { useField } from "formik";
 import React from "react";
 
+// import { SanitizeText } from "src/common/helpers";
+
 type Props = {
-  label: string;
   name: string;
+  id?: string;
+  label?: string;
+  helpText?: string | JSX.Element;
+  className?: string;
   title?: string;
-  helpText?: string | React.ReactNode;
-} & Omit<React.InputHTMLAttributes<HTMLInputElement>, "type">;
+} & React.InputHTMLAttributes<HTMLInputElement>;
 
 const CheckboxField = React.forwardRef((props: Props, ref: React.Ref<HTMLInputElement>) => {
   const [field, meta] = useField({ ...props, type: "checkbox" });
@@ -23,27 +27,27 @@ const CheckboxField = React.forwardRef((props: Props, ref: React.Ref<HTMLInputEl
   const componentId = id || name;
 
   const controlMarkup = (
-    <div className={`custom-control custom-checkbox ${className}`}>
+    <div className={`form-check ${className || ""}`}>
       <input
         id={componentId}
         type="checkbox"
         ref={ref}
-        className={`custom-control-input ${validationCssClass}`}
+        className={`form-check-input ${validationCssClass}`}
         {...field}
         {...rest}
       />
-      <label htmlFor={componentId} className="custom-control-label">
+      <label htmlFor={componentId} className="form-check-label">
         {label}
       </label>
-      {helpText && <small className="form-text text-muted">{helpText}</small>}
+      {helpText && <div className="form-text">{helpText}</div>}
       {meta.touched && meta.error ? <div className="invalid-feedback">{meta.error}</div> : null}
     </div>
   );
 
   if (title) {
     return (
-      <div className="form-group row">
-        <div className="col-sm-3 text-sm-right">{title}</div>
+      <div className="mb-3 row">
+        <div className="col-sm-3 text-sm-end">{title}</div>
         <div className="col-sm-9">{controlMarkup}</div>
       </div>
     );

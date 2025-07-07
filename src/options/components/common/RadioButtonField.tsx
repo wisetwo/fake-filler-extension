@@ -4,12 +4,14 @@ import React from "react";
 import { SanitizeText } from "src/common/helpers";
 
 type Props = {
-  label: string;
   name: string;
-  value: string;
+  id?: string;
+  label?: string;
+  helpText?: string | JSX.Element;
+  className?: string;
   title?: string;
-  helpText?: string | React.ReactNode;
-} & Omit<React.InputHTMLAttributes<HTMLInputElement>, "type">;
+  value: string;
+} & React.InputHTMLAttributes<HTMLInputElement>;
 
 const RadioButtonField = React.forwardRef((props: Props, ref: React.Ref<HTMLInputElement>) => {
   const [field, meta] = useField({ ...props, type: "radio" });
@@ -26,27 +28,27 @@ const RadioButtonField = React.forwardRef((props: Props, ref: React.Ref<HTMLInpu
   const componentId = `${id || name}_${SanitizeText(value)}`;
 
   const controlMarkup = (
-    <div className={`custom-control custom-radio ${className}`}>
+    <div className={`form-check ${className || ""}`}>
       <input
         id={componentId}
         type="radio"
         ref={ref}
-        className={`custom-control-input ${validationCssClass}`}
+        className={`form-check-input ${validationCssClass}`}
         {...field}
         {...rest}
       />
-      <label htmlFor={componentId} className="custom-control-label">
+      <label htmlFor={componentId} className="form-check-label">
         {label}
       </label>
-      {helpText && <small className="form-text text-muted">{helpText}</small>}
+      {helpText && <div className="form-text">{helpText}</div>}
       {meta.touched && meta.error ? <div className="invalid-feedback">{meta.error}</div> : null}
     </div>
   );
 
   if (title) {
     return (
-      <div className="form-group row">
-        <div className="col-sm-3 text-sm-right">{title}</div>
+      <div className="mb-3 row">
+        <div className="col-sm-3 text-sm-end">{title}</div>
         <div className="col-sm-9">{controlMarkup}</div>
       </div>
     );

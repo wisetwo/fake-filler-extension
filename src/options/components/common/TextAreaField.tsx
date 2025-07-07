@@ -3,9 +3,11 @@ import React from "react";
 
 type Props = {
   name: string;
+  id?: string;
   label?: string;
-  helpText?: string | React.ReactNode;
-} & React.InputHTMLAttributes<HTMLTextAreaElement>;
+  helpText?: string | JSX.Element;
+  className?: string;
+} & React.TextareaHTMLAttributes<HTMLTextAreaElement>;
 
 const TextAreaField = React.forwardRef((props: Props, ref: React.Ref<HTMLTextAreaElement>) => {
   const [field, meta] = useField(props);
@@ -26,15 +28,15 @@ const TextAreaField = React.forwardRef((props: Props, ref: React.Ref<HTMLTextAre
   const controlMarkup = (
     <>
       <textarea id={id || name} ref={ref} className={controlCssClass} {...field} {...rest} />
-      {helpText && <small className="form-text text-muted">{helpText}</small>}
+      {helpText && <div className="form-text">{helpText}</div>}
       {meta.touched && meta.error ? <div className="invalid-feedback">{meta.error}</div> : null}
     </>
   );
 
   if (label) {
     return (
-      <div className="form-group row">
-        <label htmlFor={id || name} className="col-sm-3 col-form-label text-sm-right">
+      <div className="mb-3 row">
+        <label htmlFor={id || name} className="col-sm-3 col-form-label text-sm-end">
           {label}
         </label>
         <div className="col-sm-9">{controlMarkup}</div>

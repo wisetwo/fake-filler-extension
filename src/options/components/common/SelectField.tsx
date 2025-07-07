@@ -3,15 +3,17 @@ import React from "react";
 
 type Props = {
   name: string;
+  id?: string;
   label?: string;
-  helpText?: string | React.ReactNode;
-} & React.InputHTMLAttributes<HTMLSelectElement>;
+  helpText?: string | JSX.Element;
+  className?: string;
+} & React.SelectHTMLAttributes<HTMLSelectElement>;
 
 const SelectField = React.forwardRef((props: Props, ref: React.Ref<HTMLSelectElement>) => {
   const [field, meta] = useField(props);
   const { name, id, label, helpText, className, ...rest } = props;
 
-  let controlCssClass = "custom-select";
+  let controlCssClass = "form-select";
 
   if (meta.touched) {
     if (meta.error) {
@@ -26,15 +28,15 @@ const SelectField = React.forwardRef((props: Props, ref: React.Ref<HTMLSelectEle
   const controlMarkup = (
     <>
       <select id={id || name} className={controlCssClass} ref={ref} {...field} {...rest} />
-      {helpText && <small className="form-text text-muted">{helpText}</small>}
+      {helpText && <div className="form-text">{helpText}</div>}
       {meta.touched && meta.error ? <div className="invalid-feedback">{meta.error}</div> : null}
     </>
   );
 
   if (label) {
     return (
-      <div className="form-group row">
-        <label className="col-sm-3 col-form-label text-sm-right" htmlFor={name}>
+      <div className="mb-3 row">
+        <label className="col-sm-3 col-form-label text-sm-end" htmlFor={name}>
           {label}
         </label>
         <div className="col-sm-9">{controlMarkup}</div>

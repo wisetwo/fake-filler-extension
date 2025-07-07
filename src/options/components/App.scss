@@ -14,6 +14,8 @@ $modal-dialog-margin-y-sm-up: 5rem;
 $modal-content-border-width: 0;
 $modal-backdrop-opacity: 0.7;
 
+$enable-negative-margins: true;
+
 @import "~bootstrap/scss/bootstrap";
 
 @each $breakpoint in map-keys($grid-breakpoints) {
@@ -93,7 +95,7 @@ h2 {
 }
 
 .custom-field-buttons {
-  float: right;
+  float: end;
 
   .btn {
     padding: 0;
