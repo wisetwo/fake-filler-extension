@@ -86,7 +86,7 @@ export interface IFieldMatchSettings {
   matchPlaceholder: boolean;
   matchAriaLabel: boolean;
   matchAriaLabelledBy: boolean;
-  customAttributes: string[]
+  customAttributes: string[];
 }
 
 export interface IPasswordSettings {
@@ -177,7 +177,6 @@ export type User = {
   stripeSubscriptionId: string;
 };
 
-
 export type AIUsageInfo = Record<string, any>;
 
 /**
@@ -185,6 +184,6 @@ export type AIUsageInfo = Record<string, any>;
  *
  */
 export enum AIResponseFormat {
-  JSON = 'json_object',
-  TEXT = 'text',
+  JSON = "json_object",
+  TEXT = "text",
 }
