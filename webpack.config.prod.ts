@@ -1,40 +1,37 @@
 import * as path from "path";
 
+import { CleanWebpackPlugin } from "clean-webpack-plugin";
+import Dotenv from "dotenv-webpack";
+import TerserPlugin from "terser-webpack-plugin";
 import * as webpack from "webpack";
 import { merge } from "webpack-merge";
 
-import webpackConfig from "./webpack.config";
+import baseConfig from "./webpack.config";
 
-const { CleanWebpackPlugin } = require("clean-webpack-plugin");
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const Dotenv = require("dotenv-webpack");
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const TerserPlugin = require("terser-webpack-plugin");
-
-const productionConfig: webpack.Configuration = {
+const config: webpack.Configuration = merge(baseConfig, {
   mode: "production",
   devtool: false,
+  optimization: {
+    minimize: true,
+    minimizer: [
+      new TerserPlugin({
+        terserOptions: {
+          format: {
+            comments: false,
+          },
+        },
+        extractComments: false,
+      }),
+    ],
+  },
   plugins: [
     new CleanWebpackPlugin({
       cleanOnceBeforeBuildPatterns: [path.join(__dirname, "dist")],
     }),
     new Dotenv({
       path: "./.env.production",
-    }),
+    }) as unknown as webpack.WebpackPluginInstance,
   ],
-  optimization: {
-    minimize: true,
-    minimizer: [
-      new TerserPlugin({
-        parallel: true,
-        terserOptions: {
-          output: {
-            ascii_only: true,
-          },
-        },
-      }),
-    ],
-  },
-};
+});
 
-export default merge(webpackConfig, productionConfig);
+export default config;

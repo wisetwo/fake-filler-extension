@@ -1,23 +1,19 @@
+import Dotenv from "dotenv-webpack";
+import ForkTsCheckerWebpackPlugin from "fork-ts-checker-webpack-plugin";
 import * as webpack from "webpack";
 import { merge } from "webpack-merge";
 
-import webpackConfig from "./webpack.config";
+import baseConfig from "./webpack.config";
 
-const ForkTsCheckerWebpackPlugin = require("fork-ts-checker-webpack-plugin");
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const Dotenv = require("dotenv-webpack");
-
-const developmentConfig: webpack.Configuration = {
+const config: webpack.Configuration = merge(baseConfig, {
   mode: "development",
-  devtool: "inline-source-map",
+  devtool: "source-map",
   plugins: [
     new ForkTsCheckerWebpackPlugin(),
-    new webpack.SourceMapDevToolPlugin({
-      exclude: /^vendor.*.\.js$/,
-      filename: "[file].map",
-    }),
-    new Dotenv(),
+    new Dotenv({
+      path: "./.env.development",
+    }) as unknown as webpack.WebpackPluginInstance,
   ],
-};
+});
 
-export default merge(webpackConfig, developmentConfig);
+export default config;

@@ -10,7 +10,11 @@ const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const sass = require("sass");
 
 const webpackConfig: webpack.Configuration = {
-  cache: false,
+  target: ["web", "es5"],
+  mode: "development",
+  cache: {
+    type: "filesystem",
+  },
   entry: {
     service_worker: [
       path.join(__dirname, "src/background/regeneratorRuntime.js"),
@@ -58,7 +62,7 @@ const webpackConfig: webpack.Configuration = {
                   "color-functions",
                   "abs-percent",
                   "mixed-decls",
-                  "slash-div"
+                  "slash-div",
                 ],
               },
             },
@@ -67,10 +71,9 @@ const webpackConfig: webpack.Configuration = {
       },
       {
         test: /\.(png|jpe?g|gif|svg|ico)$/,
-        loader: "file-loader",
-        options: {
-          name: "[hash].[ext]",
-          outputPath: "media/",
+        type: "asset/resource",
+        generator: {
+          filename: "media/[hash][ext]",
           publicPath: "build/media/",
         },
       },
@@ -79,6 +82,7 @@ const webpackConfig: webpack.Configuration = {
   output: {
     filename: "[name].js",
     path: path.join(__dirname, "dist"),
+    clean: true,
   },
   plugins: [
     new webpack.IgnorePlugin({
