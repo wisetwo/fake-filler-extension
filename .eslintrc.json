@@ -141,6 +141,7 @@
     "react/default-props-match-prop-types": "off",
     "default-param-last": "off",
     "react/function-component-definition": "off",
-    "no-console": "off"
+    "no-console": "off",
+    "react/no-unused-prop-types": "off"
   }
 }
