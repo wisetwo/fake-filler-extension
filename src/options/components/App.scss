@@ -26,6 +26,11 @@ $enable-negative-margins: true;
   --bs-btn-disabled-color: #fff;
 }
 
+.btn-outline-secondary {
+  --bs-btn-hover-color: #fff;
+  --bs-btn-active-color: #fff;
+}
+
 @each $breakpoint in map-keys($grid-breakpoints) {
   $infix: breakpoint-infix($breakpoint, $grid-breakpoints);
 

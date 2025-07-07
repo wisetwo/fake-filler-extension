@@ -39,7 +39,7 @@ const ProfilesView: React.FC<Props> = (props) => {
           {profiles.map((p, index) => (
             <NavLink
               key={`profile-${p.name}`}
-              to={`/custom-fields/profile/${index}`}
+              to={`/custom-fields/${index}`}
               className={(isActive) => (isActive ? "nav-link active" : "nav-link")}
             >
               {p.name}
