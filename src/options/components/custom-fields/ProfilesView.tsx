@@ -33,14 +33,14 @@ const ProfilesView: React.FC<Props> = (props) => {
       <div className="col-3">
         <h3 className="h6">{GetMessage("profiles")}</h3>
         <nav className="nav flex-column">
-          <NavLink to="/custom-fields" className={({ isActive }) => (isActive ? "nav-link active" : "nav-link")}>
+          <NavLink to="/custom-fields" className={(isActive) => (isActive ? "nav-link active" : "nav-link")}>
             {GetMessage("profiles_default_name")}
           </NavLink>
           {profiles.map((p, index) => (
             <NavLink
-              key={`profile-${p.name}-${index}`}
-              to={`/custom-fields/${index}`}
-              className={({ isActive }) => (isActive ? "nav-link active" : "nav-link")}
+              key={`profile-${p.name}`}
+              to={`/custom-fields/profile/${index}`}
+              className={(isActive) => (isActive ? "nav-link active" : "nav-link")}
             >
               {p.name}
             </NavLink>

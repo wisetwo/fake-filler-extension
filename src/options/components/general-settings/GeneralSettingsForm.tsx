@@ -192,7 +192,6 @@ function GeneralSettingsForm(props: Props) {
           <h2>{GetMessage("generalSettings_urlBlocking")}</h2>
           <TextAreaField
             name="urlMatchesToBlock"
-            type="paragraph"
             label={GetMessage("generalSettings_urlBlockingLabel")}
             helpText={GetMessage("generalSettings_urlBlockingHelp")}
           />
@@ -200,7 +199,6 @@ function GeneralSettingsForm(props: Props) {
           <h2>{GetMessage("generalSettings_modelConfig")}</h2>
           <TextAreaField
             name="modelEnvConfig"
-            type="paragraph"
             label={GetMessage("generalSettings_modelEnvConfigLabel")}
             helpText={GetMessage("generalSettings_modelEnvConfigHelp")}
           />

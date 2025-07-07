@@ -36,12 +36,33 @@ export default function CustomFieldsPage(): JSX.Element {
     return <Redirect to="/custom-fields" />;
   }
 
+  const handleDelete = (idx: number) => {
+    // TODO: Implement delete functionality
+    console.log("Delete profile at index:", idx);
+  };
+
+  const handleEdit = (idx: number) => {
+    // TODO: Implement edit functionality
+    console.log("Edit profile at index:", idx);
+  };
+
+  const handleNew = () => {
+    // TODO: Implement new profile functionality
+    console.log("Create new profile");
+  };
+
   return (
     <>
       <h2>{GetMessage("customFields_title")}</h2>
       <Introduction />
       <hr />
-      <ProfilesView profileIndex={profileIndex} profiles={options.profiles || []}>
+      <ProfilesView
+        profileIndex={profileIndex}
+        profiles={options.profiles || []}
+        onDelete={handleDelete}
+        onEdit={handleEdit}
+        onNew={handleNew}
+      >
         <CustomFieldsView customFields={customFieldsList} profileIndex={profileIndex} />
       </ProfilesView>
     </>
