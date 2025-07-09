@@ -40,6 +40,88 @@ class ElementFiller {
     });
   }
 
+  private async waitForElement(selector: string, timeout = 2000): Promise<Element | null> {
+    return new Promise((resolve) => {
+      const existingElement = document.querySelector(selector);
+      if (existingElement) {
+        resolve(existingElement);
+        return;
+      }
+
+      const observer = new MutationObserver(() => {
+        const element = document.querySelector(selector);
+        if (element) {
+          resolve(element);
+          observer.disconnect();
+        }
+      });
+
+      observer.observe(document.body, {
+        childList: true,
+        subtree: true,
+      });
+
+      setTimeout(() => {
+        observer.disconnect();
+        resolve(null);
+      }, timeout);
+    });
+  }
+
+  public async fillWrapedSelectElement(
+    element: HTMLInputElement,
+    isMultiSelect: boolean,
+    dropdownClass: string
+  ): Promise<void> {
+    if (this.shouldIgnoreElement(element)) {
+      return;
+    }
+
+    // 点击输入框触发下拉框
+    element.click();
+    this.fireEvents(element);
+
+    // 等待下拉框出现
+    const dropdownElement = await this.waitForElement(`.${dropdownClass}`);
+    if (!dropdownElement) {
+      return;
+    }
+
+    // 获取所有可选项
+    const options = Array.from(dropdownElement.querySelectorAll("li:not(.disabled)"));
+    if (options.length === 0) {
+      return;
+    }
+
+    if (isMultiSelect) {
+      // 多选模式：随机选择1-3个选项
+      const numberOfOptionsToSelect = this.generator.randomNumber(1, Math.min(3, options.length));
+      const selectedIndices = new Set<number>();
+
+      while (selectedIndices.size < numberOfOptionsToSelect) {
+        const randomIndex = this.generator.randomNumber(0, options.length - 1);
+        if (!selectedIndices.has(randomIndex)) {
+          selectedIndices.add(randomIndex);
+          const option = options[randomIndex] as HTMLElement;
+          option.click();
+        }
+      }
+    } else {
+      // 单选模式：随机选择一个选项
+      const randomIndex = this.generator.randomNumber(0, options.length - 1);
+      const option = options[randomIndex] as HTMLElement;
+      option.click();
+    }
+
+    // 如果是单选，点击会自动关闭下拉框
+    // 如果是多选，需要点击输入框来关闭下拉框
+    if (isMultiSelect) {
+      element.click();
+    }
+
+    this.fireEvents(element);
+  }
+
   private isAnyMatch(haystack: string, needles: string[]): boolean {
     for (let i = 0, count = needles.length; i < count; i += 1) {
       if (new RegExp(needles[i], "iu").test(haystack)) {

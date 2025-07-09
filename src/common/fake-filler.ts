@@ -5,10 +5,40 @@ class FakeFiller {
   private elementFiller: ElementFiller;
   private clickedElement: HTMLElement | undefined;
   private urlMatchesToBlock: string[];
+  private readonly selectInputClass = "t-select-input";
+  private readonly selectInputMultipleClass = "t-select-input--multiple";
+  private readonly selectInputDropdownClass = "t-select__dropdown";
 
   constructor(options: IFakeFillerOptions, profileIndex = -1) {
     this.elementFiller = new ElementFiller(options, profileIndex);
     this.urlMatchesToBlock = options.urlMatchesToBlock;
+  }
+
+  private checkWrappedSelect(element: Element): { isWrappedSelect: boolean; isMultiSelect: boolean } {
+    let { parentElement } = element;
+    let isWrappedSelect = false;
+    let isMultiSelect = false;
+
+    while (parentElement) {
+      if (parentElement.classList.contains(this.selectInputClass)) {
+        isWrappedSelect = true;
+        isMultiSelect = parentElement.classList.contains(this.selectInputMultipleClass);
+        break;
+      }
+      parentElement = parentElement.parentElement;
+    }
+
+    return { isWrappedSelect, isMultiSelect };
+  }
+
+  private async handleInputElement(element: HTMLInputElement): Promise<void> {
+    const { isWrappedSelect, isMultiSelect } = this.checkWrappedSelect(element);
+
+    if (isWrappedSelect) {
+      await this.elementFiller.fillWrapedSelectElement(element, isMultiSelect, this.selectInputDropdownClass);
+    } else {
+      this.elementFiller.fillInputElement(element);
+    }
   }
 
   private urlMatchesBlockList(): boolean {
@@ -45,15 +75,17 @@ class FakeFiller {
       ...Array.from(container.querySelectorAll("[contenteditable]")),
     ];
 
+    type FillElementFunction = (element: Element, index: number) => Promise<void>;
+
     // 创建一个填充单个元素的函数
-    const fillElement = async (element: Element, index: number): Promise<void> => {
+    const fillElement: FillElementFunction = async (element, index) => {
       // 先等待，让每个元素填充之间有200ms的间隔
       await delay(index * 200);
 
       const tagName = element.tagName.toLowerCase();
 
       if (tagName === "input") {
-        this.elementFiller.fillInputElement(element as HTMLInputElement);
+        await this.handleInputElement(element as HTMLInputElement);
       } else if (tagName === "textarea") {
         this.elementFiller.fillTextAreaElement(element as HTMLTextAreaElement);
       } else if (tagName === "select") {
@@ -75,7 +107,7 @@ class FakeFiller {
     await this.fillAllElements(document);
   }
 
-  public fillThisInput(): void {
+  public async fillThisInput(): Promise<void> {
     if (this.urlMatchesBlockList()) {
       return;
     }
@@ -86,7 +118,7 @@ class FakeFiller {
       const tagName = element.tagName.toLowerCase();
 
       if (tagName === "input") {
-        this.elementFiller.fillInputElement(element as HTMLInputElement);
+        await this.handleInputElement(element as HTMLInputElement);
       } else if (tagName === "textarea") {
         this.elementFiller.fillTextAreaElement(element as HTMLTextAreaElement);
       } else if (tagName === "select") {
