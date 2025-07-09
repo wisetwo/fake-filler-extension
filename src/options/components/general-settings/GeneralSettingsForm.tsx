@@ -104,7 +104,7 @@ function GeneralSettingsForm(props: Props) {
           <h2>{GetMessage("generalSettings_passwordSettings")}</h2>
 
           <div className="form-group row">
-            <label className="col-sm-3 col-form-label text-sm-right pt-0" htmlFor="passwordSettingsMode">
+            <label className="col-sm-3 col-form-label text-sm-end pt-0" htmlFor="passwordSettingsMode">
               {GetMessage("generalSettings_password")}
             </label>
             <div className="col-sm-9">
@@ -125,7 +125,7 @@ function GeneralSettingsForm(props: Props) {
           <h2>{GetMessage("generalSettings_fieldOptions")}</h2>
 
           <div className="form-group row">
-            <label className="col-sm-3 col-form-label text-sm-right" htmlFor="ignoredFields">
+            <label className="col-sm-3 col-form-label text-sm-end" htmlFor="ignoredFields">
               {GetMessage("generalSettings_ignoreFieldsMatch")}
             </label>
             <div className="col-sm-9">
@@ -153,7 +153,7 @@ function GeneralSettingsForm(props: Props) {
           />
 
           <div className="form-group row">
-            <div className="col-sm-3 text-sm-right pt-0">{GetMessage("generalSettings_matchFieldsUsing")}</div>
+            <div className="col-sm-3 text-sm-end pt-0">{GetMessage("generalSettings_matchFieldsUsing")}</div>
             <div className="col-sm-9">
               <CheckboxField name="fieldMatchId" label={GetMessage("generalSettings_matchFields_useId")} />
               <CheckboxField name="fieldMatchName" label={GetMessage("generalSettings_matchFields_useName")} />

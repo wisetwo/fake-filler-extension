@@ -10,7 +10,7 @@ function DateOptions() {
   return (
     <>
       <div className="form-group row">
-        <label className="col-sm-3 col-form-label text-sm-right" htmlFor="dateMin">
+        <label className="col-sm-3 col-form-label text-sm-end" htmlFor="dateMin">
           {GetMessage("customFields_label_minDate")}
         </label>
         <div className="col-sm-9">
@@ -28,7 +28,7 @@ function DateOptions() {
         </div>
       </div>
       <div className="form-group row">
-        <label className="col-sm-3 col-form-label text-sm-right" htmlFor="dateMax">
+        <label className="col-sm-3 col-form-label text-sm-end" htmlFor="dateMax">
           {GetMessage("customFields_label_maxDate")}
         </label>
         <div className="col-sm-9">

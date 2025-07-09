@@ -70,7 +70,7 @@ function EmailOptions(props: Props) {
   return (
     <div>
       <div className="form-group row">
-        <label className="col-sm-3 col-form-label text-sm-right" htmlFor="emailPrefix">
+        <label className="col-sm-3 col-form-label text-sm-end" htmlFor="emailPrefix">
           {GetMessage("customFields_label_emailUsernamePrefix")}
         </label>
         <div className="col-sm-9">
@@ -78,7 +78,7 @@ function EmailOptions(props: Props) {
         </div>
       </div>
       <div className="form-group row">
-        <label className="col-sm-3 col-form-label text-sm-right pt-0" htmlFor="emailUsername">
+        <label className="col-sm-3 col-form-label text-sm-end pt-0" htmlFor="emailUsername">
           {GetMessage("customFields_label_username")}
         </label>
         <div className="col-sm-9">
@@ -113,7 +113,7 @@ function EmailOptions(props: Props) {
       </div>
 
       <div className="form-group row">
-        <label className="col-sm-3 col-form-label text-sm-right" htmlFor="emailSuffix">
+        <label className="col-sm-3 col-form-label text-sm-end" htmlFor="emailSuffix">
           {GetMessage("customFields_label_emailUsernameSuffix")}
         </label>
         <div className="col-sm-9">
@@ -122,7 +122,7 @@ function EmailOptions(props: Props) {
       </div>
 
       <div className="form-group row">
-        <label className="col-sm-3 col-form-label text-sm-right pt-0" htmlFor="emailHostname">
+        <label className="col-sm-3 col-form-label text-sm-end pt-0" htmlFor="emailHostname">
           {GetMessage("customFields_label_hostName")}
         </label>
         <div className="col-sm-9">
