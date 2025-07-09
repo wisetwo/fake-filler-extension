@@ -11,12 +11,27 @@ class ChromeDebugger {
     this.destroyed = false;
   }
 
-  private async getActiveTabId(): Promise<number> {
-    const tabs = await chrome.tabs.query({ active: true, currentWindow: true });
-    if (!tabs || tabs.length === 0 || !tabs[0].id) {
-      throw new Error("No active tab found");
-    }
-    return tabs[0].id;
+  private async sendMessage<T>(message: any): Promise<T> {
+    return new Promise((resolve, reject) => {
+      chrome.runtime.sendMessage(message, (response) => {
+        if (chrome.runtime.lastError) {
+          reject(chrome.runtime.lastError);
+          return;
+        }
+        if (response.error) {
+          reject(new Error(response.error));
+          return;
+        }
+        resolve(response as T);
+      });
+    });
+  }
+
+  private async getTabIdOrConnectToCurrentTab(): Promise<number> {
+    const response = await this.sendMessage<{ tabId: number }>({
+      type: "GET_ACTIVE_TAB",
+    });
+    return response.tabId;
   }
 
   public async attachDebugger(): Promise<void> {
@@ -33,13 +48,7 @@ class ChromeDebugger {
     // Create new attaching promise
     this.attachingDebugger = (async () => {
       try {
-        const currentTabId = await this.getActiveTabId();
-        const tab = await chrome.tabs.get(currentTabId);
-        const url = tab.url || "";
-
-        if (url.startsWith("chrome://")) {
-          throw new Error("Cannot attach debugger to chrome:// pages");
-        }
+        const currentTabId = await this.getTabIdOrConnectToCurrentTab();
 
         if (this.tabIdOfDebuggerAttached === currentTabId) {
           // already attached
@@ -55,8 +64,23 @@ class ChromeDebugger {
           }
         }
 
+        // Try to detach any existing debugger from the current tab
+        try {
+          await this.sendMessage({
+            type: "DETACH_DEBUGGER",
+            tabId: currentTabId,
+          });
+        } catch (error) {
+          // Ignore error if no debugger was attached
+        }
+
         // attach debugger to the current tab
-        await chrome.debugger.attach({ tabId: currentTabId }, "1.3");
+        console.log("attaching debugger to tab:", currentTabId);
+        await this.sendMessage({
+          type: "ATTACH_DEBUGGER",
+          tabId: currentTabId,
+        });
+
         // wait until the debugger banner in Chrome appears
         await sleep(500);
 
@@ -80,7 +104,10 @@ class ChromeDebugger {
     }
 
     try {
-      await chrome.debugger.detach({ tabId: tabIdToDetach });
+      await this.sendMessage({
+        type: "DETACH_DEBUGGER",
+        tabId: tabIdToDetach,
+      });
       if (tabIdToDetach === this.tabIdOfDebuggerAttached) {
         this.tabIdOfDebuggerAttached = undefined;
       }
@@ -98,15 +125,14 @@ class ChromeDebugger {
       throw new Error("Debugger is not attached");
     }
 
-    return new Promise((resolve, reject) => {
-      chrome.debugger.sendCommand({ tabId: this.tabIdOfDebuggerAttached }, command, params, (response) => {
-        if (chrome.runtime.lastError) {
-          reject(chrome.runtime.lastError);
-        } else {
-          resolve(response as ResponseType);
-        }
-      });
+    const response = await this.sendMessage<{ success: boolean; response: ResponseType }>({
+      type: "SEND_DEBUGGER_COMMAND",
+      tabId: this.tabIdOfDebuggerAttached,
+      command,
+      params,
     });
+
+    return response.response;
   }
 
   public async simulateMouseEvent(
