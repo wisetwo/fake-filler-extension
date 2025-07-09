@@ -1,6 +1,6 @@
 This was forked from calvinballing/fake-filler-extension. It does not have the ability to sync settings across devices.
 
-# <img src="public/images/logo.svg" height="53" alt="Fake Filler 2" title="Fake Filler 2" />
+# <img src="public/images/logo.svg" height="53" alt="Auto Filler" title="Auto Filler" />
 
 This extension allows you to fill all form inputs (textboxes, textareas, radio buttons, dropdowns, etc.) with dummy data. It is a must for developers and testers who work with forms as it avoids the need for manually entering values in fields.
 

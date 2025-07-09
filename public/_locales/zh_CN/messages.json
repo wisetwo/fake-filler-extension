@@ -501,7 +501,7 @@
     "message": "URLs to Block"
   },
   "generalSettings_urlBlockingHelp": {
-    "message": "Enter a comma separated list of regular expressions to match URLs. Fields on these URLs will never be matched by Fake Filler 2."
+    "message": "Enter a comma separated list of regular expressions to match URLs. Fields on these URLs will never be matched by Auto Filler."
   },
   "generalSettings_modelConfig": {
     "message": "模型配置"

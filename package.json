@@ -1,6 +1,6 @@
 {
   "name": "fake-filler",
-  "version": "4.3.1",
+  "version": "1.0.1",
   "description": "Fills all inputs in a page with dummy data.",
   "engines": {
     "node": ">=16.0.0",

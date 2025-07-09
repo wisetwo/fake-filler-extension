@@ -33,7 +33,7 @@ class FakeFiller {
 
   private async handleInputElement(element: HTMLInputElement): Promise<void> {
     const { isWrappedSelect, isMultiSelect } = this.checkWrappedSelect(element);
-
+    console.log("handleInputElement", isWrappedSelect, isMultiSelect);
     if (isWrappedSelect) {
       await this.elementFiller.fillWrapedSelectElement(element, isMultiSelect, this.selectInputDropdownClass);
     } else {

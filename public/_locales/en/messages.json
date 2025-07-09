@@ -1,9 +1,9 @@
 {
   "extensionName": {
-    "message": "Fake Filler 2"
+    "message": "Auto Filler"
   },
   "extensionName_short": {
-    "message": "FakeFiller2"
+    "message": "AutoFiller"
   },
   "extensionDescription": {
     "message": "A form filler that fills all inputs on a page with fake/dummy data."
@@ -21,7 +21,7 @@
     "message": "Fill all inputs"
   },
   "bgPage_errorMigratingOptions": {
-    "message": "An error occurred while migrating Fake Filler 2 options: $1"
+    "message": "An error occurred while migrating Auto Filler options: $1"
   },
   "close": {
     "message": "Close"
@@ -135,7 +135,7 @@
     "message": "Custom Fields"
   },
   "customFields_intro": {
-    "message": "Fake Filler 2 can use the ID, NAME and CLASS values of an input field in addition to the label text to determine its data type."
+    "message": "Auto Filler can use the ID, NAME and CLASS values of an input field in addition to the label text to determine its data type."
   },
   "customFields_getMoreInfo": {
     "message": "More information on how the extension matches custom fields"
@@ -501,7 +501,7 @@
     "message": "URLs to Block"
   },
   "generalSettings_urlBlockingHelp": {
-    "message": "Enter a comma separated list of regular expressions to match URLs. Fields on these URLs will never be matched by Fake Filler 2."
+    "message": "Enter a comma separated list of regular expressions to match URLs. Fields on these URLs will never be matched by Auto Filler."
   },
   "generalSettings_modelConfig": {
     "message": "Model Config"
