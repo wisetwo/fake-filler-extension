@@ -46,6 +46,34 @@ class ElementFiller {
     });
   }
 
+  public clickOnBlankArea(): void {
+    console.log("～clickOnBlankArea～");
+    // 在页面取整体左下角的像素点进行点击
+    const body = document.querySelector("body");
+    if (body) {
+      const rect = body.getBoundingClientRect();
+      const x = rect.left + 10;
+      const y = rect.bottom - 10;
+      console.log("rect->", rect);
+      console.log("x->", x, "y->", y);
+      ["input", "click", "change", "blur"].forEach((eventName) => {
+        const event = new MouseEvent(eventName, {
+          clientX: x,
+          clientY: y,
+          bubbles: true,
+          cancelable: true,
+        });
+        body.dispatchEvent(event);
+      });
+      // const event = new MouseEvent("click", {
+      //   clientX: x,
+      //   clientY: y,
+      //   bubbles: true,
+      // });
+      // body.dispatchEvent(event);
+    }
+  }
+
   private waitForElementWithData(
     selector: string,
     dataCheckFn: (element: Element) => boolean,
@@ -59,10 +87,14 @@ class ElementFiller {
           resolve(null);
         }
 
-        const element = document.querySelector(selector);
-        if (element && dataCheckFn(element)) {
+        const elementList = document.querySelectorAll(selector);
+        // 过滤出可见的元素
+        const visibleElementList = Array.from(elementList).filter((element) =>
+          this.isElementVisible(element as FillableElement)
+        );
+        if (visibleElementList.length > 0 && dataCheckFn(visibleElementList[0])) {
           clearInterval(interval);
-          resolve(element);
+          resolve(visibleElementList[0]);
         }
       }, 100);
     });
@@ -133,6 +165,7 @@ class ElementFiller {
         if (!selectedIndices.has(randomIndex)) {
           selectedIndices.add(randomIndex);
           const option = options[randomIndex] as HTMLElement;
+          console.log("index to click->", randomIndex);
           clickPromises.push(
             this.sleep(50).then(() => {
               option.click();
@@ -156,10 +189,13 @@ class ElementFiller {
     // 如果是单选，点击会自动关闭下拉框
     // 如果是多选，需要点击输入框来关闭下拉框
     if (selected && isMultiSelect) {
-      element.click();
-      if (this.options.triggerClickEvents) {
-        this.fireEvents(element);
-      }
+      await this.sleep(50);
+      this.clickOnBlankArea();
+      // await this.sleep(50);
+      // element.click();
+      // if (this.options.triggerClickEvents) {
+      //   this.fireEvents(element);
+      // }
     }
   }
 
