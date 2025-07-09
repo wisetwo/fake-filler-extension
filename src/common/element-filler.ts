@@ -76,12 +76,12 @@ class ElementFiller {
   ): Promise<void> {
     console.log("fillWrapedSelectElement", element, isMultiSelect, dropdownClass);
     if (this.shouldIgnoreElement(element)) {
+      console.log("element ignored");
       return;
     }
 
     // 点击输入框触发下拉框
     element.click();
-    this.fireEvents(element);
 
     // 等待下拉框出现
     const dropdownElement = await this.waitForElement(`.${dropdownClass}`);
@@ -130,8 +130,9 @@ class ElementFiller {
     if (isMultiSelect) {
       element.click();
     }
-
-    this.fireEvents(element);
+    if (this.options.triggerClickEvents) {
+      this.fireEvents(element);
+    }
   }
 
   private isAnyMatch(haystack: string, needles: string[]): boolean {
@@ -166,7 +167,9 @@ class ElementFiller {
     if (!element.offsetHeight && !element.offsetWidth) {
       return false;
     }
-    if (window.getComputedStyle(element).visibility === "hidden") {
+    const { visibility } = window.getComputedStyle(element);
+    console.log("element visibility ->", visibility);
+    if (visibility === "hidden") {
       return false;
     }
     return true;
@@ -176,7 +179,7 @@ class ElementFiller {
     if (["button", "submit", "reset", "image"].indexOf(element.type) > -1) {
       return true;
     }
-
+    console.log("shouldIgnoreElement");
     // Ignore any invisible elements.
     if (this.options.ignoreHiddenFields && !this.isElementVisible(element)) {
       return true;
@@ -564,6 +567,7 @@ class ElementFiller {
 
   public fillInputElement(element: HTMLInputElement): void {
     if (this.shouldIgnoreElement(element)) {
+      console.log("element ignored");
       return;
     }
 
@@ -905,6 +909,7 @@ class ElementFiller {
 
   public fillTextAreaElement(element: HTMLTextAreaElement): void {
     if (this.shouldIgnoreElement(element)) {
+      console.log("element ignored");
       return;
     }
 
@@ -924,6 +929,7 @@ class ElementFiller {
 
   public fillSelectElement(element: HTMLSelectElement): void {
     if (this.shouldIgnoreElement(element)) {
+      console.log("element ignored");
       return;
     }
 

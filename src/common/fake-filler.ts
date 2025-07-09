@@ -34,7 +34,9 @@ class FakeFiller {
 
   private async handleInputElement(element: HTMLInputElement): Promise<void> {
     const { isWrappedSelect, isMultiSelect } = this.checkWrappedSelect(element);
-    console.log("handleInputElement", isWrappedSelect, isMultiSelect);
+    console.log("~                   ~");
+    console.log("# handleInputElement", element);
+    console.log("isWrappedSelect, isMultiSelect", isWrappedSelect, isMultiSelect);
 
     if (isWrappedSelect) {
       await this.elementFiller.fillWrapedSelectElement(
@@ -82,13 +84,10 @@ class FakeFiller {
       ...Array.from(container.querySelectorAll("[contenteditable]")),
     ];
 
-    type FillElementFunction = (element: Element, index: number) => Promise<void>;
+    type FillElementFunction = (element: Element) => Promise<void>;
 
     // 创建一个填充单个元素的函数
-    const fillElement: FillElementFunction = async (element, index) => {
-      // 先等待，让每个元素填充之间有200ms的间隔
-      await delay(index * 200);
-
+    const fillElement: FillElementFunction = async (element) => {
       const tagName = element.tagName.toLowerCase();
 
       if (tagName === "input") {
@@ -102,8 +101,12 @@ class FakeFiller {
       }
     };
 
-    // 使用Promise.all和map来并发处理所有元素
-    await Promise.all(fillableElements.map((element, index) => fillElement(element, index)));
+    // 串行处理所有元素
+    await fillableElements.reduce(async (promise, element) => {
+      await promise;
+      await fillElement(element);
+      await delay(200); // 每个元素处理完后等待200ms
+    }, Promise.resolve());
   }
 
   public setClickedElement(element: HTMLElement | undefined): void {
