@@ -40,11 +40,11 @@ class ElementFiller {
     });
   }
 
-  private sleep(ms: number): Promise<void> {
-    return new Promise((resolve) => {
-      setTimeout(resolve, ms);
-    });
-  }
+  // private sleep(ms: number): Promise<void> {
+  //   return new Promise((resolve) => {
+  //     setTimeout(resolve, ms);
+  //   });
+  // }
 
   private waitForElementWithData(
     selector: string,
@@ -82,9 +82,12 @@ class ElementFiller {
 
     // 点击输入框触发下拉框
     element.click();
+    if (this.options.triggerClickEvents) {
+      this.fireEvents(element);
+    }
 
     // 先等待一小段时间，让点击事件完成处理
-    await this.sleep(50);
+    // await this.sleep(50);
 
     // 等待下拉框出现并且有数据
     const dropdownElement = await this.waitForElementWithData(`.${dropdownClass}`, (el) => {
@@ -117,6 +120,7 @@ class ElementFiller {
       return;
     }
 
+    let selected = false;
     if (isMultiSelect) {
       // 多选模式：随机选择1-3个选项
       const numberOfOptionsToSelect = this.generator.randomNumber(1, Math.min(3, options.length));
@@ -128,6 +132,7 @@ class ElementFiller {
           selectedIndices.add(randomIndex);
           const option = options[randomIndex] as HTMLElement;
           option.click();
+          selected = true;
         }
       }
     } else {
@@ -135,15 +140,16 @@ class ElementFiller {
       const randomIndex = this.generator.randomNumber(0, options.length - 1);
       const option = options[randomIndex] as HTMLElement;
       option.click();
+      selected = true;
     }
 
     // 如果是单选，点击会自动关闭下拉框
     // 如果是多选，需要点击输入框来关闭下拉框
-    if (isMultiSelect) {
+    if (selected && isMultiSelect) {
       element.click();
-    }
-    if (this.options.triggerClickEvents) {
-      this.fireEvents(element);
+      if (this.options.triggerClickEvents) {
+        this.fireEvents(element);
+      }
     }
   }
 
