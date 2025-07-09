@@ -41,6 +41,9 @@ class ElementFiller {
   }
 
   private async waitForElement(selector: string, timeout = 2000): Promise<Element | null> {
+    // 先等待一个微任务周期，确保DOM变化事件能被捕获
+    // await Promise.resolve();
+
     return new Promise((resolve) => {
       const existingElement = document.querySelector(selector);
       if (existingElement) {
@@ -68,6 +71,29 @@ class ElementFiller {
     });
   }
 
+  private async waitForElementWithData(
+    selector: string,
+    dataCheckFn: (element: Element) => boolean,
+    timeout = 2000,
+    startTime = Date.now()
+  ): Promise<Element | null> {
+    if (Date.now() - startTime >= timeout) {
+      return null;
+    }
+
+    const element = await this.waitForElement(selector, 100);
+    if (element && dataCheckFn(element)) {
+      return element;
+    }
+
+    // 递归调用自身，继续检查
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve(this.waitForElementWithData(selector, dataCheckFn, timeout, startTime));
+      }, 100);
+    });
+  }
+
   public async fillWrapedSelectElement(
     element: HTMLInputElement,
     isMultiSelect: boolean,
@@ -83,10 +109,19 @@ class ElementFiller {
     // 点击输入框触发下拉框
     element.click();
 
-    // 等待下拉框出现
-    const dropdownElement = await this.waitForElement(`.${dropdownClass}`);
+    // 等待下拉框出现并且有数据
+    const dropdownElement = await this.waitForElementWithData(`.${dropdownClass}`, (el) => {
+      // 检查是否有选项数据
+      const hasOptions = dropdownOptionClassList.some(
+        (optionClass) => el.querySelectorAll(`.${optionClass}:not(.disabled)`).length > 0
+      );
+      console.log("检查下拉框数据:", hasOptions);
+      return hasOptions;
+    });
+
     console.log("dropdownElement", dropdownElement);
     if (!dropdownElement) {
+      console.log("下拉框未出现或无数据");
       return;
     }
 
