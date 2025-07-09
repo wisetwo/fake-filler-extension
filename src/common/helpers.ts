@@ -367,6 +367,12 @@ const GetMessage = (key: string, parameters?: any): string => {
   return chrome.i18n.getMessage(key, parameters);
 };
 
+export function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
+}
+
 export {
   DEFAULT_TELEPHONE_TEMPLATE,
   CreateContextMenus,

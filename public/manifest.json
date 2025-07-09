@@ -17,7 +17,8 @@
     "contextMenus",
     "activeTab",
     "storage",
-    "scripting"
+    "scripting",
+    "debugger"
   ],
   "action": {
     "default_icon": {

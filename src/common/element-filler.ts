@@ -4,8 +4,9 @@ import cssesc from "cssesc";
 import moment from "moment";
 import RandExp from "randexp";
 
+import ChromeDebugger from "src/common/chrome-debugger";
 import DataGenerator from "src/common/data-generator";
-import { SanitizeText, DEFAULT_EMAIL_CUSTOM_FIELD } from "src/common/helpers";
+import { SanitizeText, DEFAULT_EMAIL_CUSTOM_FIELD, sleep } from "src/common/helpers";
 import { IFakeFillerOptions, ICustomField, CustomFieldTypes } from "src/types";
 
 type FillableElement = HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement;
@@ -14,6 +15,7 @@ class ElementFiller {
   private generator: DataGenerator;
   private options: IFakeFillerOptions;
   private profileIndex: number;
+  private debugger: ChromeDebugger;
 
   private previousValue: string;
   private previousPassword: string;
@@ -25,6 +27,7 @@ class ElementFiller {
     this.options = options;
     this.profileIndex = profileIndex;
     this.generator = new DataGenerator();
+    this.debugger = new ChromeDebugger();
 
     this.previousValue = "";
     this.previousPassword = "";
@@ -40,13 +43,7 @@ class ElementFiller {
     });
   }
 
-  private sleep(ms: number): Promise<void> {
-    return new Promise((resolve) => {
-      setTimeout(resolve, ms);
-    });
-  }
-
-  public clickOnBlankArea(): void {
+  public async clickOnBlankArea(): Promise<void> {
     console.log("～clickOnBlankArea～");
     // 在页面取整体左下角的像素点进行点击
     const body = document.querySelector("body");
@@ -56,25 +53,27 @@ class ElementFiller {
       const y = rect.bottom - 10;
       console.log("rect->", rect);
       console.log("x->", x, "y->", y);
-      ["input", "click", "change", "blur"].forEach((eventName) => {
-        const event = new MouseEvent(eventName, {
-          clientX: x,
-          clientY: y,
-          bubbles: true,
-          cancelable: true,
+
+      try {
+        await this.debugger.attachDebugger();
+        await this.debugger.click(x, y);
+      } catch (error) {
+        console.error("Failed to click using debugger, falling back to events", error);
+        // 如果debugger方式失败，回退到原来的事件方式
+        ["input", "click", "change", "blur"].forEach((eventName) => {
+          const event = new MouseEvent(eventName, {
+            clientX: x,
+            clientY: y,
+            bubbles: true,
+            cancelable: true,
+          });
+          body.dispatchEvent(event);
         });
-        body.dispatchEvent(event);
-      });
-      // const event = new MouseEvent("click", {
-      //   clientX: x,
-      //   clientY: y,
-      //   bubbles: true,
-      // });
-      // body.dispatchEvent(event);
+      }
     }
   }
 
-  private waitForElementWithData(
+  private async waitForElementWithData(
     selector: string,
     dataCheckFn: (element: Element) => boolean,
     timeout = 2000
@@ -113,13 +112,17 @@ class ElementFiller {
     }
 
     // 点击输入框触发下拉框
-    element.click();
-    if (this.options.triggerClickEvents) {
-      this.fireEvents(element);
+    try {
+      const rect = element.getBoundingClientRect();
+      await this.debugger.attachDebugger();
+      await this.debugger.click(rect.left + rect.width / 2, rect.top + rect.height / 2);
+    } catch (error) {
+      console.error("Failed to click using debugger, falling back to events", error);
+      element.click();
+      if (this.options.triggerClickEvents) {
+        this.fireEvents(element);
+      }
     }
-
-    // 先等待一小段时间，让点击事件完成处理
-    // await this.sleep(50);
 
     // 等待下拉框出现并且有数据
     const dropdownElement = await this.waitForElementWithData(`.${dropdownClass}`, (el) => {
@@ -165,11 +168,16 @@ class ElementFiller {
         if (!selectedIndices.has(randomIndex)) {
           selectedIndices.add(randomIndex);
           const option = options[randomIndex] as HTMLElement;
+          const rect = option.getBoundingClientRect();
           console.log("index to click->", randomIndex);
           clickPromises.push(
-            this.sleep(50).then(() => {
-              option.click();
-              return Promise.resolve();
+            sleep(50).then(async () => {
+              try {
+                await this.debugger.click(rect.left + rect.width / 2, rect.top + rect.height / 2);
+              } catch (error) {
+                console.error("Failed to click using debugger, falling back to events", error);
+                option.click();
+              }
             })
           );
         }
@@ -181,21 +189,22 @@ class ElementFiller {
       // 单选模式：随机选择一个选项
       const randomIndex = this.generator.randomNumber(0, options.length - 1);
       const option = options[randomIndex] as HTMLElement;
-      await this.sleep(50);
-      option.click();
+      const rect = option.getBoundingClientRect();
+      await sleep(50);
+      try {
+        await this.debugger.click(rect.left + rect.width / 2, rect.top + rect.height / 2);
+      } catch (error) {
+        console.error("Failed to click using debugger, falling back to events", error);
+        option.click();
+      }
       selected = true;
     }
 
     // 如果是单选，点击会自动关闭下拉框
     // 如果是多选，需要点击输入框来关闭下拉框
     if (selected && isMultiSelect) {
-      await this.sleep(50);
-      this.clickOnBlankArea();
-      // await this.sleep(50);
-      // element.click();
-      // if (this.options.triggerClickEvents) {
-      //   this.fireEvents(element);
-      // }
+      await sleep(50);
+      await this.clickOnBlankArea();
     }
   }
 
@@ -1070,6 +1079,10 @@ class ElementFiller {
     if ((element as HTMLElement).isContentEditable) {
       element.textContent = this.generator.paragraph(5, 100, 0, this.options.defaultMaxLength);
     }
+  }
+
+  public async destroy(): Promise<void> {
+    await this.debugger.destroy();
   }
 }
 
