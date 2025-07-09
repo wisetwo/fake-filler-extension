@@ -40,11 +40,11 @@ class ElementFiller {
     });
   }
 
-  // private sleep(ms: number): Promise<void> {
-  //   return new Promise((resolve) => {
-  //     setTimeout(resolve, ms);
-  //   });
-  // }
+  private sleep(ms: number): Promise<void> {
+    return new Promise((resolve) => {
+      setTimeout(resolve, ms);
+    });
+  }
 
   private waitForElementWithData(
     selector: string,
@@ -124,21 +124,31 @@ class ElementFiller {
     if (isMultiSelect) {
       // 多选模式：随机选择1-3个选项
       const numberOfOptionsToSelect = this.generator.randomNumber(1, Math.min(3, options.length));
+      console.log("numberOfOptionsToSelect->", numberOfOptionsToSelect);
       const selectedIndices = new Set<number>();
+      const clickPromises: Promise<void>[] = [];
 
       while (selectedIndices.size < numberOfOptionsToSelect) {
         const randomIndex = this.generator.randomNumber(0, options.length - 1);
         if (!selectedIndices.has(randomIndex)) {
           selectedIndices.add(randomIndex);
           const option = options[randomIndex] as HTMLElement;
-          option.click();
-          selected = true;
+          clickPromises.push(
+            this.sleep(50).then(() => {
+              option.click();
+              return Promise.resolve();
+            })
+          );
         }
       }
+
+      await Promise.all(clickPromises);
+      selected = true;
     } else {
       // 单选模式：随机选择一个选项
       const randomIndex = this.generator.randomNumber(0, options.length - 1);
       const option = options[randomIndex] as HTMLElement;
+      await this.sleep(50);
       option.click();
       selected = true;
     }
