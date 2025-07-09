@@ -104,7 +104,7 @@ function GeneralSettingsForm(props: Props) {
         <Form>
           <h2>{GetMessage("generalSettings_passwordSettings")}</h2>
 
-          <div className="form-group row">
+          <div className="form-group row mb-3">
             <label className="col-sm-3 col-form-label text-sm-end pt-0" htmlFor="passwordSettingsMode">
               {GetMessage("generalSettings_password")}
             </label>
@@ -125,7 +125,7 @@ function GeneralSettingsForm(props: Props) {
 
           <h2>{GetMessage("generalSettings_fieldOptions")}</h2>
 
-          <div className="form-group row">
+          <div className="form-group row mb-3">
             <label className="col-sm-3 col-form-label text-sm-end" htmlFor="ignoredFields">
               {GetMessage("generalSettings_ignoreFieldsMatch")}
             </label>
@@ -153,7 +153,7 @@ function GeneralSettingsForm(props: Props) {
             helpText={GetMessage("generalSettings_agreeToTermsMatchHelp")}
           />
 
-          <div className="form-group row">
+          <div className="form-group row mb-3">
             <div className="col-sm-3 text-sm-end pt-0">{GetMessage("generalSettings_matchFieldsUsing")}</div>
             <div className="col-sm-9">
               <CheckboxField name="fieldMatchId" label={GetMessage("generalSettings_matchFields_useId")} />
@@ -167,11 +167,11 @@ function GeneralSettingsForm(props: Props) {
                 name="fieldMatchAriaLabelledBy"
                 label={GetMessage("generalSettings_matchFields_useAriaLabelledBy")}
               />
-              <CheckboxField name="fieldMatchClass" label={GetMessage("generalSettings_matchFields_useClass")} />
               <CheckboxField
                 name="fieldMatchPlaceholder"
                 label={GetMessage("generalSettings_matchFields_usePlaceholder")}
               />
+              <CheckboxField name="fieldMatchClass" label={GetMessage("generalSettings_matchFields_useClass")} />
               <div className="form-text text-muted">{GetMessage("generalSettings_matchFields_help")}</div>
             </div>
           </div>
