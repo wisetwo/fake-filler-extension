@@ -40,56 +40,30 @@ class ElementFiller {
     });
   }
 
-  private async waitForElement(selector: string, timeout = 2000): Promise<Element | null> {
-    // 先等待一个微任务周期，确保DOM变化事件能被捕获
-    // await Promise.resolve();
-
+  private sleep(ms: number): Promise<void> {
     return new Promise((resolve) => {
-      const existingElement = document.querySelector(selector);
-      if (existingElement) {
-        resolve(existingElement);
-        return;
-      }
-
-      const observer = new MutationObserver(() => {
-        const element = document.querySelector(selector);
-        if (element) {
-          resolve(element);
-          observer.disconnect();
-        }
-      });
-
-      observer.observe(document.body, {
-        childList: true,
-        subtree: true,
-      });
-
-      setTimeout(() => {
-        observer.disconnect();
-        resolve(null);
-      }, timeout);
+      setTimeout(resolve, ms);
     });
   }
 
-  private async waitForElementWithData(
+  private waitForElementWithData(
     selector: string,
     dataCheckFn: (element: Element) => boolean,
-    timeout = 2000,
-    startTime = Date.now()
+    timeout = 2000
   ): Promise<Element | null> {
-    if (Date.now() - startTime >= timeout) {
-      return null;
-    }
-
-    const element = await this.waitForElement(selector, 100);
-    if (element && dataCheckFn(element)) {
-      return element;
-    }
-
-    // 递归调用自身，继续检查
     return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve(this.waitForElementWithData(selector, dataCheckFn, timeout, startTime));
+      const startTime = Date.now();
+      const interval = setInterval(() => {
+        if (Date.now() - startTime >= timeout) {
+          clearInterval(interval);
+          resolve(null);
+        }
+
+        const element = document.querySelector(selector);
+        if (element && dataCheckFn(element)) {
+          clearInterval(interval);
+          resolve(element);
+        }
       }, 100);
     });
   }
@@ -108,6 +82,9 @@ class ElementFiller {
 
     // 点击输入框触发下拉框
     element.click();
+
+    // 先等待一小段时间，让点击事件完成处理
+    await this.sleep(50);
 
     // 等待下拉框出现并且有数据
     const dropdownElement = await this.waitForElementWithData(`.${dropdownClass}`, (el) => {
