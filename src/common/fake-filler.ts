@@ -27,34 +27,52 @@ class FakeFiller {
     return false;
   }
 
-  private fillAllElements(container: Document | HTMLElement): void {
+  private async fillAllElements(container: Document | HTMLElement): Promise<void> {
     if (this.urlMatchesBlockList()) {
       return;
     }
 
-    container.querySelectorAll("input:not(:disabled):not([readonly])").forEach((element) => {
-      this.elementFiller.fillInputElement(element as HTMLInputElement);
-    });
+    const delay = (ms: number): Promise<void> =>
+      new Promise((resolve) => {
+        setTimeout(resolve, ms);
+      });
 
-    container.querySelectorAll("textarea:not(:disabled):not([readonly])").forEach((element) => {
-      this.elementFiller.fillTextAreaElement(element as HTMLTextAreaElement);
-    });
+    // 获取所有需要填充的元素
+    const fillableElements = [
+      ...Array.from(container.querySelectorAll("input:not(:disabled):not([readonly])")),
+      ...Array.from(container.querySelectorAll("textarea:not(:disabled):not([readonly])")),
+      ...Array.from(container.querySelectorAll("select:not(:disabled):not([readonly])")),
+      ...Array.from(container.querySelectorAll("[contenteditable]")),
+    ];
 
-    container.querySelectorAll("select:not(:disabled):not([readonly])").forEach((element) => {
-      this.elementFiller.fillSelectElement(element as HTMLSelectElement);
-    });
+    // 创建一个填充单个元素的函数
+    const fillElement = async (element: Element, index: number): Promise<void> => {
+      // 先等待，让每个元素填充之间有200ms的间隔
+      await delay(index * 200);
 
-    container.querySelectorAll("[contenteditable]").forEach((element) => {
-      this.elementFiller.fillContentEditableElement(element as HTMLElement);
-    });
+      const tagName = element.tagName.toLowerCase();
+
+      if (tagName === "input") {
+        this.elementFiller.fillInputElement(element as HTMLInputElement);
+      } else if (tagName === "textarea") {
+        this.elementFiller.fillTextAreaElement(element as HTMLTextAreaElement);
+      } else if (tagName === "select") {
+        this.elementFiller.fillSelectElement(element as HTMLSelectElement);
+      } else if ((element as HTMLElement).isContentEditable) {
+        this.elementFiller.fillContentEditableElement(element as HTMLElement);
+      }
+    };
+
+    // 使用Promise.all和map来并发处理所有元素
+    await Promise.all(fillableElements.map((element, index) => fillElement(element, index)));
   }
 
   public setClickedElement(element: HTMLElement | undefined): void {
     this.clickedElement = element;
   }
 
-  public fillAllInputs(): void {
-    this.fillAllElements(document);
+  public async fillAllInputs(): Promise<void> {
+    await this.fillAllElements(document);
   }
 
   public fillThisInput(): void {
@@ -81,7 +99,7 @@ class FakeFiller {
     this.setClickedElement(undefined);
   }
 
-  public fillThisForm(): void {
+  public async fillThisForm(): Promise<void> {
     if (this.urlMatchesBlockList()) {
       return;
     }
@@ -92,7 +110,7 @@ class FakeFiller {
       const form = element.closest("form");
 
       if (form) {
-        this.fillAllElements(form);
+        await this.fillAllElements(form);
       }
     }
 
