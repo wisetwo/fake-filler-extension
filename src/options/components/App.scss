@@ -89,7 +89,7 @@ h2 {
 .saved-msg {
   font-weight: bold;
   color: $success;
-  padding: 12px;
+  margin: 12px 1rem;
 }
 
 .narrow {
@@ -118,6 +118,10 @@ h2 {
   .btn:last-child {
     margin-right: 0;
   }
+}
+
+.reset-settings {
+  margin: 0 1rem;
 }
 
 :disabled {

@@ -40,6 +40,7 @@ type Props = {
   options: IFakeFillerOptions;
   showSavedMessage: boolean;
   onSave: (formValues: IFakeFillerOptionsForm) => void;
+  onReset: (event: React.SyntheticEvent) => void;
 };
 
 function GeneralSettingsForm(props: Props) {
@@ -226,6 +227,9 @@ function GeneralSettingsForm(props: Props) {
               <button type="submit" className="btn btn-primary" disabled={isSubmitting || !isValid}>
                 {GetMessage("saveSettings")}
               </button>
+              <a href="javacript: void(0)" className="reset-settings" onClick={props.onReset}>
+                {GetMessage("leftNav_restoreFactorySettings")}
+              </a>
               {props.showSavedMessage && (
                 <span className="saved-msg">{GetMessage("generalSettings_settingsSaved")}</span>
               )}

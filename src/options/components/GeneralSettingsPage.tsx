@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 
-import { GetMessage } from "src/common/helpers";
+import { GetMessage, FakeFillerDefaultOptions } from "src/common/helpers";
 import { saveOptions, MyThunkDispatch, getOptions } from "src/options/actions";
 import GeneralSettingsForm from "src/options/components/general-settings/GeneralSettingsForm";
 import { IFakeFillerOptions, IFakeFillerOptionsForm, IAppState } from "src/types";
@@ -24,11 +24,28 @@ function GeneralSettingsPage() {
     }
   }
 
+  function handleResetSettings(event: React.SyntheticEvent): void {
+    event.preventDefault();
+
+    // eslint-disable-next-line no-alert
+    if (window.confirm(GetMessage("leftNav_confirmResetSettings"))) {
+      const newOptions = FakeFillerDefaultOptions();
+      dispatch(saveOptions(newOptions));
+    }
+  }
+
   if (isFetching || options === null) {
     return <div>{GetMessage("loading")}</div>;
   }
 
-  return <GeneralSettingsForm options={options} showSavedMessage={showSavedMessage} onSave={handleSave} />;
+  return (
+    <GeneralSettingsForm
+      options={options}
+      showSavedMessage={showSavedMessage}
+      onSave={handleSave}
+      onReset={handleResetSettings}
+    />
+  );
 }
 
 export default GeneralSettingsPage;

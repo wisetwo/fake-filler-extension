@@ -1,10 +1,9 @@
 import React from "react";
 import { Nav, Navbar } from "react-bootstrap";
-import { useDispatch } from "react-redux";
+// import { useDispatch } from "react-redux";
 import { Link, NavLink, Route } from "react-router-dom";
 
-import { GetMessage, FakeFillerDefaultOptions } from "src/common/helpers";
-import { saveOptions } from "src/options/actions";
+import { GetMessage } from "src/common/helpers";
 import BackupAndRestorePage from "src/options/components/BackupAndRestorePage";
 import ChangeLogPage from "src/options/components/ChangeLogPage";
 import CustomFieldsPage from "src/options/components/CustomFieldsPage";
@@ -17,20 +16,7 @@ import ScrollToTop from "src/options/components/common/ScrollToTop";
 import "src/options/components/App.scss";
 
 function App() {
-  const dispatch = useDispatch();
-
   // const sendFeedbackMessage = chrome.i18n.getMessage("leftNav_sendFeedback", ["james.thomas.hays@gmail.com"]);
-
-  function handleResetSettings(event: React.SyntheticEvent): void {
-    event.preventDefault();
-
-    // eslint-disable-next-line no-alert
-    if (window.confirm(GetMessage("leftNav_confirmResetSettings"))) {
-      const options = FakeFillerDefaultOptions();
-      dispatch(saveOptions(options));
-    }
-  }
-
   return (
     <>
       <ScrollToTop />
@@ -69,12 +55,6 @@ function App() {
       <footer id="main-footer" className="container">
         {/* <HtmlPhrase phrase={sendFeedbackMessage} as="p" /> */}
         <ul className="list-inline">
-          <li className="list-inline-item">
-            {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
-            <a href="#" onClick={handleResetSettings}>
-              {GetMessage("leftNav_restoreFactorySettings")}
-            </a>
-          </li>
           <li className="list-inline-item">
             <Link to="/changelog">{GetMessage("leftNav_changelog")}</Link>
           </li>
