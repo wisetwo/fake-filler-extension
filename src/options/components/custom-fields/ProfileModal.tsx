@@ -1,6 +1,6 @@
 import { Form, Formik, FormikErrors } from "formik";
 import React from "react";
-import { Modal } from "react-bootstrap";
+import { Modal, Button } from "react-bootstrap";
 
 import { GetMessage } from "src/common/helpers";
 import TextField from "src/options/components/common/TextField";
@@ -61,12 +61,12 @@ function ProfileModal(props: Props) {
               />
             </Modal.Body>
             <Modal.Footer>
-              <button type="button" className="btn btn-outline-secondary" onClick={props.onClose}>
+              <Button variant="outline-secondary" onClick={props.onClose}>
                 {GetMessage("Cancel")}
-              </button>
-              <button type="submit" className="btn btn-primary" disabled={isSubmitting || !isValid}>
+              </Button>
+              <Button variant="primary" type="submit" disabled={isSubmitting || !isValid}>
                 {GetMessage("Save")}
-              </button>
+              </Button>
             </Modal.Footer>
           </Form>
         )}
