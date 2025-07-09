@@ -71,8 +71,10 @@ class ElementFiller {
   public async fillWrapedSelectElement(
     element: HTMLInputElement,
     isMultiSelect: boolean,
-    dropdownClass: string
+    dropdownClass: string,
+    dropdownOptionClassList: string[]
   ): Promise<void> {
+    console.log("fillWrapedSelectElement", element, isMultiSelect, dropdownClass);
     if (this.shouldIgnoreElement(element)) {
       return;
     }
@@ -83,13 +85,23 @@ class ElementFiller {
 
     // 等待下拉框出现
     const dropdownElement = await this.waitForElement(`.${dropdownClass}`);
+    console.log("dropdownElement", dropdownElement);
     if (!dropdownElement) {
       return;
     }
 
-    // 获取所有可选项
-    const options = Array.from(dropdownElement.querySelectorAll("li:not(.disabled)"));
+    // 尝试使用不同的类名查找选项
+    const options = dropdownOptionClassList.reduce<Element[]>((foundOptions, optionClass) => {
+      if (foundOptions.length > 0) {
+        return foundOptions;
+      }
+      const newOptions = Array.from(dropdownElement.querySelectorAll(`.${optionClass}:not(.disabled)`));
+      console.log(`尝试使用类名 ${optionClass} 查找选项:`, newOptions);
+      return newOptions;
+    }, []);
+
     if (options.length === 0) {
+      console.log("未找到任何可选项");
       return;
     }
 

@@ -14,7 +14,7 @@ function ChangeLogPage() {
       </ul>
       <hr />
       <p>
-        <strong>Version 4.3.0</strong>
+        <strong>Version 1.0.0</strong>
       </p>
       <ul>
         <li>

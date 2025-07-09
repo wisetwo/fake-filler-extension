@@ -8,6 +8,7 @@ class FakeFiller {
   private readonly selectInputClass = "t-select-input";
   private readonly selectInputMultipleClass = "t-select-input--multiple";
   private readonly selectInputDropdownClass = "t-select__dropdown";
+  private readonly selectInputDropdownOptionClassList = ["t-select-option"];
 
   constructor(options: IFakeFillerOptions, profileIndex = -1) {
     this.elementFiller = new ElementFiller(options, profileIndex);
@@ -34,8 +35,14 @@ class FakeFiller {
   private async handleInputElement(element: HTMLInputElement): Promise<void> {
     const { isWrappedSelect, isMultiSelect } = this.checkWrappedSelect(element);
     console.log("handleInputElement", isWrappedSelect, isMultiSelect);
+
     if (isWrappedSelect) {
-      await this.elementFiller.fillWrapedSelectElement(element, isMultiSelect, this.selectInputDropdownClass);
+      await this.elementFiller.fillWrapedSelectElement(
+        element,
+        isMultiSelect,
+        this.selectInputDropdownClass,
+        this.selectInputDropdownOptionClassList
+      );
     } else {
       this.elementFiller.fillInputElement(element);
     }
