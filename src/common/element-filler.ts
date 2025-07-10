@@ -15,7 +15,7 @@ class ElementFiller {
   private generator: DataGenerator;
   private options: IFakeFillerOptions;
   private profileIndex: number;
-  private debugger: ChromeDebugger;
+  private chromeDebugger?: ChromeDebugger;
 
   private previousValue: string;
   private previousPassword: string;
@@ -23,11 +23,11 @@ class ElementFiller {
   private previousFirstName: string;
   private previousLastName: string;
 
-  constructor(options: IFakeFillerOptions, profileIndex = -1) {
+  constructor(options: IFakeFillerOptions, profileIndex = -1, chromeDebugger?: ChromeDebugger) {
     this.options = options;
     this.profileIndex = profileIndex;
     this.generator = new DataGenerator();
-    this.debugger = new ChromeDebugger();
+    this.chromeDebugger = chromeDebugger;
 
     this.previousValue = "";
     this.previousPassword = "";
@@ -43,34 +43,39 @@ class ElementFiller {
     });
   }
 
-  public async clickOnBlankArea(): Promise<void> {
-    console.log("～clickOnBlankArea～");
-    // 在页面取整体左下角的像素点进行点击
-    const body = document.querySelector("body");
-    if (body) {
-      const rect = body.getBoundingClientRect();
-      const x = rect.left + 10;
-      const y = rect.bottom - 10;
-      console.log("rect->", rect);
-      console.log("x->", x, "y->", y);
-
+  private async simulateClick(element: HTMLElement, x: number, y: number): Promise<void> {
+    if (this.chromeDebugger) {
       try {
-        await this.debugger.attachDebugger();
-        await this.debugger.click(x, y);
+        await this.chromeDebugger.click(x, y);
       } catch (error) {
         console.error("Failed to click using debugger, falling back to events", error);
-        // 如果debugger方式失败，回退到原来的事件方式
-        ["input", "click", "change", "blur"].forEach((eventName) => {
-          const event = new MouseEvent(eventName, {
-            clientX: x,
-            clientY: y,
-            bubbles: true,
-            cancelable: true,
-          });
-          body.dispatchEvent(event);
-        });
+        element.click();
       }
+    } else {
+      element.click();
     }
+  }
+
+  // private async clickElement(element: HTMLElement): Promise<void> {
+  //   if (this.chromeDebugger) {
+  //     try {
+  //       const rect = element.getBoundingClientRect();
+  //       await this.chromeDebugger.attachDebugger();
+  //       await this.chromeDebugger.click(rect.left + rect.width / 2, rect.top + rect.height / 2);
+  //     } catch (error) {
+  //       console.error("Failed to click using debugger, falling back to events", error);
+  //       element.click();
+  //     }
+  //   } else {
+  //     element.click();
+  //   }
+  // }
+
+  public async clickOnBlankArea(): Promise<void> {
+    const x = Math.floor(Math.random() * (window.innerWidth - 100)) + 50;
+    const y = Math.floor(Math.random() * (window.innerHeight - 100)) + 50;
+
+    await this.simulateClick(document.body, x, y);
   }
 
   private async waitForElementWithData(
@@ -114,8 +119,15 @@ class ElementFiller {
     // 点击输入框触发下拉框
     try {
       const rect = element.getBoundingClientRect();
-      await this.debugger.attachDebugger();
-      await this.debugger.click(rect.left + rect.width / 2, rect.top + rect.height / 2);
+      if (this.chromeDebugger) {
+        await this.chromeDebugger.attachDebugger();
+        await this.chromeDebugger.click(rect.left + rect.width / 2, rect.top + rect.height / 2);
+      } else {
+        element.click();
+        if (this.options.triggerClickEvents) {
+          this.fireEvents(element);
+        }
+      }
     } catch (error) {
       console.error("Failed to click using debugger, falling back to events", error);
       element.click();
@@ -173,7 +185,11 @@ class ElementFiller {
           clickPromises.push(
             sleep(50).then(async () => {
               try {
-                await this.debugger.click(rect.left + rect.width / 2, rect.top + rect.height / 2);
+                if (this.chromeDebugger) {
+                  await this.chromeDebugger.click(rect.left + rect.width / 2, rect.top + rect.height / 2);
+                } else {
+                  option.click();
+                }
               } catch (error) {
                 console.error("Failed to click using debugger, falling back to events", error);
                 option.click();
@@ -192,7 +208,11 @@ class ElementFiller {
       const rect = option.getBoundingClientRect();
       await sleep(50);
       try {
-        await this.debugger.click(rect.left + rect.width / 2, rect.top + rect.height / 2);
+        if (this.chromeDebugger) {
+          await this.chromeDebugger.click(rect.left + rect.width / 2, rect.top + rect.height / 2);
+        } else {
+          option.click();
+        }
       } catch (error) {
         console.error("Failed to click using debugger, falling back to events", error);
         option.click();
@@ -661,21 +681,21 @@ class ElementFiller {
 
         // docassemble version of this selector:
         /*
-        if (this.isAnyMatch(this.getElementName(element), this.options.agreeTermsFields)) {
-          let label: HTMLElement = element.nextElementSibling as HTMLElement;
-          if (label) {
-            label.click();
-          }
-          if (element.value && element.value == "false") {
-            element.value = "true";
-          }
-        } else {
-          let label: HTMLElement = element.nextElementSibling as HTMLElement;
-          if (label) {
-            label.click();
-          }
-        }
-        */
+    if (this.isAnyMatch(this.getElementName(element), this.options.agreeTermsFields)) {
+      let label: HTMLElement = element.nextElementSibling as HTMLElement;
+      if (label) {
+        label.click();
+      }
+      if (element.value && element.value == "false") {
+        element.value = "true";
+      }
+    } else {
+      let label: HTMLElement = element.nextElementSibling as HTMLElement;
+      if (label) {
+        label.click();
+      }
+    }
+    */
 
         break;
       }
@@ -1082,7 +1102,9 @@ class ElementFiller {
   }
 
   public async destroy(): Promise<void> {
-    await this.debugger.destroy();
+    if (this.chromeDebugger) {
+      await this.chromeDebugger.destroy();
+    }
   }
 }
 

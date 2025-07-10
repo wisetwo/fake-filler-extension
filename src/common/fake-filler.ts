@@ -1,3 +1,5 @@
+import ChromeDebugger from "./chrome-debugger";
+
 import ElementFiller from "src/common/element-filler";
 import { IFakeFillerOptions } from "src/types";
 
@@ -9,9 +11,11 @@ class FakeFiller {
   private readonly selectInputMultipleClass = "t-select-input--multiple";
   private readonly selectInputDropdownClass = "t-select__dropdown";
   private readonly selectInputDropdownOptionClassList = ["t-select-option"];
+  private chromeDebugger: ChromeDebugger;
 
   constructor(options: IFakeFillerOptions, profileIndex = -1) {
-    this.elementFiller = new ElementFiller(options, profileIndex);
+    this.chromeDebugger = new ChromeDebugger();
+    this.elementFiller = new ElementFiller(options, profileIndex, this.chromeDebugger);
     this.urlMatchesToBlock = options.urlMatchesToBlock;
   }
 
@@ -71,42 +75,48 @@ class FakeFiller {
       return;
     }
 
-    const delay = (ms: number): Promise<void> =>
-      new Promise((resolve) => {
-        setTimeout(resolve, ms);
-      });
+    try {
+      await this.chromeDebugger.attachDebugger();
 
-    // 获取所有需要填充的元素
-    const fillableElements = [
-      ...Array.from(container.querySelectorAll("input:not(:disabled):not([readonly])")),
-      ...Array.from(container.querySelectorAll("textarea:not(:disabled):not([readonly])")),
-      ...Array.from(container.querySelectorAll("select:not(:disabled):not([readonly])")),
-      ...Array.from(container.querySelectorAll("[contenteditable]")),
-    ];
+      const delay = (ms: number): Promise<void> =>
+        new Promise((resolve) => {
+          setTimeout(resolve, ms);
+        });
 
-    type FillElementFunction = (element: Element) => Promise<void>;
+      // 获取所有需要填充的元素
+      const fillableElements = [
+        ...Array.from(container.querySelectorAll("input:not(:disabled):not([readonly])")),
+        ...Array.from(container.querySelectorAll("textarea:not(:disabled):not([readonly])")),
+        ...Array.from(container.querySelectorAll("select:not(:disabled):not([readonly])")),
+        ...Array.from(container.querySelectorAll("[contenteditable]")),
+      ];
 
-    // 创建一个填充单个元素的函数
-    const fillElement: FillElementFunction = async (element) => {
-      const tagName = element.tagName.toLowerCase();
+      type FillElementFunction = (element: Element) => Promise<void>;
 
-      if (tagName === "input") {
-        await this.handleInputElement(element as HTMLInputElement);
-      } else if (tagName === "textarea") {
-        this.elementFiller.fillTextAreaElement(element as HTMLTextAreaElement);
-      } else if (tagName === "select") {
-        this.elementFiller.fillSelectElement(element as HTMLSelectElement);
-      } else if ((element as HTMLElement).isContentEditable) {
-        this.elementFiller.fillContentEditableElement(element as HTMLElement);
-      }
-    };
+      // 创建一个填充单个元素的函数
+      const fillElement: FillElementFunction = async (element) => {
+        const tagName = element.tagName.toLowerCase();
 
-    // 串行处理所有元素
-    await fillableElements.reduce(async (promise, element) => {
-      await promise;
-      await fillElement(element);
-      await delay(200); // 每个元素处理完后等待200ms
-    }, Promise.resolve());
+        if (tagName === "input") {
+          await this.handleInputElement(element as HTMLInputElement);
+        } else if (tagName === "textarea") {
+          this.elementFiller.fillTextAreaElement(element as HTMLTextAreaElement);
+        } else if (tagName === "select") {
+          this.elementFiller.fillSelectElement(element as HTMLSelectElement);
+        } else if ((element as HTMLElement).isContentEditable) {
+          this.elementFiller.fillContentEditableElement(element as HTMLElement);
+        }
+      };
+
+      // 串行处理所有元素
+      await fillableElements.reduce(async (promise, element) => {
+        await promise;
+        await fillElement(element);
+        await delay(200); // 每个元素处理完后等待200ms
+      }, Promise.resolve());
+    } finally {
+      await this.chromeDebugger.destroy();
+    }
   }
 
   public setClickedElement(element: HTMLElement | undefined): void {
@@ -114,7 +124,12 @@ class FakeFiller {
   }
 
   public async fillAllInputs(): Promise<void> {
-    await this.fillAllElements(document);
+    try {
+      await this.chromeDebugger.attachDebugger();
+      await this.fillAllElements(document);
+    } finally {
+      await this.chromeDebugger.destroy();
+    }
   }
 
   public async fillThisInput(): Promise<void> {
@@ -122,23 +137,27 @@ class FakeFiller {
       return;
     }
 
-    const element = this.clickedElement || document.activeElement;
+    try {
+      await this.chromeDebugger.attachDebugger();
+      const element = this.clickedElement || document.activeElement;
 
-    if (element) {
-      const tagName = element.tagName.toLowerCase();
+      if (element) {
+        const tagName = element.tagName.toLowerCase();
 
-      if (tagName === "input") {
-        await this.handleInputElement(element as HTMLInputElement);
-      } else if (tagName === "textarea") {
-        this.elementFiller.fillTextAreaElement(element as HTMLTextAreaElement);
-      } else if (tagName === "select") {
-        this.elementFiller.fillSelectElement(element as HTMLSelectElement);
-      } else if ((element as HTMLElement).isContentEditable) {
-        this.elementFiller.fillContentEditableElement(element as HTMLElement);
+        if (tagName === "input") {
+          await this.handleInputElement(element as HTMLInputElement);
+        } else if (tagName === "textarea") {
+          this.elementFiller.fillTextAreaElement(element as HTMLTextAreaElement);
+        } else if (tagName === "select") {
+          this.elementFiller.fillSelectElement(element as HTMLSelectElement);
+        } else if ((element as HTMLElement).isContentEditable) {
+          this.elementFiller.fillContentEditableElement(element as HTMLElement);
+        }
       }
+    } finally {
+      await this.chromeDebugger.destroy();
+      this.setClickedElement(undefined);
     }
-
-    this.setClickedElement(undefined);
   }
 
   public async fillThisForm(): Promise<void> {
@@ -146,17 +165,21 @@ class FakeFiller {
       return;
     }
 
-    const element = this.clickedElement || document.activeElement;
+    try {
+      await this.chromeDebugger.attachDebugger();
+      const element = this.clickedElement || document.activeElement;
 
-    if (element && element.tagName.toLowerCase() !== "body") {
-      const form = element.closest("form");
+      if (element && element.tagName.toLowerCase() !== "body") {
+        const form = element.closest("form");
 
-      if (form) {
-        await this.fillAllElements(form);
+        if (form) {
+          await this.fillAllElements(form);
+        }
       }
+    } finally {
+      await this.chromeDebugger.destroy();
+      this.setClickedElement(undefined);
     }
-
-    this.setClickedElement(undefined);
   }
 }
 
