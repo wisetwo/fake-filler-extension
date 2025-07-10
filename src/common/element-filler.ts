@@ -79,12 +79,12 @@ class ElementFiller {
   //   }
   // }
 
-  public async clickOnBlankArea(): Promise<void> {
+  public async clickAtBlankArea(): Promise<void> {
     const x = 10;
     const y = Math.floor(window.innerHeight / 2 - 100) + 50;
-    await sleep(1000);
+    await sleep(200);
     await this.simulateClick(document.body, x, y);
-    await sleep(1000);
+    await sleep(200);
   }
 
   private async waitForElementWithData(
@@ -192,20 +192,32 @@ class ElementFiller {
       // 多选模式：随机选择1-3个选项
       const numberOfOptionsToSelect = this.generator.randomNumber(1, Math.min(3, visibleOptions.length));
       console.log("numberOfOptionsToSelect->", numberOfOptionsToSelect);
-      const selectedIndices = new Set<number>();
 
-      while (selectedIndices.size < numberOfOptionsToSelect) {
-        const randomIndex = this.generator.randomNumber(0, visibleOptions.length - 1);
-        if (!selectedIndices.has(randomIndex)) {
-          selectedIndices.add(randomIndex);
-          const option = visibleOptions[randomIndex] as HTMLElement;
-          console.log("index to click->", randomIndex);
+      // 生成不重复的随机索引数组
+      const selectedIndices: number[] = [];
+      const availableIndices = Array.from({ length: visibleOptions.length }, (_, i) => i);
 
-          await sleep(200);
-          await this.simulateClick(option);
-          // 关闭
-          await this.clickOnBlankArea();
-          // 再次打开
+      // 随机打乱数组并取前 numberOfOptionsToSelect 个
+      for (let i = availableIndices.length - 1; i > 0; i -= 1) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [availableIndices[i], availableIndices[j]] = [availableIndices[j], availableIndices[i]];
+      }
+      selectedIndices.push(...availableIndices.slice(0, numberOfOptionsToSelect));
+
+      console.log("selectedIndices->", selectedIndices);
+
+      // 依次点击选中的选项
+      for (let i = 0; i < selectedIndices.length; i += 1) {
+        const optionIndex = selectedIndices[i];
+        const option = visibleOptions[optionIndex] as HTMLElement;
+        console.log(`clicking option ${i + 1}/${selectedIndices.length}, index: ${optionIndex}`);
+
+        await sleep(200);
+        await this.simulateClick(option);
+        // 关闭
+        await this.clickAtBlankArea();
+        // 再次打开（如果不是最后一个选项）
+        if (i < selectedIndices.length - 1) {
           await this.simulateClick(element);
         }
       }
@@ -217,7 +229,7 @@ class ElementFiller {
       await sleep(50);
       try {
         await this.simulateClick(option);
-        await this.clickOnBlankArea();
+        await this.clickAtBlankArea();
       } catch (error) {
         console.error("Failed to click using page operator, falling back to events", error);
         option.click();
@@ -229,7 +241,7 @@ class ElementFiller {
     // 如果是多选，需要点击输入框来关闭下拉框
     // if (selected && isMultiSelect) {
     //   await sleep(50);
-    //   await this.clickOnBlankArea();
+    //   await this.clickAtBlankArea();
     // }
   }
 
