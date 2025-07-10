@@ -86,23 +86,39 @@ async function handleMessage(message: any): Promise<any> {
       case "ATTACH_DEBUGGER": {
         const { tabId } = message;
         console.log("Attaching debugger to tab:", tabId);
-        await chrome.debugger.attach({ tabId }, "1.3");
-        console.log("Successfully attached debugger to tab:", tabId);
-        return { success: true };
+        try {
+          await chrome.debugger.attach({ tabId }, "1.3");
+          console.log("Successfully attached debugger to tab:", tabId);
+          return { success: true };
+        } catch (error) {
+          console.error("Failed to attach debugger:", error);
+          throw error;
+        }
       }
       case "DETACH_DEBUGGER": {
         const { tabId } = message;
         console.log("Detaching debugger from tab:", tabId);
-        await chrome.debugger.detach({ tabId });
-        console.log("Successfully detached debugger from tab:", tabId);
-        return { success: true };
+        try {
+          await chrome.debugger.detach({ tabId });
+          console.log("Successfully detached debugger from tab:", tabId);
+          return { success: true };
+        } catch (error) {
+          // maybe tab is closed ?
+          console.warn("Failed to detach debugger:", error);
+          return { success: true }; // 即使失败也返回成功，因为可能是tab已经关闭
+        }
       }
       case "SEND_DEBUGGER_COMMAND": {
         const { tabId, command, params } = message;
         console.log("Sending debugger command:", command, "to tab:", tabId, "with params:", params);
-        const response = await chrome.debugger.sendCommand({ tabId }, command, params);
-        console.log("Successfully sent debugger command:", command, "response:", response);
-        return { success: true, response };
+        try {
+          const response = await chrome.debugger.sendCommand({ tabId }, command, params);
+          console.log("Successfully sent debugger command:", command, "response:", response);
+          return { success: true, response };
+        } catch (error) {
+          console.error("Failed to send debugger command:", error);
+          throw error;
+        }
       }
       default: {
         throw new Error(`Unknown message type: ${message.type}`);

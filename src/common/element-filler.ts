@@ -47,10 +47,13 @@ class ElementFiller {
     });
   }
 
-  private async simulateClick(element: HTMLElement, x: number, y: number): Promise<void> {
+  private async simulateClick(element: HTMLElement, x?: number, y?: number): Promise<void> {
     if (this.pageOperator) {
+      const rect = element.getBoundingClientRect();
+      const finalX = x ?? rect.left + rect.width / 2;
+      const finalY = y ?? rect.top + rect.height / 2;
       try {
-        await this.pageOperator.click(x, y);
+        await this.pageOperator.click(finalX, finalY);
       } catch (error) {
         console.error("Failed to click using page operator, falling back to events", error);
         element.click();
@@ -122,16 +125,7 @@ class ElementFiller {
 
     // 点击输入框触发下拉框
     try {
-      const rect = element.getBoundingClientRect();
-      if (this.pageOperator) {
-        await this.pageOperator.initialize();
-        await this.pageOperator.click(rect.left + rect.width / 2, rect.top + rect.height / 2);
-      } else {
-        element.click();
-        if (this.options.triggerClickEvents) {
-          this.fireEvents(element);
-        }
-      }
+      await this.simulateClick(element);
     } catch (error) {
       console.error("Failed to click using page operator, falling back to events", error);
       element.click();
@@ -184,20 +178,10 @@ class ElementFiller {
         if (!selectedIndices.has(randomIndex)) {
           selectedIndices.add(randomIndex);
           const option = options[randomIndex] as HTMLElement;
-          const rect = option.getBoundingClientRect();
           console.log("index to click->", randomIndex);
           clickPromises.push(
             sleep(50).then(async () => {
-              try {
-                if (this.pageOperator) {
-                  await this.pageOperator.click(rect.left + rect.width / 2, rect.top + rect.height / 2);
-                } else {
-                  option.click();
-                }
-              } catch (error) {
-                console.error("Failed to click using page operator, falling back to events", error);
-                option.click();
-              }
+              this.simulateClick(option);
             })
           );
         }
@@ -209,14 +193,9 @@ class ElementFiller {
       // 单选模式：随机选择一个选项
       const randomIndex = this.generator.randomNumber(0, options.length - 1);
       const option = options[randomIndex] as HTMLElement;
-      const rect = option.getBoundingClientRect();
       await sleep(50);
       try {
-        if (this.pageOperator) {
-          await this.pageOperator.click(rect.left + rect.width / 2, rect.top + rect.height / 2);
-        } else {
-          option.click();
-        }
+        this.simulateClick(option);
       } catch (error) {
         console.error("Failed to click using page operator, falling back to events", error);
         option.click();

@@ -146,7 +146,10 @@ export default class ChromeExtensionProxyPage implements AbstractPage {
 
         // detach any debugger attached to the tab
         console.log("attaching debugger", currentTabId);
-        await chrome.debugger.attach({ tabId: currentTabId }, "1.3");
+        await this.sendMessage({
+          type: "ATTACH_DEBUGGER",
+          tabId: currentTabId,
+        });
         // wait util the debugger banner in Chrome appears
         await sleep(500);
 
@@ -209,7 +212,10 @@ export default class ChromeExtensionProxyPage implements AbstractPage {
     }
 
     try {
-      await chrome.debugger.detach({ tabId: tabIdToDetach });
+      await this.sendMessage({
+        type: "DETACH_DEBUGGER",
+        tabId: tabIdToDetach,
+      });
     } catch (error) {
       // maybe tab is closed ?
       console.warn("Failed to detach debugger", error);
@@ -220,22 +226,21 @@ export default class ChromeExtensionProxyPage implements AbstractPage {
   private async enableWaterFlowAnimation() {
     // limit open page in new tab
     if (this.forceSameTabNavigation) {
-      await chrome.debugger.sendCommand({ tabId: this.tabIdOfDebuggerAttached! }, "Runtime.evaluate", {
+      await this.sendCommandToDebugger("Runtime.evaluate", {
         expression: limitOpenNewTabScript,
       });
     }
 
     const script = await injectWaterFlowAnimation();
     // we will call this function in sendCommandToDebugger, so we have to use the chrome.debugger.sendCommand
-    await chrome.debugger.sendCommand({ tabId: this.tabIdOfDebuggerAttached! }, "Runtime.evaluate", {
+    await this.sendCommandToDebugger("Runtime.evaluate", {
       expression: script,
     });
   }
 
   private async disableWaterFlowAnimation(tabId: number) {
     const script = await injectStopWaterFlowAnimation();
-
-    await chrome.debugger.sendCommand({ tabId }, "Runtime.evaluate", {
+    await this.sendCommandToDebugger("Runtime.evaluate", {
       expression: script,
     });
   }
@@ -250,11 +255,13 @@ export default class ChromeExtensionProxyPage implements AbstractPage {
 
     // wo don't have to await it
     this.enableWaterFlowAnimation();
-    return (await chrome.debugger.sendCommand(
-      { tabId: this.tabIdOfDebuggerAttached! },
+    const response = await this.sendMessage<{ success: boolean; response: ResponseType }>({
+      type: "SEND_DEBUGGER_COMMAND",
+      tabId: this.tabIdOfDebuggerAttached,
       command,
-      params as any
-    )) as ResponseType;
+      params,
+    });
+    return response.response;
   }
 
   private async getPageContentByCDP() {

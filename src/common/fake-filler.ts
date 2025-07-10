@@ -84,12 +84,14 @@ class FakeFiller {
   }
 
   private async fillAllElements(container: Document | HTMLElement): Promise<void> {
+    console.log("# fillAllElements", container);
     if (this.urlMatchesBlockList()) {
       return;
     }
 
     try {
-      const pageOperatorInstance = await this.getPageOperator();
+      await this.getPageOperator();
+      console.log("got operator");
 
       const delay = (ms: number): Promise<void> =>
         new Promise((resolve) => {
@@ -140,7 +142,7 @@ class FakeFiller {
 
   public async fillAllInputs(): Promise<void> {
     try {
-      const pageOperatorInstance = await this.getPageOperator();
+      await this.getPageOperator();
       await this.fillAllElements(document);
     } finally {
       if (this.pageOperator) {
@@ -153,9 +155,10 @@ class FakeFiller {
     if (this.urlMatchesBlockList()) {
       return;
     }
+    console.log("# fillThisInput");
 
     try {
-      const pageOperatorInstance = await this.getPageOperator();
+      await this.getPageOperator();
       const element = this.clickedElement || document.activeElement;
 
       if (element) {
@@ -185,7 +188,7 @@ class FakeFiller {
     }
 
     try {
-      const pageOperatorInstance = await this.getPageOperator();
+      await this.getPageOperator();
       const element = this.clickedElement || document.activeElement;
 
       if (element && element.tagName.toLowerCase() !== "body") {
