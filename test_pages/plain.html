@@ -4,11 +4,11 @@
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Auto Filler Test</title>
+    <title>Fake Filler 2 Test</title>
     <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css"
       rel="stylesheet"
-      integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+      integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z"
       crossorigin="anonymous"
     />
     <style>
@@ -43,7 +43,7 @@
   </head>
   <body>
     <div class="container">
-      <h1>Auto Filler Test</h1>
+      <h1>Fake Filler 2 Test</h1>
       <form id="form" class="form-horizontal">
         <fieldset>
           <legend>Inputs with type='text'</legend>
@@ -529,29 +529,5 @@
       <div id="form-data"></div>
       <br />
     </div>
-
-    <script>
-      document.addEventListener('DOMContentLoaded', function() {
-        // Serialize form
-        document.getElementById('serialize-form').addEventListener('click', function() {
-          const form = document.getElementById('form');
-          const formData = new FormData(form);
-          const serialized = Array.from(formData.entries())
-            .map(([key, value]) => `${key} = ${value}`)
-            .join('<br>');
-          document.getElementById('form-data').innerHTML = serialized;
-        });
-
-        // Hide element
-        document.getElementById('js-hide').style.display = 'none';
-
-        // Checkbox change event
-        document.querySelectorAll('input[type="checkbox"]').forEach(function(checkbox) {
-          checkbox.addEventListener('change', function() {
-            console.log('Checkbox changed:', this.checked);
-          });
-        });
-      });
-    </script>
   </body>
 </html>
