@@ -47,14 +47,30 @@ export default class ChromeExtensionProxyPage implements AbstractPage {
   }
 
   private async sendMessage<T>(message: any): Promise<T> {
+    console.log("Sending message:", message.type);
     return new Promise((resolve, reject) => {
+      // 添加超时机制
+      const timeout = setTimeout(() => {
+        reject(new Error(`Message timeout after 10 seconds: ${message.type}`));
+      }, 10000);
+
       chrome.runtime.sendMessage(message, (response) => {
+        clearTimeout(timeout);
+        console.log("Received response for:", message.type, response);
+
         if (chrome.runtime.lastError) {
+          console.error("Runtime error:", chrome.runtime.lastError);
           reject(chrome.runtime.lastError);
           return;
         }
-        if (response.error) {
+        if (response && response.error) {
+          console.error("Response error:", response.error);
           reject(new Error(response.error));
+          return;
+        }
+        if (!response) {
+          console.error("No response received for:", message.type);
+          reject(new Error("No response received"));
           return;
         }
         resolve(response as T);
@@ -150,12 +166,17 @@ export default class ChromeExtensionProxyPage implements AbstractPage {
           type: "ATTACH_DEBUGGER",
           tabId: currentTabId,
         });
+        console.log("debugger attached, waiting 500ms");
         // wait util the debugger banner in Chrome appears
         await sleep(500);
 
         this.tabIdOfDebuggerAttached = currentTabId;
+        console.log("starting to enable water flow animation");
 
-        await this.enableWaterFlowAnimation();
+        // 不要在这里调用 enableWaterFlowAnimation，避免递归死锁
+        // await this.enableWaterFlowAnimation();
+        console.log("debugger attached successfully, skipping water flow animation to avoid recursion");
+        // console.log("water flow animation enabled successfully");
       } catch (e) {
         console.error("Failed to attach debugger", e);
         error = e as Error;
@@ -224,18 +245,31 @@ export default class ChromeExtensionProxyPage implements AbstractPage {
   }
 
   private async enableWaterFlowAnimation() {
-    // limit open page in new tab
-    if (this.forceSameTabNavigation) {
-      await this.sendCommandToDebugger("Runtime.evaluate", {
-        expression: limitOpenNewTabScript,
-      });
-    }
+    console.log("enableWaterFlowAnimation: starting");
+    try {
+      // limit open page in new tab
+      if (this.forceSameTabNavigation) {
+        console.log("enableWaterFlowAnimation: forceSameTabNavigation is true, executing limitOpenNewTabScript");
+        await this.sendCommandToDebugger("Runtime.evaluate", {
+          expression: limitOpenNewTabScript,
+        });
+        console.log("enableWaterFlowAnimation: limitOpenNewTabScript executed");
+      }
 
-    const script = await injectWaterFlowAnimation();
-    // we will call this function in sendCommandToDebugger, so we have to use the chrome.debugger.sendCommand
-    await this.sendCommandToDebugger("Runtime.evaluate", {
-      expression: script,
-    });
+      console.log("enableWaterFlowAnimation: getting water flow animation script");
+      const script = await injectWaterFlowAnimation();
+      console.log("enableWaterFlowAnimation: got script, length:", script.length);
+
+      console.log("enableWaterFlowAnimation: sending script to debugger");
+      // we will call this function in sendCommandToDebugger, so we have to use the chrome.debugger.sendCommand
+      await this.sendCommandToDebugger("Runtime.evaluate", {
+        expression: script,
+      });
+      console.log("enableWaterFlowAnimation: script executed successfully");
+    } catch (error) {
+      console.error("enableWaterFlowAnimation: error occurred:", error);
+      throw error;
+    }
   }
 
   private async disableWaterFlowAnimation(tabId: number) {
@@ -249,18 +283,39 @@ export default class ChromeExtensionProxyPage implements AbstractPage {
     command: string,
     params: RequestType
   ): Promise<ResponseType> {
+    console.log("sendCommandToDebugger: starting, command:", command);
+
+    console.log("sendCommandToDebugger: calling attachDebugger");
     await this.attachDebugger();
+    console.log("sendCommandToDebugger: attachDebugger completed");
 
     assert(this.tabIdOfDebuggerAttached, "Debugger is not attached");
+    console.log("sendCommandToDebugger: debugger attached to tab:", this.tabIdOfDebuggerAttached);
 
-    // wo don't have to await it
-    this.enableWaterFlowAnimation();
+    // 如果是第一次发送命令且不是 Runtime.evaluate，则初始化水流动画
+    // 避免在 enableWaterFlowAnimation 中的 Runtime.evaluate 调用时再次初始化
+    const isWaterFlowCommand =
+      command === "Runtime.evaluate" &&
+      typeof params === "object" &&
+      params &&
+      "expression" in params &&
+      (params.expression as string).includes("midsceneWaterFlowAnimation");
+
+    if (!isWaterFlowCommand) {
+      console.log("sendCommandToDebugger: this is not a water flow command, will initialize if needed");
+      // 这里可以添加水流动画初始化逻辑，但要避免递归
+    }
+
+    console.log("sendCommandToDebugger: sending SEND_DEBUGGER_COMMAND message");
     const response = await this.sendMessage<{ success: boolean; response: ResponseType }>({
       type: "SEND_DEBUGGER_COMMAND",
       tabId: this.tabIdOfDebuggerAttached,
       command,
       params,
     });
+    console.log("sendCommandToDebugger: received response:", response);
+
+    console.log("sendCommandToDebugger: returning response.response");
     return response.response;
   }
 

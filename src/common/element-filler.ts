@@ -48,6 +48,7 @@ class ElementFiller {
   }
 
   private async simulateClick(element: HTMLElement, x?: number, y?: number): Promise<void> {
+    console.log("-simulateClick-", element, x, y);
     if (this.pageOperator) {
       const rect = element.getBoundingClientRect();
       const finalX = x ?? rect.left + rect.width / 2;
