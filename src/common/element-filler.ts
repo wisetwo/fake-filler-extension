@@ -164,13 +164,13 @@ class ElementFiller {
         return foundOptions;
       }
       const newOptions = Array.from(dropdownElement.querySelectorAll(`.${optionClass}:not(.disabled)`));
-      console.log(`尝试使用类名 ${optionClass} 查找选项:`, newOptions);
+      console.log(`try to find options with ${optionClass}:`, newOptions);
       return newOptions;
     }, []);
     const visibleOptions = options.filter((option) => this.isElementVisible(option as FillableElement));
 
     if (visibleOptions.length === 0) {
-      console.log("未找到任何可见选项");
+      console.log("no visible options");
       return;
     }
 
@@ -255,14 +255,62 @@ class ElementFiller {
     }
     // END Docassemble specific code
 
+    // 检查基本尺寸
     if (!element.offsetHeight && !element.offsetWidth) {
       return false;
     }
-    const { visibility } = window.getComputedStyle(element);
-    console.log("element visibility ->", visibility);
-    if (visibility === "hidden") {
+
+    // 检查 CSS 样式
+    const computedStyle = window.getComputedStyle(element);
+    if (computedStyle.visibility === "hidden" || computedStyle.display === "none" || computedStyle.opacity === "0") {
       return false;
     }
+
+    // 使用 getBoundingClientRect 检查元素是否真正可见
+    const rect = element.getBoundingClientRect();
+
+    // 检查元素是否有实际的尺寸
+    // TODO 确认是否会误伤
+    if (rect.width === 0 || rect.height === 0) {
+      return false;
+    }
+
+    // 检查元素是否在视口内
+    const isInViewport =
+      rect.top < window.innerHeight && rect.bottom > 0 && rect.left < window.innerWidth && rect.right > 0;
+
+    if (!isInViewport) {
+      return false;
+    }
+
+    // 检查元素是否被滚动容器裁剪
+    // 遍历所有父级元素，检查是否有滚动容器裁剪了当前元素
+    let parent = element.parentElement;
+    while (parent && parent !== document.body) {
+      const parentStyle = window.getComputedStyle(parent);
+      const hasOverflow =
+        parentStyle.overflow !== "visible" ||
+        parentStyle.overflowX !== "visible" ||
+        parentStyle.overflowY !== "visible";
+
+      if (hasOverflow) {
+        const parentRect = parent.getBoundingClientRect();
+        // 检查元素是否被父级滚动容器完全裁剪
+        const isClippedByParent =
+          rect.bottom <= parentRect.top ||
+          rect.top >= parentRect.bottom ||
+          rect.right <= parentRect.left ||
+          rect.left >= parentRect.right;
+
+        if (isClippedByParent) {
+          console.log("element clipped by scroll container ->", parent);
+          return false;
+        }
+      }
+      parent = parent.parentElement;
+    }
+
+    console.log("element visibility -> visible");
     return true;
   }
 

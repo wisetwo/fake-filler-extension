@@ -38,7 +38,7 @@ class FakeFiller {
 
   private async handleInputElement(element: HTMLInputElement): Promise<void> {
     const { isWrappedSelect, isMultiSelect } = this.checkWrappedSelect(element);
-    console.log("~                   ~");
+    console.log("~        handle input         ~");
     console.log("# handleInputElement", element);
     console.log("isWrappedSelect, isMultiSelect", isWrappedSelect, isMultiSelect);
 
@@ -108,7 +108,8 @@ class FakeFiller {
 
       // 获取所有需要填充的元素
       const fillableElements = [
-        ...Array.from(container.querySelectorAll("input:not(:disabled):not([readonly])")),
+        // 下拉框可能是readonly的，看能否优化 TODO
+        ...Array.from(container.querySelectorAll("input:not(:disabled)")),
         ...Array.from(container.querySelectorAll("textarea:not(:disabled):not([readonly])")),
         ...Array.from(container.querySelectorAll("select:not(:disabled):not([readonly])")),
         ...Array.from(container.querySelectorAll("[contenteditable]")),
