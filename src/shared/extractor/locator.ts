@@ -137,7 +137,8 @@ export function getElementInfoByXpath(xpath: string): ElementInfo | null {
     const isVisible = isElementPartiallyInViewport(rect, window, document, 1);
 
     if (!isVisible) {
-      node.scrollIntoView({ behavior: "instant", block: "center" });
+      // TODO  Type '"instant"' is not assignable to type 'ScrollBehavior | undefined' ?
+      node.scrollIntoView({ behavior: "instant" as ScrollBehavior, block: "center" });
     }
   }
 

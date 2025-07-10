@@ -1,6 +1,6 @@
-import ChromeDebugger from "src/common/chrome/chrome-debugger";
-
 import ElementFiller from "src/common/element-filler";
+import PageOperator from "src/common/page-operator";
+
 import { IFakeFillerOptions } from "src/types";
 
 class FakeFiller {
@@ -11,11 +11,11 @@ class FakeFiller {
   private readonly selectInputMultipleClass = "t-select-input--multiple";
   private readonly selectInputDropdownClass = "t-select__dropdown";
   private readonly selectInputDropdownOptionClassList = ["t-select-option"];
-  private chromeDebugger: ChromeDebugger;
+  private pageOperator: PageOperator;
 
   constructor(options: IFakeFillerOptions, profileIndex = -1) {
-    this.chromeDebugger = new ChromeDebugger();
-    this.elementFiller = new ElementFiller(options, profileIndex, this.chromeDebugger);
+    this.pageOperator = new PageOperator();
+    this.elementFiller = new ElementFiller(options, profileIndex, this.pageOperator);
     this.urlMatchesToBlock = options.urlMatchesToBlock;
   }
 
@@ -70,15 +70,16 @@ class FakeFiller {
     return false;
   }
 
-  private async getChromeDebugger(): Promise<ChromeDebugger> {
+  private async getPageOperator(): Promise<PageOperator> {
     try {
-      await this.chromeDebugger.attachDebugger();
-      return this.chromeDebugger;
+      await this.pageOperator.initialize();
+      return this.pageOperator;
     } catch (error) {
       // 如果出现错误，创建新的实例
-      this.chromeDebugger = new ChromeDebugger();
-      this.elementFiller.updateChromeDebugger(this.chromeDebugger);
-      return this.chromeDebugger;
+      this.pageOperator = new PageOperator();
+      this.elementFiller.updatePageOperator(this.pageOperator);
+      await this.pageOperator.initialize();
+      return this.pageOperator;
     }
   }
 
@@ -88,8 +89,7 @@ class FakeFiller {
     }
 
     try {
-      const debuggerInstance = await this.getChromeDebugger();
-      await debuggerInstance.attachDebugger();
+      const pageOperatorInstance = await this.getPageOperator();
 
       const delay = (ms: number): Promise<void> =>
         new Promise((resolve) => {
@@ -128,8 +128,8 @@ class FakeFiller {
         await delay(200); // 每个元素处理完后等待200ms
       }, Promise.resolve());
     } finally {
-      if (this.chromeDebugger) {
-        await this.chromeDebugger.destroy();
+      if (this.pageOperator) {
+        await this.pageOperator.destroy();
       }
     }
   }
@@ -140,12 +140,11 @@ class FakeFiller {
 
   public async fillAllInputs(): Promise<void> {
     try {
-      const debuggerInstance = await this.getChromeDebugger();
-      await debuggerInstance.attachDebugger();
+      const pageOperatorInstance = await this.getPageOperator();
       await this.fillAllElements(document);
     } finally {
-      if (this.chromeDebugger) {
-        await this.chromeDebugger.destroy();
+      if (this.pageOperator) {
+        await this.pageOperator.destroy();
       }
     }
   }
@@ -156,8 +155,7 @@ class FakeFiller {
     }
 
     try {
-      const debuggerInstance = await this.getChromeDebugger();
-      await debuggerInstance.attachDebugger();
+      const pageOperatorInstance = await this.getPageOperator();
       const element = this.clickedElement || document.activeElement;
 
       if (element) {
@@ -174,8 +172,8 @@ class FakeFiller {
         }
       }
     } finally {
-      if (this.chromeDebugger) {
-        await this.chromeDebugger.destroy();
+      if (this.pageOperator) {
+        await this.pageOperator.destroy();
       }
       this.setClickedElement(undefined);
     }
@@ -187,8 +185,7 @@ class FakeFiller {
     }
 
     try {
-      const debuggerInstance = await this.getChromeDebugger();
-      await debuggerInstance.attachDebugger();
+      const pageOperatorInstance = await this.getPageOperator();
       const element = this.clickedElement || document.activeElement;
 
       if (element && element.tagName.toLowerCase() !== "body") {
@@ -199,8 +196,8 @@ class FakeFiller {
         }
       }
     } finally {
-      if (this.chromeDebugger) {
-        await this.chromeDebugger.destroy();
+      if (this.pageOperator) {
+        await this.pageOperator.destroy();
       }
       this.setClickedElement(undefined);
     }

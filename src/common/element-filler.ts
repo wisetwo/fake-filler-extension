@@ -4,10 +4,9 @@ import cssesc from "cssesc";
 import moment from "moment";
 import RandExp from "randexp";
 
-import ChromeDebugger from "src/common/chrome/chrome-debugger";
-
 import DataGenerator from "src/common/data-generator";
 import { SanitizeText, DEFAULT_EMAIL_CUSTOM_FIELD, sleep } from "src/common/helpers";
+import PageOperator from "src/common/page-operator";
 import { IFakeFillerOptions, ICustomField, CustomFieldTypes } from "src/types";
 
 type FillableElement = HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement;
@@ -16,7 +15,7 @@ class ElementFiller {
   private generator: DataGenerator;
   private options: IFakeFillerOptions;
   private profileIndex: number;
-  private chromeDebugger?: ChromeDebugger;
+  private pageOperator?: PageOperator;
 
   private previousValue: string;
   private previousPassword: string;
@@ -24,11 +23,11 @@ class ElementFiller {
   private previousFirstName: string;
   private previousLastName: string;
 
-  constructor(options: IFakeFillerOptions, profileIndex = -1, chromeDebugger?: ChromeDebugger) {
+  constructor(options: IFakeFillerOptions, profileIndex = -1, pageOperator?: PageOperator) {
     this.options = options;
     this.profileIndex = profileIndex;
     this.generator = new DataGenerator();
-    this.chromeDebugger = chromeDebugger;
+    this.pageOperator = pageOperator;
 
     this.previousValue = "";
     this.previousPassword = "";
@@ -37,8 +36,8 @@ class ElementFiller {
     this.previousLastName = "";
   }
 
-  public updateChromeDebugger(chromeDebugger: ChromeDebugger): void {
-    this.chromeDebugger = chromeDebugger;
+  public updatePageOperator(pageOperator: PageOperator): void {
+    this.pageOperator = pageOperator;
   }
 
   private fireEvents(element: FillableElement): void {
@@ -49,11 +48,11 @@ class ElementFiller {
   }
 
   private async simulateClick(element: HTMLElement, x: number, y: number): Promise<void> {
-    if (this.chromeDebugger) {
+    if (this.pageOperator) {
       try {
-        await this.chromeDebugger.click(x, y);
+        await this.pageOperator.click(x, y);
       } catch (error) {
-        console.error("Failed to click using debugger, falling back to events", error);
+        console.error("Failed to click using page operator, falling back to events", error);
         element.click();
       }
     } else {
@@ -124,9 +123,9 @@ class ElementFiller {
     // 点击输入框触发下拉框
     try {
       const rect = element.getBoundingClientRect();
-      if (this.chromeDebugger) {
-        await this.chromeDebugger.attachDebugger();
-        await this.chromeDebugger.click(rect.left + rect.width / 2, rect.top + rect.height / 2);
+      if (this.pageOperator) {
+        await this.pageOperator.initialize();
+        await this.pageOperator.click(rect.left + rect.width / 2, rect.top + rect.height / 2);
       } else {
         element.click();
         if (this.options.triggerClickEvents) {
@@ -134,7 +133,7 @@ class ElementFiller {
         }
       }
     } catch (error) {
-      console.error("Failed to click using debugger, falling back to events", error);
+      console.error("Failed to click using page operator, falling back to events", error);
       element.click();
       if (this.options.triggerClickEvents) {
         this.fireEvents(element);
@@ -190,13 +189,13 @@ class ElementFiller {
           clickPromises.push(
             sleep(50).then(async () => {
               try {
-                if (this.chromeDebugger) {
-                  await this.chromeDebugger.click(rect.left + rect.width / 2, rect.top + rect.height / 2);
+                if (this.pageOperator) {
+                  await this.pageOperator.click(rect.left + rect.width / 2, rect.top + rect.height / 2);
                 } else {
                   option.click();
                 }
               } catch (error) {
-                console.error("Failed to click using debugger, falling back to events", error);
+                console.error("Failed to click using page operator, falling back to events", error);
                 option.click();
               }
             })
@@ -213,13 +212,13 @@ class ElementFiller {
       const rect = option.getBoundingClientRect();
       await sleep(50);
       try {
-        if (this.chromeDebugger) {
-          await this.chromeDebugger.click(rect.left + rect.width / 2, rect.top + rect.height / 2);
+        if (this.pageOperator) {
+          await this.pageOperator.click(rect.left + rect.width / 2, rect.top + rect.height / 2);
         } else {
           option.click();
         }
       } catch (error) {
-        console.error("Failed to click using debugger, falling back to events", error);
+        console.error("Failed to click using page operator, falling back to events", error);
         option.click();
       }
       selected = true;
@@ -1107,8 +1106,8 @@ class ElementFiller {
   }
 
   public async destroy(): Promise<void> {
-    if (this.chromeDebugger) {
-      await this.chromeDebugger.destroy();
+    if (this.pageOperator) {
+      await this.pageOperator.destroy();
     }
   }
 }

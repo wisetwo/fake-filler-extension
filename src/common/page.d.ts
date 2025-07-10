@@ -1,9 +1,10 @@
-import type { ElementTreeNode, PageType, Point, Size } from "@midscene/core";
-import type { ElementInfo } from "@midscene/shared/extractor";
 import type { KeyInput } from "puppeteer";
 
 // import type ChromeExtensionProxyPage from "../chrome/page";
 import type { AbstractPage } from "../page";
+
+import type { ElementInfo } from "src/shared/extractor";
+import type { ElementTreeNode, PageType, Point, Size } from "src/shared/types";
 // import type { StaticPage } from "../playground";
 // import type { PlaywrightWebPage } from "../playwright";
 // import type { PuppeteerWebPage } from "../puppeteer";
