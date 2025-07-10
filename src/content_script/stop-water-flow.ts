@@ -1,3 +1,3 @@
-if (typeof window.midsceneWaterFlowAnimation !== 'undefined') {
+if (typeof window.midsceneWaterFlowAnimation !== "undefined") {
   window.midsceneWaterFlowAnimation.disable();
 }

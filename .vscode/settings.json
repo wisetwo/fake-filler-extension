@@ -22,7 +22,7 @@
     "textboxes",
     "webextensions"
   ],
-  "editor.formatOnSave": true,
+  "editor.formatOnSave": false,
   "files.exclude": {
     "**/.git": true,
     "**/.crx": true,

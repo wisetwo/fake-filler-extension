@@ -64,7 +64,7 @@
     ],
     "no-use-before-define": "off",
     "@typescript-eslint/no-use-before-define": [
-      "error"
+      "off"
     ],
     "lines-between-class-members": [
       "error",
@@ -128,7 +128,7 @@
     ],
     "no-unused-vars": "off",
     "@typescript-eslint/no-unused-vars": [
-      "warn",
+      "off",
       {
         "argsIgnorePattern": "^_",
         "varsIgnorePattern": "^_",
@@ -142,6 +142,21 @@
     "default-param-last": "off",
     "react/function-component-definition": "off",
     "no-console": "off",
-    "react/no-unused-prop-types": "off"
+    "react/no-unused-prop-types": "off",
+    "import/prefer-default-export": "off",
+    "no-shadow": "off",
+    "no-underscore-dangle": "off",
+    "no-promise-executor-return": "off",
+    "no-bitwise": "off",
+    "no-await-in-loop": "off",
+    "no-restricted-syntax": "off",
+    "@typescript-eslint/no-non-null-assertion": "off",
+    "no-param-reassign": "off",
+    "no-plusplus": "off",
+    "no-restricted-globals": "off",
+    "@typescript-eslint/no-empty-function": "off",
+    "no-empty-function": "off",
+    "no-continue": "off",
+    "no-alert": "off"
   }
 }

@@ -1,7 +1,7 @@
 const midsceneWaterFlowAnimation = {
   styleElement: null as null | HTMLStyleElement,
 
-  mousePointerAttribute: 'data-water-flow-pointer',
+  mousePointerAttribute: "data-water-flow-pointer",
 
   lastCallTime: 0,
 
@@ -28,17 +28,13 @@ const midsceneWaterFlowAnimation = {
   showMousePointer(x: number, y: number) {
     this.enable(); // show water flow animation
     this.registerSelfCleaning();
-    const existingPointer = document.querySelector(
-      `div[${this.mousePointerAttribute}]`,
-    ) as HTMLDivElement | null;
+    const existingPointer = document.querySelector(`div[${this.mousePointerAttribute}]`) as HTMLDivElement | null;
 
     // Clear any existing timeouts to prevent race conditions
     if (existingPointer) {
-      const timeoutId = Number(existingPointer.getAttribute('data-timeout-id'));
+      const timeoutId = Number(existingPointer.getAttribute("data-timeout-id"));
       if (timeoutId) clearTimeout(timeoutId);
-      const removeTimeoutId = Number(
-        existingPointer.getAttribute('data-remove-timeout-id'),
-      );
+      const removeTimeoutId = Number(existingPointer.getAttribute("data-remove-timeout-id"));
       if (removeTimeoutId) clearTimeout(removeTimeoutId);
     }
 
@@ -46,17 +42,17 @@ const midsceneWaterFlowAnimation = {
     const pointer =
       existingPointer ||
       (() => {
-        const p = document.createElement('div');
-        p.setAttribute(this.mousePointerAttribute, 'true');
-        p.style.position = 'fixed';
+        const p = document.createElement("div");
+        p.setAttribute(this.mousePointerAttribute, "true");
+        p.style.position = "fixed";
         p.style.width = `${size}px`;
         p.style.height = `${size}px`;
-        p.style.borderRadius = '50%';
-        p.style.backgroundColor = 'rgba(0, 0, 255, 0.3)';
-        p.style.border = '1px solid rgba(0, 0, 255, 0.3)';
-        p.style.zIndex = '99999';
-        p.style.transition = 'all 1s ease-in';
-        p.style.pointerEvents = 'none'; // Make pointer not clickable
+        p.style.borderRadius = "50%";
+        p.style.backgroundColor = "rgba(0, 0, 255, 0.3)";
+        p.style.border = "1px solid rgba(0, 0, 255, 0.3)";
+        p.style.zIndex = "99999";
+        p.style.transition = "all 1s ease-in";
+        p.style.pointerEvents = "none"; // Make pointer not clickable
         // Start from offset position if new pointer
         p.style.left = `${x - size / 2}px`;
         p.style.top = `${y - size / 2}px`;
@@ -67,27 +63,25 @@ const midsceneWaterFlowAnimation = {
     requestAnimationFrame(() => {
       pointer.style.left = `${x - size / 2}px`;
       pointer.style.top = `${y - size / 2}px`;
-      pointer.style.opacity = '1';
+      pointer.style.opacity = "1";
     });
 
     // Set new timeouts
     const fadeTimeoutId = setTimeout(() => {
-      pointer.style.opacity = '0';
+      pointer.style.opacity = "0";
       const removeTimeoutId = setTimeout(() => {
         if (pointer.parentNode) {
           document.body.removeChild(pointer);
         }
       }, 500);
-      pointer.setAttribute('data-remove-timeout-id', String(removeTimeoutId));
+      pointer.setAttribute("data-remove-timeout-id", String(removeTimeoutId));
     }, 3000);
-    pointer.setAttribute('data-timeout-id', String(fadeTimeoutId));
+    pointer.setAttribute("data-timeout-id", String(fadeTimeoutId));
   },
 
   hideMousePointer() {
     this.registerSelfCleaning();
-    const pointer = document.querySelector(
-      `div[${this.mousePointerAttribute}]`,
-    ) as HTMLDivElement | null;
+    const pointer = document.querySelector(`div[${this.mousePointerAttribute}]`) as HTMLDivElement | null;
     if (pointer) {
       document.body.removeChild(pointer);
     }
@@ -103,8 +97,8 @@ const midsceneWaterFlowAnimation = {
       this.styleElement = null;
     }
 
-    this.styleElement = document.createElement('style');
-    this.styleElement.id = 'water-flow-animation';
+    this.styleElement = document.createElement("style");
+    this.styleElement.id = "water-flow-animation";
     this.styleElement.textContent = `
     html::before {
       content: "";
@@ -167,16 +161,14 @@ const midsceneWaterFlowAnimation = {
       this.cleanupTimeout = null;
     }
 
-    const styleElements = document.querySelectorAll('#water-flow-animation');
+    const styleElements = document.querySelectorAll("#water-flow-animation");
     styleElements.forEach((element) => {
       document.head.removeChild(element);
     });
     this.styleElement = null;
 
     // remove all mouse pointers
-    const mousePointers = document.querySelectorAll(
-      `div[${this.mousePointerAttribute}]`,
-    );
+    const mousePointers = document.querySelectorAll(`div[${this.mousePointerAttribute}]`);
     mousePointers.forEach((element) => {
       document.body.removeChild(element);
     });
@@ -189,6 +181,5 @@ declare global {
     midsceneWaterFlowAnimation: typeof midsceneWaterFlowAnimation;
   }
 }
-(window as any).midsceneWaterFlowAnimation =
-  (window as any).midsceneWaterFlowAnimation || midsceneWaterFlowAnimation;
+(window as any).midsceneWaterFlowAnimation = (window as any).midsceneWaterFlowAnimation || midsceneWaterFlowAnimation;
 (window as any).midsceneWaterFlowAnimation.enable();
