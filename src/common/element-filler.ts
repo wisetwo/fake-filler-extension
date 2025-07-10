@@ -80,14 +80,14 @@ class ElementFiller {
   // }
 
   public async clickOnBlankArea(): Promise<void> {
-    const x = Math.floor(Math.random() * (window.innerWidth - 100)) + 50;
-    const y = Math.floor(Math.random() * (window.innerHeight - 100)) + 50;
+    const x = 10;
+    const y = Math.floor(window.innerHeight / 2 - 100) + 50;
 
     await this.simulateClick(document.body, x, y);
   }
 
   private async waitForElementWithData(
-    selector: string,
+    selectorList: string[],
     dataCheckFn: (element: Element) => boolean,
     timeout = 2000
   ): Promise<Element | null> {
@@ -99,7 +99,7 @@ class ElementFiller {
           resolve(null);
         }
 
-        const elementList = document.querySelectorAll(selector);
+        const elementList = document.querySelectorAll(selectorList.join(","));
         // 过滤出可见的元素
         const visibleElementList = Array.from(elementList).filter((element) =>
           this.isElementVisible(element as FillableElement)
@@ -115,10 +115,10 @@ class ElementFiller {
   public async fillWrapedSelectElement(
     element: HTMLInputElement,
     isMultiSelect: boolean,
-    dropdownClass: string,
+    dropdownClassList: string[],
     dropdownOptionClassList: string[]
   ): Promise<void> {
-    console.log("fillWrapedSelectElement", element, isMultiSelect, dropdownClass);
+    console.log("fillWrapedSelectElement", element, isMultiSelect, dropdownClassList);
     if (this.shouldIgnoreElement(element)) {
       console.log("element ignored");
       return;
@@ -136,7 +136,7 @@ class ElementFiller {
     }
 
     // 等待下拉框出现并且有数据
-    const dropdownElement = await this.waitForElementWithData(`.${dropdownClass}`, (el) => {
+    const dropdownElement = await this.waitForElementWithData(dropdownClassList, (el) => {
       // 检查是否有选项数据
       const hasOptions = dropdownOptionClassList.some(
         (optionClass) => el.querySelectorAll(`.${optionClass}:not(.disabled)`).length > 0
@@ -160,25 +160,26 @@ class ElementFiller {
       console.log(`尝试使用类名 ${optionClass} 查找选项:`, newOptions);
       return newOptions;
     }, []);
+    const visibleOptions = options.filter((option) => this.isElementVisible(option as FillableElement));
 
-    if (options.length === 0) {
-      console.log("未找到任何可选项");
+    if (visibleOptions.length === 0) {
+      console.log("未找到任何可见选项");
       return;
     }
 
     let selected = false;
     if (isMultiSelect) {
       // 多选模式：随机选择1-3个选项
-      const numberOfOptionsToSelect = this.generator.randomNumber(1, Math.min(3, options.length));
+      const numberOfOptionsToSelect = this.generator.randomNumber(1, Math.min(3, visibleOptions.length));
       console.log("numberOfOptionsToSelect->", numberOfOptionsToSelect);
       const selectedIndices = new Set<number>();
       const clickPromises: Promise<void>[] = [];
 
       while (selectedIndices.size < numberOfOptionsToSelect) {
-        const randomIndex = this.generator.randomNumber(0, options.length - 1);
+        const randomIndex = this.generator.randomNumber(0, visibleOptions.length - 1);
         if (!selectedIndices.has(randomIndex)) {
           selectedIndices.add(randomIndex);
-          const option = options[randomIndex] as HTMLElement;
+          const option = visibleOptions[randomIndex] as HTMLElement;
           console.log("index to click->", randomIndex);
           clickPromises.push(
             sleep(50).then(async () => {
@@ -192,8 +193,8 @@ class ElementFiller {
       selected = true;
     } else {
       // 单选模式：随机选择一个选项
-      const randomIndex = this.generator.randomNumber(0, options.length - 1);
-      const option = options[randomIndex] as HTMLElement;
+      const randomIndex = this.generator.randomNumber(0, visibleOptions.length - 1);
+      const option = visibleOptions[randomIndex] as HTMLElement;
       await sleep(50);
       try {
         this.simulateClick(option);

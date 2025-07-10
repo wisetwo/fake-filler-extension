@@ -9,8 +9,8 @@ class FakeFiller {
   private urlMatchesToBlock: string[];
   private readonly selectInputClass = "t-select-input";
   private readonly selectInputMultipleClass = "t-select-input--multiple";
-  private readonly selectInputDropdownClass = "t-select__dropdown";
-  private readonly selectInputDropdownOptionClassList = ["t-select-option"];
+  private readonly selectInputDropdownClassList = ["t-select__dropdown", "t-popup__content"];
+  private readonly selectInputDropdownOptionClassList = ["t-select-option", "t-avatar"];
   private pageOperator: PageOperator | null;
 
   constructor(options: IFakeFillerOptions, profileIndex = -1) {
@@ -46,7 +46,7 @@ class FakeFiller {
       await this.elementFiller.fillWrapedSelectElement(
         element,
         isMultiSelect,
-        this.selectInputDropdownClass,
+        this.selectInputDropdownClassList,
         this.selectInputDropdownOptionClassList
       );
     } else {
