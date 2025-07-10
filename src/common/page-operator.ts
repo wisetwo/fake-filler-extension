@@ -68,14 +68,6 @@ class PageOperator {
     throw new Error("evaluateJavaScript not supported");
   }
 
-  public async clickOnBlankArea(): Promise<void> {
-    await this.ensureInitialized();
-    const size = await this.page.size();
-    const x = Math.floor(Math.random() * (size.width - 100)) + 50;
-    const y = Math.floor(Math.random() * (size.height - 100)) + 50;
-    await this.click(x, y);
-  }
-
   public async waitUntilNetworkIdle(): Promise<void> {
     await this.ensureInitialized();
     if (this.page.waitUntilNetworkIdle) {

@@ -82,9 +82,9 @@ class ElementFiller {
   public async clickOnBlankArea(): Promise<void> {
     const x = 10;
     const y = Math.floor(window.innerHeight / 2 - 100) + 50;
-    await sleep(100);
+    await sleep(1000);
     await this.simulateClick(document.body, x, y);
-    await sleep(100);
+    await sleep(1000);
   }
 
   private async waitForElementWithData(
@@ -92,24 +92,36 @@ class ElementFiller {
     dataCheckFn: (element: Element) => boolean,
     timeout = 2000
   ): Promise<Element | null> {
+    console.log("waitForElementWithData: starting, selectorList:", selectorList);
     return new Promise((resolve) => {
       const startTime = Date.now();
       const interval = setInterval(() => {
         if (Date.now() - startTime >= timeout) {
           clearInterval(interval);
+          console.log("waitForElementWithData: timeout");
           resolve(null);
         }
 
         let activeElement: Element | null = null;
-        selectorList.forEach((selector) => {
+        for (let i = 0; i < selectorList.length; i += 1) {
+          const selector = selectorList[i];
           const elementList = document.querySelectorAll(`.${selector}`);
           const visibleElementList = Array.from(elementList).filter((element) =>
             this.isElementVisible(element as FillableElement)
           );
+          if (visibleElementList.length > 1) {
+            console.warn("visibleElementList > 1, ", visibleElementList);
+          }
+          // console.log("visibleElementList——> ", visibleElementList);
+          console.log(
+            "visibleElementList.innerTextList——> ",
+            Array.from(visibleElementList).map((el) => (el as HTMLElement).innerText)
+          );
           if (visibleElementList.length > 0) {
             [activeElement] = visibleElementList;
+            break;
           }
-        });
+        }
 
         if (activeElement && dataCheckFn(activeElement)) {
           clearInterval(interval);
@@ -181,7 +193,6 @@ class ElementFiller {
       const numberOfOptionsToSelect = this.generator.randomNumber(1, Math.min(3, visibleOptions.length));
       console.log("numberOfOptionsToSelect->", numberOfOptionsToSelect);
       const selectedIndices = new Set<number>();
-      const clickPromises: Promise<void>[] = [];
 
       while (selectedIndices.size < numberOfOptionsToSelect) {
         const randomIndex = this.generator.randomNumber(0, visibleOptions.length - 1);
@@ -189,19 +200,15 @@ class ElementFiller {
           selectedIndices.add(randomIndex);
           const option = visibleOptions[randomIndex] as HTMLElement;
           console.log("index to click->", randomIndex);
-          clickPromises.push(
-            sleep(200).then(async () => {
-              await this.simulateClick(option);
-              // 关闭
-              await this.clickOnBlankArea();
-              // 再次打开
-              await this.simulateClick(element);
-            })
-          );
+
+          await sleep(200);
+          await this.simulateClick(option);
+          // 关闭
+          await this.clickOnBlankArea();
+          // 再次打开
+          await this.simulateClick(element);
         }
       }
-
-      await Promise.all(clickPromises);
       // selected = true;
     } else {
       // 单选模式：随机选择一个选项
@@ -303,7 +310,7 @@ class ElementFiller {
           rect.left >= parentRect.right;
 
         if (isClippedByParent) {
-          console.log("element clipped by scroll container ->", parent);
+          console.log("element clipped by scroll container");
           return false;
         }
       }
