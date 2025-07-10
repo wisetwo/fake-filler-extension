@@ -120,7 +120,7 @@ class FakeFiller {
       // 创建一个填充单个元素的函数
       const fillElement: FillElementFunction = async (element) => {
         const tagName = element.tagName.toLowerCase();
-
+        element.scrollIntoView({ behavior: "smooth", block: "center" });
         if (tagName === "input") {
           await this.handleInputElement(element as HTMLInputElement);
         } else if (tagName === "textarea") {
