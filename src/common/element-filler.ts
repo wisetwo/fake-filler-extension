@@ -1086,9 +1086,10 @@ class ElementFiller {
   }
 
   public async destroy(): Promise<void> {
-    if (this.pageOperator) {
-      await this.pageOperator.destroy();
-    }
+    // PageOperator 的生命周期由 FakeFiller 管理，这里不需要销毁
+    // if (this.pageOperator) {
+    //   await this.pageOperator.destroy();
+    // }
   }
 }
 

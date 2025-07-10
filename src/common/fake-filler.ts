@@ -11,7 +11,7 @@ class FakeFiller {
   private readonly selectInputMultipleClass = "t-select-input--multiple";
   private readonly selectInputDropdownClass = "t-select__dropdown";
   private readonly selectInputDropdownOptionClassList = ["t-select-option"];
-  private pageOperator: PageOperator;
+  private pageOperator: PageOperator | null;
 
   constructor(options: IFakeFillerOptions, profileIndex = -1) {
     this.pageOperator = new PageOperator();
@@ -72,9 +72,17 @@ class FakeFiller {
 
   private async getPageOperator(): Promise<PageOperator> {
     try {
+      // 检查当前 pageOperator 是否为 null 或已被销毁，如果是则创建新实例
+      if (!this.pageOperator || this.pageOperator.isDestroyed()) {
+        console.log("getPageOperator: creating new PageOperator instance");
+        this.pageOperator = new PageOperator();
+        this.elementFiller.updatePageOperator(this.pageOperator);
+      }
+
       await this.pageOperator.initialize();
       return this.pageOperator;
     } catch (error) {
+      console.log("getPageOperator: error occurred, creating new instance:", error);
       // 如果出现错误，创建新的实例
       this.pageOperator = new PageOperator();
       this.elementFiller.updatePageOperator(this.pageOperator);
@@ -132,6 +140,7 @@ class FakeFiller {
     } finally {
       if (this.pageOperator) {
         await this.pageOperator.destroy();
+        this.pageOperator = null;
       }
     }
   }
@@ -147,6 +156,7 @@ class FakeFiller {
     } finally {
       if (this.pageOperator) {
         await this.pageOperator.destroy();
+        this.pageOperator = null;
       }
     }
   }
@@ -177,6 +187,7 @@ class FakeFiller {
     } finally {
       if (this.pageOperator) {
         await this.pageOperator.destroy();
+        this.pageOperator = null;
       }
       this.setClickedElement(undefined);
     }
@@ -201,6 +212,7 @@ class FakeFiller {
     } finally {
       if (this.pageOperator) {
         await this.pageOperator.destroy();
+        this.pageOperator = null;
       }
       this.setClickedElement(undefined);
     }
