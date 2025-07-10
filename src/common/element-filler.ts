@@ -82,8 +82,9 @@ class ElementFiller {
   public async clickOnBlankArea(): Promise<void> {
     const x = 10;
     const y = Math.floor(window.innerHeight / 2 - 100) + 50;
-
+    await sleep(100);
     await this.simulateClick(document.body, x, y);
+    await sleep(100);
   }
 
   private async waitForElementWithData(
@@ -174,7 +175,7 @@ class ElementFiller {
       return;
     }
 
-    let selected = false;
+    // let selected = false;
     if (isMultiSelect) {
       // 多选模式：随机选择1-3个选项
       const numberOfOptionsToSelect = this.generator.randomNumber(1, Math.min(3, visibleOptions.length));
@@ -191,10 +192,8 @@ class ElementFiller {
           clickPromises.push(
             sleep(200).then(async () => {
               await this.simulateClick(option);
-              await sleep(100);
               // 关闭
               await this.clickOnBlankArea();
-              await sleep(100);
               // 再次打开
               await this.simulateClick(element);
             })
@@ -203,27 +202,28 @@ class ElementFiller {
       }
 
       await Promise.all(clickPromises);
-      selected = true;
+      // selected = true;
     } else {
       // 单选模式：随机选择一个选项
       const randomIndex = this.generator.randomNumber(0, visibleOptions.length - 1);
       const option = visibleOptions[randomIndex] as HTMLElement;
       await sleep(50);
       try {
-        this.simulateClick(option);
+        await this.simulateClick(option);
+        await this.clickOnBlankArea();
       } catch (error) {
         console.error("Failed to click using page operator, falling back to events", error);
         option.click();
       }
-      selected = true;
+      // selected = true;
     }
 
     // 如果是单选，点击会自动关闭下拉框
     // 如果是多选，需要点击输入框来关闭下拉框
-    if (selected && isMultiSelect) {
-      await sleep(50);
-      await this.clickOnBlankArea();
-    }
+    // if (selected && isMultiSelect) {
+    //   await sleep(50);
+    //   await this.clickOnBlankArea();
+    // }
   }
 
   private isAnyMatch(haystack: string, needles: string[]): boolean {
