@@ -24,57 +24,114 @@ function NotifyTabsOfNewOptions(options: IFakeFillerOptions) {
   });
 }
 
-function handleMessage(
-  request: MessageRequest,
-  sender: chrome.runtime.MessageSender,
-  sendResponse: (response: any) => void
-): boolean | null {
-  switch (request.type) {
-    case "getOptions": {
-      GetFakeFillerOptions().then((result) => {
-        sendResponse({ options: result });
-      });
-      return true;
-    }
+async function handleMessage(message: any): Promise<any> {
+  console.log("Received message:", message.type, message);
 
-    case "setProfileBadge": {
-      const profile = request.data as IProfile;
-      chrome.action.setBadgeText({ text: "★", tabId: sender.tab?.id });
-      chrome.action.setBadgeBackgroundColor({ color: "#D4AF37", tabId: sender.tab?.id });
-      chrome.action.setTitle({
-        title: `${GetMessage("actionTitle")}\n${GetMessage("matchedProfile")}: ${profile.name}`,
-        tabId: sender.tab?.id,
-      });
-      return true;
+  try {
+    switch (message.type) {
+      case "getOptions": {
+        const options = await GetFakeFillerOptions();
+        return { options };
+      }
+      case "setProfileBadge": {
+        const profile = message.data as IProfile;
+        await chrome.action.setBadgeText({ text: "★", tabId: message.sender?.tab?.id });
+        await chrome.action.setBadgeBackgroundColor({ color: "#D4AF37", tabId: message.sender?.tab?.id });
+        await chrome.action.setTitle({
+          title: `${GetMessage("actionTitle")}\n${GetMessage("matchedProfile")}: ${profile.name}`,
+          tabId: message.sender?.tab?.id,
+        });
+        return { success: true };
+      }
+      case "setBlockedBadge": {
+        const urlToBlock = message.data as string;
+        await chrome.action.setBadgeText({ text: "X", tabId: message.sender?.tab?.id });
+        await chrome.action.setBadgeBackgroundColor({ color: "#880000", tabId: message.sender?.tab?.id });
+        await chrome.action.setTitle({
+          title: `${GetMessage("actionTitle")}\n${GetMessage("matchedBlockedURL")}: ${urlToBlock}`,
+          tabId: message.sender?.tab?.id,
+        });
+        return { success: true };
+      }
+      case "clearProfileBadge": {
+        await chrome.action.setBadgeText({ text: "", tabId: message.sender?.tab?.id });
+        return { success: true };
+      }
+      case "optionsUpdated": {
+        const options = await GetFakeFillerOptions();
+        await NotifyTabsOfNewOptions(options);
+        return { success: true };
+      }
+      case "GET_TAB_LIST": {
+        const tabs = await chrome.tabs.query({ currentWindow: true });
+        return { tabs };
+      }
+      case "GET_ACTIVE_TAB": {
+        const tabs = await chrome.tabs.query({ active: true, currentWindow: true });
+        if (tabs && tabs.length > 0 && tabs[0].id) {
+          console.log("Found active tab:", tabs[0].id);
+          return { tabId: tabs[0].id };
+        }
+        console.error("No active tab found");
+        throw new Error("No active tab found");
+      }
+      case "SET_ACTIVE_TAB": {
+        await chrome.tabs.update(message.tabId, { active: true });
+        return { success: true };
+      }
+      case "GET_TAB_URL": {
+        const tab = await chrome.tabs.get(message.tabId);
+        return { url: tab.url };
+      }
+      case "ATTACH_DEBUGGER": {
+        const { tabId } = message;
+        console.log("Attaching debugger to tab:", tabId);
+        await chrome.debugger.attach({ tabId }, "1.3");
+        console.log("Successfully attached debugger to tab:", tabId);
+        return { success: true };
+      }
+      case "DETACH_DEBUGGER": {
+        const { tabId } = message;
+        console.log("Detaching debugger from tab:", tabId);
+        await chrome.debugger.detach({ tabId });
+        console.log("Successfully detached debugger from tab:", tabId);
+        return { success: true };
+      }
+      case "SEND_DEBUGGER_COMMAND": {
+        const { tabId, command, params } = message;
+        console.log("Sending debugger command:", command, "to tab:", tabId, "with params:", params);
+        const response = await chrome.debugger.sendCommand({ tabId }, command, params);
+        console.log("Successfully sent debugger command:", command, "response:", response);
+        return { success: true, response };
+      }
+      default: {
+        throw new Error(`Unknown message type: ${message.type}`);
+      }
     }
-
-    case "setBlockedBadge": {
-      const urlToBlock = request.data as string;
-      chrome.action.setBadgeText({ text: "X", tabId: sender.tab?.id });
-      chrome.action.setBadgeBackgroundColor({ color: "#880000", tabId: sender.tab?.id });
-      chrome.action.setTitle({
-        title: `${GetMessage("actionTitle")}\n${GetMessage("matchedBlockedURL")}: ${urlToBlock}`,
-        tabId: sender.tab?.id,
-      });
-      return true;
+  } catch (error: unknown) {
+    console.error("Error handling message:", error);
+    if (error instanceof Error) {
+      throw error;
     }
-
-    case "clearProfileBadge": {
-      chrome.action.setBadgeText({ text: "", tabId: sender.tab?.id });
-      return true;
-    }
-
-    case "optionsUpdated": {
-      GetFakeFillerOptions().then((options) => {
-        NotifyTabsOfNewOptions(options);
-      });
-      return true;
-    }
-
-    default:
-      return null;
+    throw new Error("An unknown error occurred");
   }
 }
+
+// 统一的消息监听器
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  // 将 sender 信息添加到消息中，因为某些处理需要用到
+  const messageWithSender = { ...message, sender };
+
+  handleMessage(messageWithSender)
+    .then((response) => {
+      sendResponse(response);
+    })
+    .catch((error: Error) => {
+      console.error("Error in message handler:", error);
+      sendResponse({ error: error.message });
+    });
+  return true; // 保持消息通道开放以进行异步响应
+});
 
 if (chrome.runtime.onInstalled) {
   chrome.runtime.onInstalled.addListener((_details) => {
@@ -93,49 +150,6 @@ if (chrome.runtime.onInstalled) {
     // }
   });
 }
-
-// 添加debugger相关的消息处理
-chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  (async () => {
-    try {
-      switch (message.type) {
-        case "GET_TAB_LIST": {
-          const tabs = await chrome.tabs.query({ currentWindow: true });
-          sendResponse({ tabs });
-          break;
-        }
-        case "GET_ACTIVE_TAB": {
-          const tabs = await chrome.tabs.query({ active: true, currentWindow: true });
-          sendResponse({ tabId: tabs[0]?.id || 0 });
-          break;
-        }
-        case "SET_ACTIVE_TAB": {
-          await chrome.tabs.update(message.tabId, { active: true });
-          sendResponse({ success: true });
-          break;
-        }
-        case "GET_TAB_URL": {
-          const tab = await chrome.tabs.get(message.tabId);
-          sendResponse({ url: tab.url });
-          break;
-        }
-        default: {
-          sendResponse({ error: `Unknown message type: ${message.type}` });
-        }
-      }
-    } catch (error: unknown) {
-      console.error("Error handling message:", error);
-      if (error instanceof Error) {
-        sendResponse({ error: error.message });
-      } else {
-        sendResponse({ error: "An unknown error occurred" });
-      }
-    }
-  })();
-  return true; // 保持消息通道开放以进行异步响应
-});
-
-chrome.runtime.onMessage.addListener(handleMessage);
 
 function fillAllInputs() {
   if (window.fakeFiller) {
