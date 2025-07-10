@@ -323,7 +323,7 @@ export default class ChromeExtensionProxyPage implements AbstractPage {
     command: string,
     params: RequestType
   ): Promise<ResponseType> {
-    console.log("sendCommandToDebugger: starting, command:", command);
+    // console.log("sendCommandToDebugger: starting, command:", command);
 
     // console.log("sendCommandToDebugger: calling attachDebugger");
     await this.attachDebugger();
