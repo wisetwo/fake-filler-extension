@@ -6,7 +6,7 @@ import { ifInBrowser } from "src/shared/utils";
 // extract html element from page
 let scriptFileContentCache: string | null = null;
 export const getHtmlElementScript = async () => {
-  const scriptFileToRetrieve = chrome.runtime.getURL("scripts/htmlElement.js");
+  const scriptFileToRetrieve = chrome.runtime.getURL("build/htmlElement.js");
   if (scriptFileContentCache) return scriptFileContentCache;
   if (ifInBrowser) {
     const script = await fetch(scriptFileToRetrieve);
@@ -19,7 +19,7 @@ export const getHtmlElementScript = async () => {
 // inject water flow animation
 let waterFlowScriptFileContentCache: string | null = null;
 export const injectWaterFlowAnimation = async () => {
-  const waterFlowScriptFileToRetrieve = chrome.runtime.getURL("scripts/water-flow.js");
+  const waterFlowScriptFileToRetrieve = chrome.runtime.getURL("build/water-flow.js");
   if (waterFlowScriptFileContentCache) return waterFlowScriptFileContentCache;
   if (ifInBrowser) {
     const script = await fetch(waterFlowScriptFileToRetrieve);
@@ -32,7 +32,7 @@ export const injectWaterFlowAnimation = async () => {
 // inject stop water flow animation
 let stopWaterFlowScriptFileContentCache: string | null = null;
 export const injectStopWaterFlowAnimation = async () => {
-  const stopWaterFlowScriptFileToRetrieve = chrome.runtime.getURL("scripts/stop-water-flow.js");
+  const stopWaterFlowScriptFileToRetrieve = chrome.runtime.getURL("build/stop-water-flow.js");
   if (stopWaterFlowScriptFileContentCache) return stopWaterFlowScriptFileContentCache;
   if (ifInBrowser) {
     const script = await fetch(stopWaterFlowScriptFileToRetrieve);

@@ -1,8 +1,6 @@
 import type { Rect } from "../types";
 import { generateHashId } from "../utils";
 
-// import { extractTextWithPosition } from "./web-extractor";
-
 const MAX_VALUE_LENGTH = 300;
 let debugMode = false;
 
@@ -418,12 +416,6 @@ export function setMidsceneVisibleRectOnWindow() {
     (window as any).midsceneVisibleRect = elementRect;
   }
 }
-
-// export function setExtractTextWithPositionOnWindow() {
-//   if (typeof window !== "undefined") {
-//     (window as any).extractTextWithPosition = extractTextWithPosition;
-//   }
-// }
 
 export function getTopDocument(): globalThis.HTMLElement {
   const container: globalThis.HTMLElement = document.body || document;

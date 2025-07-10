@@ -420,3 +420,9 @@ export function mergeElementAndChildrenRects(
     height: maxBottom - minTop,
   };
 }
+
+export function setExtractTextWithPositionOnWindow() {
+  if (typeof window !== "undefined") {
+    (window as any).extractTextWithPosition = extractTextWithPosition;
+  }
+}

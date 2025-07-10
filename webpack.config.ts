@@ -24,6 +24,8 @@ const webpackConfig: webpack.Configuration = {
     "build/options": path.join(__dirname, "src/options/index.tsx"),
     "build/stop-water-flow": path.join(__dirname, "./src/content_script/stop-water-flow.ts"),
     "build/water-flow": path.join(__dirname, "./src/content_script/water-flow.ts"),
+    "build/htmlElement": path.join(__dirname, "src/shared/extractor/index.ts"),
+    "build/htmlElementDebug": path.join(__dirname, "src/shared/extractor/debug.ts"),
   },
   module: {
     rules: [
