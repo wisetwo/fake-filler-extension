@@ -83,6 +83,23 @@ async function handleMessage(message: any): Promise<any> {
         const tab = await chrome.tabs.get(message.tabId);
         return { url: tab.url };
       }
+      case "GET_EXTENSION_RESOURCE": {
+        const { resourcePath } = message;
+        console.log("Getting extension resource:", resourcePath);
+        try {
+          const resourceUrl = chrome.runtime.getURL(resourcePath);
+          const response = await fetch(resourceUrl);
+          if (!response.ok) {
+            throw new Error(`Failed to fetch resource: ${response.status} ${response.statusText}`);
+          }
+          const content = await response.text();
+          console.log("Resource loaded successfully, length:", content.length);
+          return { content };
+        } catch (error) {
+          console.error("Failed to get extension resource:", error);
+          throw error;
+        }
+      }
       case "ATTACH_DEBUGGER": {
         const { tabId } = message;
         console.log("Attaching debugger to tab:", tabId);

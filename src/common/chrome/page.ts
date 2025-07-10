@@ -42,6 +42,8 @@ export default class ChromeExtensionProxyPage implements AbstractPage {
 
   private isMobileEmulation: boolean | null = null;
 
+  private waterFlowAnimationInitialized = false;
+
   constructor(forceSameTabNavigation: boolean) {
     this.forceSameTabNavigation = forceSameTabNavigation;
   }
@@ -242,6 +244,36 @@ export default class ChromeExtensionProxyPage implements AbstractPage {
       console.warn("Failed to detach debugger", error);
     }
     this.tabIdOfDebuggerAttached = null;
+    this.waterFlowAnimationInitialized = false; // 重置状态，下次需要重新初始化
+  }
+
+  private async initializeWaterFlowAnimation(): Promise<void> {
+    console.log("initializeWaterFlowAnimation: starting");
+
+    // limit open page in new tab
+    if (this.forceSameTabNavigation) {
+      console.log("initializeWaterFlowAnimation: executing limitOpenNewTabScript");
+      await this.sendMessage({
+        type: "SEND_DEBUGGER_COMMAND",
+        tabId: this.tabIdOfDebuggerAttached!,
+        command: "Runtime.evaluate",
+        params: { expression: limitOpenNewTabScript },
+      });
+      console.log("initializeWaterFlowAnimation: limitOpenNewTabScript executed");
+    }
+
+    console.log("initializeWaterFlowAnimation: getting water flow animation script");
+    const script = await injectWaterFlowAnimation();
+    console.log("initializeWaterFlowAnimation: got script, length:", script.length);
+
+    console.log("initializeWaterFlowAnimation: sending script to debugger");
+    await this.sendMessage({
+      type: "SEND_DEBUGGER_COMMAND",
+      tabId: this.tabIdOfDebuggerAttached!,
+      command: "Runtime.evaluate",
+      params: { expression: script },
+    });
+    console.log("initializeWaterFlowAnimation: script executed successfully");
   }
 
   private async enableWaterFlowAnimation() {
@@ -273,10 +305,22 @@ export default class ChromeExtensionProxyPage implements AbstractPage {
   }
 
   private async disableWaterFlowAnimation(tabId: number) {
-    const script = await injectStopWaterFlowAnimation();
-    await this.sendCommandToDebugger("Runtime.evaluate", {
-      expression: script,
-    });
+    console.log("disableWaterFlowAnimation: starting for tab:", tabId);
+    try {
+      const script = await injectStopWaterFlowAnimation();
+      console.log("disableWaterFlowAnimation: got script, length:", script.length);
+
+      await this.sendMessage({
+        type: "SEND_DEBUGGER_COMMAND",
+        tabId,
+        command: "Runtime.evaluate",
+        params: { expression: script },
+      });
+      console.log("disableWaterFlowAnimation: script executed successfully");
+    } catch (error) {
+      console.warn("disableWaterFlowAnimation: failed to disable water flow animation:", error);
+      // 不要抛出错误，因为这通常在页面关闭时发生
+    }
   }
 
   private async sendCommandToDebugger<ResponseType = any, RequestType = any>(
@@ -292,8 +336,7 @@ export default class ChromeExtensionProxyPage implements AbstractPage {
     assert(this.tabIdOfDebuggerAttached, "Debugger is not attached");
     console.log("sendCommandToDebugger: debugger attached to tab:", this.tabIdOfDebuggerAttached);
 
-    // 如果是第一次发送命令且不是 Runtime.evaluate，则初始化水流动画
-    // 避免在 enableWaterFlowAnimation 中的 Runtime.evaluate 调用时再次初始化
+    // 检查是否是水流动画相关的命令，避免递归
     const isWaterFlowCommand =
       command === "Runtime.evaluate" &&
       typeof params === "object" &&
@@ -301,9 +344,17 @@ export default class ChromeExtensionProxyPage implements AbstractPage {
       "expression" in params &&
       (params.expression as string).includes("midsceneWaterFlowAnimation");
 
-    if (!isWaterFlowCommand) {
-      console.log("sendCommandToDebugger: this is not a water flow command, will initialize if needed");
-      // 这里可以添加水流动画初始化逻辑，但要避免递归
+    // 如果不是水流动画命令且还没有初始化，则初始化水流动画
+    if (!isWaterFlowCommand && !this.waterFlowAnimationInitialized) {
+      console.log("sendCommandToDebugger: initializing water flow animation");
+      try {
+        await this.initializeWaterFlowAnimation();
+        this.waterFlowAnimationInitialized = true;
+        console.log("sendCommandToDebugger: water flow animation initialized successfully");
+      } catch (error) {
+        console.warn("sendCommandToDebugger: failed to initialize water flow animation:", error);
+        // 继续执行，不要因为动画初始化失败而阻止其他操作
+      }
     }
 
     console.log("sendCommandToDebugger: sending SEND_DEBUGGER_COMMAND message");

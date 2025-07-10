@@ -16,26 +16,34 @@ let waterFlowScriptFileContentCache: string | null = null;
 export const injectWaterFlowAnimation = async () => {
   console.log("injectWaterFlowAnimation: starting");
   try {
-    const waterFlowScriptFileToRetrieve = chrome.runtime.getURL("build/water-flow.js");
-    console.log("injectWaterFlowAnimation: file URL:", waterFlowScriptFileToRetrieve);
-
     if (waterFlowScriptFileContentCache) {
       console.log("injectWaterFlowAnimation: returning cached content");
       return waterFlowScriptFileContentCache;
     }
 
-    console.log("injectWaterFlowAnimation: fetching script file");
-    const script = await fetch(waterFlowScriptFileToRetrieve);
-    console.log("injectWaterFlowAnimation: fetch response status:", script.status);
+    console.log("injectWaterFlowAnimation: requesting script from service worker");
+    const response = await new Promise<{ content: string }>((resolve, reject) => {
+      chrome.runtime.sendMessage(
+        {
+          type: "GET_EXTENSION_RESOURCE",
+          resourcePath: "build/water-flow.js",
+        },
+        (response) => {
+          if (chrome.runtime.lastError) {
+            reject(chrome.runtime.lastError);
+            return;
+          }
+          if (response.error) {
+            reject(new Error(response.error));
+            return;
+          }
+          resolve(response);
+        }
+      );
+    });
 
-    if (!script.ok) {
-      throw new Error(`Failed to fetch water flow script: ${script.status} ${script.statusText}`);
-    }
-
-    console.log("injectWaterFlowAnimation: reading script text");
-    waterFlowScriptFileContentCache = await script.text();
-    console.log("injectWaterFlowAnimation: script loaded, length:", waterFlowScriptFileContentCache.length);
-
+    console.log("injectWaterFlowAnimation: script loaded, length:", response.content.length);
+    waterFlowScriptFileContentCache = response.content;
     return waterFlowScriptFileContentCache;
   } catch (error) {
     console.error("injectWaterFlowAnimation: error occurred:", error);
@@ -46,9 +54,39 @@ export const injectWaterFlowAnimation = async () => {
 // inject stop water flow animation
 let stopWaterFlowScriptFileContentCache: string | null = null;
 export const injectStopWaterFlowAnimation = async () => {
-  const stopWaterFlowScriptFileToRetrieve = chrome.runtime.getURL("build/stop-water-flow.js");
-  if (stopWaterFlowScriptFileContentCache) return stopWaterFlowScriptFileContentCache;
-  const script = await fetch(stopWaterFlowScriptFileToRetrieve);
-  stopWaterFlowScriptFileContentCache = await script.text();
-  return stopWaterFlowScriptFileContentCache;
+  console.log("injectStopWaterFlowAnimation: starting");
+  try {
+    if (stopWaterFlowScriptFileContentCache) {
+      console.log("injectStopWaterFlowAnimation: returning cached content");
+      return stopWaterFlowScriptFileContentCache;
+    }
+
+    console.log("injectStopWaterFlowAnimation: requesting script from service worker");
+    const response = await new Promise<{ content: string }>((resolve, reject) => {
+      chrome.runtime.sendMessage(
+        {
+          type: "GET_EXTENSION_RESOURCE",
+          resourcePath: "build/stop-water-flow.js",
+        },
+        (response) => {
+          if (chrome.runtime.lastError) {
+            reject(chrome.runtime.lastError);
+            return;
+          }
+          if (response.error) {
+            reject(new Error(response.error));
+            return;
+          }
+          resolve(response);
+        }
+      );
+    });
+
+    console.log("injectStopWaterFlowAnimation: script loaded, length:", response.content.length);
+    stopWaterFlowScriptFileContentCache = response.content;
+    return stopWaterFlowScriptFileContentCache;
+  } catch (error) {
+    console.error("injectStopWaterFlowAnimation: error occurred:", error);
+    throw error;
+  }
 };
