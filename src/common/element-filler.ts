@@ -4,7 +4,8 @@ import cssesc from "cssesc";
 import moment from "moment";
 import RandExp from "randexp";
 
-import ChromeDebugger from "src/common/chrome-debugger";
+import ChromeDebugger from "src/common/chrome/chrome-debugger";
+
 import DataGenerator from "src/common/data-generator";
 import { SanitizeText, DEFAULT_EMAIL_CUSTOM_FIELD, sleep } from "src/common/helpers";
 import { IFakeFillerOptions, ICustomField, CustomFieldTypes } from "src/types";
@@ -34,6 +35,10 @@ class ElementFiller {
     this.previousUsername = "";
     this.previousFirstName = "";
     this.previousLastName = "";
+  }
+
+  public updateChromeDebugger(chromeDebugger: ChromeDebugger): void {
+    this.chromeDebugger = chromeDebugger;
   }
 
   private fireEvents(element: FillableElement): void {

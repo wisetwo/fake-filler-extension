@@ -1,4 +1,4 @@
-import ChromeDebugger from "./chrome-debugger";
+import ChromeDebugger from "src/common/chrome/chrome-debugger";
 
 import ElementFiller from "src/common/element-filler";
 import { IFakeFillerOptions } from "src/types";
@@ -70,13 +70,26 @@ class FakeFiller {
     return false;
   }
 
+  private async getChromeDebugger(): Promise<ChromeDebugger> {
+    try {
+      await this.chromeDebugger.attachDebugger();
+      return this.chromeDebugger;
+    } catch (error) {
+      // 如果出现错误，创建新的实例
+      this.chromeDebugger = new ChromeDebugger();
+      this.elementFiller.updateChromeDebugger(this.chromeDebugger);
+      return this.chromeDebugger;
+    }
+  }
+
   private async fillAllElements(container: Document | HTMLElement): Promise<void> {
     if (this.urlMatchesBlockList()) {
       return;
     }
 
     try {
-      await this.chromeDebugger.attachDebugger();
+      const debuggerInstance = await this.getChromeDebugger();
+      await debuggerInstance.attachDebugger();
 
       const delay = (ms: number): Promise<void> =>
         new Promise((resolve) => {
@@ -115,7 +128,9 @@ class FakeFiller {
         await delay(200); // 每个元素处理完后等待200ms
       }, Promise.resolve());
     } finally {
-      await this.chromeDebugger.destroy();
+      if (this.chromeDebugger) {
+        await this.chromeDebugger.destroy();
+      }
     }
   }
 
@@ -125,10 +140,13 @@ class FakeFiller {
 
   public async fillAllInputs(): Promise<void> {
     try {
-      await this.chromeDebugger.attachDebugger();
+      const debuggerInstance = await this.getChromeDebugger();
+      await debuggerInstance.attachDebugger();
       await this.fillAllElements(document);
     } finally {
-      await this.chromeDebugger.destroy();
+      if (this.chromeDebugger) {
+        await this.chromeDebugger.destroy();
+      }
     }
   }
 
@@ -138,7 +156,8 @@ class FakeFiller {
     }
 
     try {
-      await this.chromeDebugger.attachDebugger();
+      const debuggerInstance = await this.getChromeDebugger();
+      await debuggerInstance.attachDebugger();
       const element = this.clickedElement || document.activeElement;
 
       if (element) {
@@ -155,7 +174,9 @@ class FakeFiller {
         }
       }
     } finally {
-      await this.chromeDebugger.destroy();
+      if (this.chromeDebugger) {
+        await this.chromeDebugger.destroy();
+      }
       this.setClickedElement(undefined);
     }
   }
@@ -166,7 +187,8 @@ class FakeFiller {
     }
 
     try {
-      await this.chromeDebugger.attachDebugger();
+      const debuggerInstance = await this.getChromeDebugger();
+      await debuggerInstance.attachDebugger();
       const element = this.clickedElement || document.activeElement;
 
       if (element && element.tagName.toLowerCase() !== "body") {
@@ -177,7 +199,9 @@ class FakeFiller {
         }
       }
     } finally {
-      await this.chromeDebugger.destroy();
+      if (this.chromeDebugger) {
+        await this.chromeDebugger.destroy();
+      }
       this.setClickedElement(undefined);
     }
   }

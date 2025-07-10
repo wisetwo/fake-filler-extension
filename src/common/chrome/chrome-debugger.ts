@@ -1,4 +1,4 @@
-import { sleep } from "./helpers";
+import { sleep } from "src/common/helpers";
 
 class ChromeDebugger {
   private tabIdOfDebuggerAttached: number | undefined = undefined;
