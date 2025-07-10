@@ -112,6 +112,7 @@ class ElementFiller {
 
         if (activeElement && dataCheckFn(activeElement)) {
           clearInterval(interval);
+          console.log("waitForElementWithData: found element", activeElement);
           resolve(activeElement);
         }
       }, 100);
@@ -147,13 +148,13 @@ class ElementFiller {
       const hasOptions = dropdownOptionClassList.some(
         (optionClass) => el.querySelectorAll(`.${optionClass}:not(.disabled)`).length > 0
       );
-      console.log("检查下拉框数据:", hasOptions);
+      console.log("check dropdown data:", hasOptions);
       return hasOptions;
     });
 
     console.log("dropdownElement", dropdownElement);
     if (!dropdownElement) {
-      console.log("下拉框未出现或无数据");
+      console.warn("dropdownElement not found");
       return;
     }
 
@@ -188,8 +189,14 @@ class ElementFiller {
           const option = visibleOptions[randomIndex] as HTMLElement;
           console.log("index to click->", randomIndex);
           clickPromises.push(
-            sleep(50).then(async () => {
-              this.simulateClick(option);
+            sleep(200).then(async () => {
+              await this.simulateClick(option);
+              await sleep(100);
+              // 关闭
+              await this.clickOnBlankArea();
+              await sleep(100);
+              // 再次打开
+              await this.simulateClick(element);
             })
           );
         }

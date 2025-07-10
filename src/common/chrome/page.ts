@@ -49,7 +49,7 @@ export default class ChromeExtensionProxyPage implements AbstractPage {
   }
 
   private async sendMessage<T>(message: any): Promise<T> {
-    console.log("Sending message:", message.type);
+    // console.log("Sending message:", message.type);
     return new Promise((resolve, reject) => {
       // 添加超时机制
       const timeout = setTimeout(() => {
@@ -58,7 +58,7 @@ export default class ChromeExtensionProxyPage implements AbstractPage {
 
       chrome.runtime.sendMessage(message, (response) => {
         clearTimeout(timeout);
-        console.log("Received response for:", message.type, response);
+        // console.log("Received response for:", message.type, response);
 
         if (chrome.runtime.lastError) {
           console.error("Runtime error:", chrome.runtime.lastError);
@@ -173,12 +173,8 @@ export default class ChromeExtensionProxyPage implements AbstractPage {
         await sleep(500);
 
         this.tabIdOfDebuggerAttached = currentTabId;
-        console.log("starting to enable water flow animation");
 
-        // 不要在这里调用 enableWaterFlowAnimation，避免递归死锁
-        // await this.enableWaterFlowAnimation();
-        console.log("debugger attached successfully, skipping water flow animation to avoid recursion");
-        // console.log("water flow animation enabled successfully");
+        console.log("debugger attached successfully");
       } catch (e) {
         console.error("Failed to attach debugger", e);
         error = e as Error;
@@ -329,12 +325,12 @@ export default class ChromeExtensionProxyPage implements AbstractPage {
   ): Promise<ResponseType> {
     console.log("sendCommandToDebugger: starting, command:", command);
 
-    console.log("sendCommandToDebugger: calling attachDebugger");
+    // console.log("sendCommandToDebugger: calling attachDebugger");
     await this.attachDebugger();
-    console.log("sendCommandToDebugger: attachDebugger completed");
+    // console.log("sendCommandToDebugger: attachDebugger completed");
 
     assert(this.tabIdOfDebuggerAttached, "Debugger is not attached");
-    console.log("sendCommandToDebugger: debugger attached to tab:", this.tabIdOfDebuggerAttached);
+    // console.log("sendCommandToDebugger: debugger attached to tab:", this.tabIdOfDebuggerAttached);
 
     // 检查是否是水流动画相关的命令，避免递归
     const isWaterFlowCommand =
@@ -357,16 +353,16 @@ export default class ChromeExtensionProxyPage implements AbstractPage {
       }
     }
 
-    console.log("sendCommandToDebugger: sending SEND_DEBUGGER_COMMAND message");
+    // console.log("sendCommandToDebugger: sending SEND_DEBUGGER_COMMAND message");
     const response = await this.sendMessage<{ success: boolean; response: ResponseType }>({
       type: "SEND_DEBUGGER_COMMAND",
       tabId: this.tabIdOfDebuggerAttached,
       command,
       params,
     });
-    console.log("sendCommandToDebugger: received response:", response);
+    // console.log("sendCommandToDebugger: received response:", response);
 
-    console.log("sendCommandToDebugger: returning response.response");
+    // console.log("sendCommandToDebugger: returning response.response");
     return response.response;
   }
 
