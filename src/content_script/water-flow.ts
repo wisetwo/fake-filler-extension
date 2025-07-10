@@ -51,7 +51,7 @@ const midsceneWaterFlowAnimation = {
         p.style.backgroundColor = "rgba(0, 0, 255, 0.3)";
         p.style.border = "1px solid rgba(0, 0, 255, 0.3)";
         p.style.zIndex = "99999";
-        p.style.transition = "all 1s ease-in";
+        p.style.transition = "all 0.15s cubic-bezier(0.25, 0.46, 0.45, 0.94)";
         p.style.pointerEvents = "none"; // Make pointer not clickable
         // Start from offset position if new pointer
         p.style.left = `${x - size / 2}px`;
@@ -66,16 +66,16 @@ const midsceneWaterFlowAnimation = {
       pointer.style.opacity = "1";
     });
 
-    // Set new timeouts
+    // Set new timeouts - 减少显示时间让轨迹更跟得上
     const fadeTimeoutId = setTimeout(() => {
       pointer.style.opacity = "0";
       const removeTimeoutId = setTimeout(() => {
         if (pointer.parentNode) {
           document.body.removeChild(pointer);
         }
-      }, 500);
+      }, 300);
       pointer.setAttribute("data-remove-timeout-id", String(removeTimeoutId));
-    }, 3000);
+    }, 1500);
     pointer.setAttribute("data-timeout-id", String(fadeTimeoutId));
   },
 
@@ -113,8 +113,8 @@ const midsceneWaterFlowAnimation = {
         linear-gradient(to top, rgba(30, 144, 255, 0.4), transparent 50%) bottom;
       background-repeat: no-repeat;
       background-size: 10% 100%, 10% 100%, 100% 10%, 100% 10%;
-      animation: waterflow 5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-      filter: blur(8px);
+      animation: waterflow 2s cubic-bezier(0.25, 0.46, 0.45, 0.94) infinite;
+      filter: blur(6px);
     }
 
     @keyframes waterflow {
@@ -128,27 +128,27 @@ const midsceneWaterFlowAnimation = {
       }
       25% {
         background-image:
-          linear-gradient(to right, rgba(30, 144, 255, 0.39), transparent 52%),
-          linear-gradient(to left, rgba(30, 144, 255, 0.39), transparent 52%),
-          linear-gradient(to bottom, rgba(30, 144, 255, 0.39), transparent 52%),
-          linear-gradient(to top, rgba(30, 144, 255, 0.39), transparent 52%);
-        transform: scale(1.03);
+          linear-gradient(to right, rgba(30, 144, 255, 0.42), transparent 48%),
+          linear-gradient(to left, rgba(30, 144, 255, 0.42), transparent 48%),
+          linear-gradient(to bottom, rgba(30, 144, 255, 0.42), transparent 48%),
+          linear-gradient(to top, rgba(30, 144, 255, 0.42), transparent 48%);
+        transform: scale(1.02);
       }
       50% {
         background-image:
-          linear-gradient(to right, rgba(30, 144, 255, 0.38), transparent 55%),
-          linear-gradient(to left, rgba(30, 144, 255, 0.38), transparent 55%),
-          linear-gradient(to bottom, rgba(30, 144, 255, 0.38), transparent 55%),
-          linear-gradient(to top, rgba(30, 144, 255, 0.38), transparent 55%);
-        transform: scale(1.05);
+          linear-gradient(to right, rgba(30, 144, 255, 0.45), transparent 45%),
+          linear-gradient(to left, rgba(30, 144, 255, 0.45), transparent 45%),
+          linear-gradient(to bottom, rgba(30, 144, 255, 0.45), transparent 45%),
+          linear-gradient(to top, rgba(30, 144, 255, 0.45), transparent 45%);
+        transform: scale(1.04);
       }
       75% {
         background-image:
-          linear-gradient(to right, rgba(30, 144, 255, 0.39), transparent 52%),
-          linear-gradient(to left, rgba(30, 144, 255, 0.39), transparent 52%),
-          linear-gradient(to bottom, rgba(30, 144, 255, 0.39), transparent 52%),
-          linear-gradient(to top, rgba(30, 144, 255, 0.39), transparent 52%);
-        transform: scale(1.03);
+          linear-gradient(to right, rgba(30, 144, 255, 0.42), transparent 48%),
+          linear-gradient(to left, rgba(30, 144, 255, 0.42), transparent 48%),
+          linear-gradient(to bottom, rgba(30, 144, 255, 0.42), transparent 48%),
+          linear-gradient(to top, rgba(30, 144, 255, 0.42), transparent 48%);
+        transform: scale(1.02);
       }
     }
     `;
