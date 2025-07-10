@@ -99,14 +99,20 @@ class ElementFiller {
           resolve(null);
         }
 
-        const elementList = document.querySelectorAll(selectorList.join(","));
-        // 过滤出可见的元素
-        const visibleElementList = Array.from(elementList).filter((element) =>
-          this.isElementVisible(element as FillableElement)
-        );
-        if (visibleElementList.length > 0 && dataCheckFn(visibleElementList[0])) {
+        let activeElement: Element | null = null;
+        selectorList.forEach((selector) => {
+          const elementList = document.querySelectorAll(`.${selector}`);
+          const visibleElementList = Array.from(elementList).filter((element) =>
+            this.isElementVisible(element as FillableElement)
+          );
+          if (visibleElementList.length > 0) {
+            [activeElement] = visibleElementList;
+          }
+        });
+
+        if (activeElement && dataCheckFn(activeElement)) {
           clearInterval(interval);
-          resolve(visibleElementList[0]);
+          resolve(activeElement);
         }
       }, 100);
     });

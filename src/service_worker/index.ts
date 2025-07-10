@@ -1,7 +1,7 @@
 import { CreateContextMenus, GetFakeFillerOptions, GetMessage } from "src/common/helpers";
 // , SaveFakeFillerOptions
 
-import { MessageRequest, IProfile, IFakeFillerOptions } from "src/types";
+import { IProfile, IFakeFillerOptions } from "src/types";
 
 async function getCurrentTabId() {
   const queryOptions = { active: true, lastFocusedWindow: true };

@@ -1,5 +1,3 @@
-import { ifInBrowser } from "src/shared/utils";
-
 // remember to include this file into extension's package
 // extract html element from page
 let scriptFileContentCache: string | null = null;

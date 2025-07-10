@@ -35,21 +35,21 @@ export abstract class AbstractPage {
 
   get mouse(): MouseAction {
     return {
-      click: async (x: number, y: number, options: { button: MouseButton }) => {},
-      wheel: async (deltaX: number, deltaY: number) => {},
-      move: async (x: number, y: number) => {},
-      drag: async (from: { x: number; y: number }, to: { x: number; y: number }) => {},
+      click: async (_x: number, _y: number, _options: { button: MouseButton }) => {},
+      wheel: async (_deltaX: number, _deltaY: number) => {},
+      move: async (_x: number, _y: number) => {},
+      drag: async (_from: { x: number; y: number }, _to: { x: number; y: number }) => {},
     };
   }
 
   get keyboard(): KeyboardAction {
     return {
-      type: async (text: string) => {},
-      press: async (action: { key: WebKeyInput; command?: string } | { key: WebKeyInput; command?: string }[]) => {},
+      type: async (_text: string) => {},
+      press: async (_action: { key: WebKeyInput; command?: string } | { key: WebKeyInput; command?: string }[]) => {},
     };
   }
 
-  async clearInput(element: ElementInfo): Promise<void> {}
+  async clearInput(_element: ElementInfo): Promise<void> {}
 
   abstract scrollUntilTop(startingPoint?: Point): Promise<void>;
   abstract scrollUntilBottom(startingPoint?: Point): Promise<void>;
