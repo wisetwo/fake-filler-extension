@@ -1,5 +1,3 @@
-import fs from "node:fs";
-
 import { ifInBrowser } from "src/shared/utils";
 
 // remember to include this file into extension's package
@@ -8,12 +6,9 @@ let scriptFileContentCache: string | null = null;
 export const getHtmlElementScript = async () => {
   const scriptFileToRetrieve = chrome.runtime.getURL("build/htmlElement.js");
   if (scriptFileContentCache) return scriptFileContentCache;
-  if (ifInBrowser) {
-    const script = await fetch(scriptFileToRetrieve);
-    scriptFileContentCache = await script.text();
-    return scriptFileContentCache;
-  }
-  return fs.readFileSync(scriptFileToRetrieve, "utf8");
+  const script = await fetch(scriptFileToRetrieve);
+  scriptFileContentCache = await script.text();
+  return scriptFileContentCache;
 };
 
 // inject water flow animation
@@ -21,12 +16,9 @@ let waterFlowScriptFileContentCache: string | null = null;
 export const injectWaterFlowAnimation = async () => {
   const waterFlowScriptFileToRetrieve = chrome.runtime.getURL("build/water-flow.js");
   if (waterFlowScriptFileContentCache) return waterFlowScriptFileContentCache;
-  if (ifInBrowser) {
-    const script = await fetch(waterFlowScriptFileToRetrieve);
-    waterFlowScriptFileContentCache = await script.text();
-    return waterFlowScriptFileContentCache;
-  }
-  return fs.readFileSync(waterFlowScriptFileToRetrieve, "utf8");
+  const script = await fetch(waterFlowScriptFileToRetrieve);
+  waterFlowScriptFileContentCache = await script.text();
+  return waterFlowScriptFileContentCache;
 };
 
 // inject stop water flow animation
@@ -34,10 +26,7 @@ let stopWaterFlowScriptFileContentCache: string | null = null;
 export const injectStopWaterFlowAnimation = async () => {
   const stopWaterFlowScriptFileToRetrieve = chrome.runtime.getURL("build/stop-water-flow.js");
   if (stopWaterFlowScriptFileContentCache) return stopWaterFlowScriptFileContentCache;
-  if (ifInBrowser) {
-    const script = await fetch(stopWaterFlowScriptFileToRetrieve);
-    stopWaterFlowScriptFileContentCache = await script.text();
-    return stopWaterFlowScriptFileContentCache;
-  }
-  return fs.readFileSync(stopWaterFlowScriptFileToRetrieve, "utf8");
+  const script = await fetch(stopWaterFlowScriptFileToRetrieve);
+  stopWaterFlowScriptFileContentCache = await script.text();
+  return stopWaterFlowScriptFileContentCache;
 };
