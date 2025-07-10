@@ -46,29 +46,31 @@ export default class ChromeExtensionProxyPage implements AbstractPage {
     this.forceSameTabNavigation = forceSameTabNavigation;
   }
 
-  public async setActiveTabId(tabId: number) {
-    if (this.activeTabId) {
-      throw new Error(`Active tab id is already set, which is ${this.activeTabId}, cannot set it to ${tabId}`);
-    }
-    await chrome.tabs.update(tabId, { active: true });
-    this.activeTabId = tabId;
+  private async sendMessage<T>(message: any): Promise<T> {
+    return new Promise((resolve, reject) => {
+      chrome.runtime.sendMessage(message, (response) => {
+        if (chrome.runtime.lastError) {
+          reject(chrome.runtime.lastError);
+          return;
+        }
+        if (response.error) {
+          reject(new Error(response.error));
+          return;
+        }
+        resolve(response as T);
+      });
+    });
   }
 
-  public async getActiveTabId() {
-    return this.activeTabId;
-  }
-
-  /**
-   * Get a list of current tabs
-   * @returns {Promise<Array<{id: number, title: string, url: string}>>}
-   */
   public async getBrowserTabList(): Promise<{ id: string; title: string; url: string; currentActiveTab: boolean }[]> {
-    const tabs = await chrome.tabs.query({ currentWindow: true });
-    return tabs
+    const response = await this.sendMessage<{ tabs: chrome.tabs.Tab[] }>({
+      type: "GET_TAB_LIST",
+    });
+    return response.tabs
       .map((tab) => ({
         id: `${tab.id}`,
-        title: tab.title,
-        url: tab.url,
+        title: tab.title || "",
+        url: tab.url || "",
         currentActiveTab: tab.active,
       }))
       .filter((tab) => tab.id && tab.title && tab.url) as {
@@ -81,11 +83,28 @@ export default class ChromeExtensionProxyPage implements AbstractPage {
 
   public async getTabIdOrConnectToCurrentTab() {
     if (this.activeTabId) {
-      // alway keep on the connected tab
+      // always keep on the connected tab
       return this.activeTabId;
     }
-    const tabId = await chrome.tabs.query({ active: true, currentWindow: true }).then((tabs) => tabs[0]?.id);
-    this.activeTabId = tabId || 0;
+    const response = await this.sendMessage<{ tabId: number }>({
+      type: "GET_ACTIVE_TAB",
+    });
+    this.activeTabId = response.tabId;
+    return this.activeTabId;
+  }
+
+  public async setActiveTabId(tabId: number) {
+    if (this.activeTabId) {
+      throw new Error(`Active tab id is already set, which is ${this.activeTabId}, cannot set it to ${tabId}`);
+    }
+    await this.sendMessage({
+      type: "SET_ACTIVE_TAB",
+      tabId,
+    });
+    this.activeTabId = tabId;
+  }
+
+  public async getActiveTabId() {
     return this.activeTabId;
   }
 
@@ -377,8 +396,11 @@ export default class ChromeExtensionProxyPage implements AbstractPage {
 
   async url() {
     const tabId = await this.getTabIdOrConnectToCurrentTab();
-    const url = await chrome.tabs.get(tabId).then((tab) => tab.url);
-    return url || "";
+    const response = await this.sendMessage<{ url: string }>({
+      type: "GET_TAB_URL",
+      tabId,
+    });
+    return response.url || "";
   }
 
   async scrollUntilTop(startingPoint?: Point) {
