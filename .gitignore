@@ -4,6 +4,6 @@ dist.*
 .env*
 .vscode/
 .DS_Store
-other_projects/
 .vscode/settings.json
 .DS_Store
+extension_output/

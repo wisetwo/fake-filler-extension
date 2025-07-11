@@ -31,7 +31,8 @@
     "src",
     "webpack.config.ts",
     "webpack.config.dev.ts",
-    "webpack.config.prod.ts"
+    "webpack.config.prod.ts",
+    "scripts"
   ],
   "exclude": [
     "node_modules",
