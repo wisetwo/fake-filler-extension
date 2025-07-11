@@ -22,7 +22,7 @@ function App() {
       <ScrollToTop />
       <Navbar bg="dark" variant="dark" expand="lg">
         <Navbar.Brand>
-          <img src="images/logo-white.svg" height="30" alt={GetMessage("extensionName")} />
+          <img src="images/logo-256.png" height="30" alt={GetMessage("extensionName")} />
         </Navbar.Brand>
         <Navbar.Toggle aria-controls="main-navbar-nav" />
         <Navbar.Collapse id="main-navbar-nav">
