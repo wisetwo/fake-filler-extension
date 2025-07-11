@@ -6,3 +6,4 @@ dist.*
 .DS_Store
 other_projects/
 .vscode/settings.json
+.DS_Store
