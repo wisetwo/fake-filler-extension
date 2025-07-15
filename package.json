@@ -2,7 +2,6 @@
   "name": "fake-filler",
   "version": "1.0.1",
   "description": "Fills all inputs in a page with dummy data.",
-  "type": "module",
   "engines": {
     "node": ">=16.0.0",
     "npm": ">=8.0.0"

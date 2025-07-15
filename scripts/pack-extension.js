@@ -1,15 +1,12 @@
 #!/usr/bin/env node
 
-import fs from "node:fs";
-import path from "node:path";
-import { fileURLToPath } from "node:url";
+const fs = require("node:fs");
+const path = require("node:path");
 
 // eslint-disable-next-line import/no-extraneous-dependencies
-import archiver from "archiver";
+const archiver = require("archiver");
 
-// Get the directory path of the current file
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+// In CommonJS, __dirname is already available as a global variable
 
 // Read package.json
 const packageJsonPath = path.resolve(__dirname, "../package.json");
