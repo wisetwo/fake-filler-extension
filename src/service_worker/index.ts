@@ -198,15 +198,20 @@ function fillThisInput() {
   window.fakeFiller.fillThisInput();
 }
 
-chrome.action.onClicked.addListener(async () => {
-  await chrome.scripting.executeScript({
-    func: fillAllInputs,
-    target: {
-      allFrames: true,
-      tabId: await getCurrentTabId(),
-    },
-  });
-});
+// https://developer.chrome.com/docs/extensions/reference/api/sidePanel?hl=zh-cn
+chrome.sidePanel
+  .setPanelBehavior({ openPanelOnActionClick: true })
+  .catch((error) => console.error(error));
+
+// chrome.action.onClicked.addListener(async () => {
+//   await chrome.scripting.executeScript({
+//     func: fillAllInputs,
+//     target: {
+//       allFrames: true,
+//       tabId: await getCurrentTabId(),
+//     },
+//   });
+// });
 
 GetFakeFillerOptions().then((options) => {
   CreateContextMenus(options.enableContextMenu);

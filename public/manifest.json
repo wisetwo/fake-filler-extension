@@ -16,6 +16,8 @@
   "permissions": [
     "contextMenus",
     "activeTab",
+    "tabs",
+    "sidePanel",
     "storage",
     "scripting",
     "debugger"
@@ -30,6 +32,9 @@
       "128": "images/logo-128.png"
     },
     "default_title": "__MSG_ActionTitle__"
+  },
+  "side_panel": {
+    "default_path": "popup.html"
   },
   "commands": {
     "fill_all_inputs": {
