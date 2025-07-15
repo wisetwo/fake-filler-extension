@@ -25,7 +25,10 @@
     "noEmitOnError": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    "paths": {
+      "src/*": ["src/*"]
+    }
   },
   "include": [
     "src",
