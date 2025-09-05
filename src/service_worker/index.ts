@@ -140,49 +140,30 @@ async function handleMessage(message: any): Promise<any> {
       case "FILL_ALL_INPUTS": {
         console.log("Filling all inputs from side panel");
         try {
-          await chrome.scripting.executeScript({
+          const tabId = await getCurrentTabId();
+          console.log("Current tab ID:", tabId);
+
+          if (tabId === -1) {
+            throw new Error("No active tab found");
+          }
+
+          const results = await chrome.scripting.executeScript({
             func: fillAllInputs,
             target: {
               allFrames: true,
-              tabId: await getCurrentTabId(),
+              tabId,
             },
           });
+
+          console.log("Script execution results:", results);
           return { success: true };
         } catch (error) {
           console.error("Failed to fill all inputs:", error);
-          throw error;
-        }
-      }
-      case "FILL_THIS_FORM": {
-        console.log("Filling this form from side panel");
-        try {
-          await chrome.scripting.executeScript({
-            func: fillThisForm,
-            target: {
-              allFrames: true,
-              tabId: await getCurrentTabId(),
-            },
-          });
-          return { success: true };
-        } catch (error) {
-          console.error("Failed to fill this form:", error);
-          throw error;
-        }
-      }
-      case "FILL_THIS_INPUT": {
-        console.log("Filling this input from side panel");
-        try {
-          await chrome.scripting.executeScript({
-            func: fillThisInput,
-            target: {
-              allFrames: true,
-              tabId: await getCurrentTabId(),
-            },
-          });
-          return { success: true };
-        } catch (error) {
-          console.error("Failed to fill this input:", error);
-          throw error;
+          // 返回更友好的错误信息给前端
+          return {
+            success: false,
+            error: error instanceof Error ? error.message : "Unknown error occurred",
+          };
         }
       }
       default: {

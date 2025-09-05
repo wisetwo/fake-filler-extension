@@ -8,19 +8,23 @@ const SidePanel: React.FC = () => {
     setIsLoading(true);
     try {
       const response = await chrome.runtime.sendMessage({ type: action });
-      if (response.error) {
-        console.error("Error:", response.error);
+      if (response.error || !response.success) {
+        const errorMsg = response.error || "操作失败";
+        console.error("Error:", errorMsg);
+        alert(`错误: ${errorMsg}`);
+      } else {
+        console.log("操作成功完成");
+        // 可以显示成功提示
       }
     } catch (error) {
       console.error("Failed to send message:", error);
+      alert(`通信错误: ${error instanceof Error ? error.message : "未知错误"}`);
     } finally {
       setIsLoading(false);
     }
   };
 
   const handleFillAllInputs = () => sendMessage("FILL_ALL_INPUTS");
-  const handleFillThisForm = () => sendMessage("FILL_THIS_FORM");
-  const handleFillThisInput = () => sendMessage("FILL_THIS_INPUT");
 
   return (
     <div
@@ -54,97 +58,41 @@ const SidePanel: React.FC = () => {
         </p>
       </div>
 
-      <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-        <button
-          type="button"
-          onClick={handleFillAllInputs}
-          disabled={isLoading}
-          style={{
-            padding: "12px 16px",
-            backgroundColor: "#007bff",
-            color: "white",
-            border: "none",
-            borderRadius: "6px",
-            fontSize: "14px",
-            fontWeight: "500",
-            cursor: isLoading ? "not-allowed" : "pointer",
-            transition: "background-color 0.2s ease",
-            opacity: isLoading ? 0.6 : 1,
-          }}
-          onFocus={(e) => {
-            if (!isLoading) {
-              (e.target as HTMLButtonElement).style.backgroundColor = "#0056b3";
-            }
-          }}
-          onBlur={(e) => {
-            if (!isLoading) {
-              (e.target as HTMLButtonElement).style.backgroundColor = "#007bff";
-            }
-          }}
-        >
-          {isLoading ? "处理中..." : "填充所有输入框"}
-        </button>
-
-        <button
-          type="button"
-          onClick={handleFillThisForm}
-          disabled={isLoading}
-          style={{
-            padding: "12px 16px",
-            backgroundColor: "#28a745",
-            color: "white",
-            border: "none",
-            borderRadius: "6px",
-            fontSize: "14px",
-            fontWeight: "500",
-            cursor: isLoading ? "not-allowed" : "pointer",
-            transition: "background-color 0.2s ease",
-            opacity: isLoading ? 0.6 : 1,
-          }}
-          onFocus={(e) => {
-            if (!isLoading) {
-              (e.target as HTMLButtonElement).style.backgroundColor = "#1e7e34";
-            }
-          }}
-          onBlur={(e) => {
-            if (!isLoading) {
-              (e.target as HTMLButtonElement).style.backgroundColor = "#28a745";
-            }
-          }}
-        >
-          {isLoading ? "处理中..." : "填充当前表单"}
-        </button>
-
-        <button
-          type="button"
-          onClick={handleFillThisInput}
-          disabled={isLoading}
-          style={{
-            padding: "12px 16px",
-            backgroundColor: "#ffc107",
-            color: "#212529",
-            border: "none",
-            borderRadius: "6px",
-            fontSize: "14px",
-            fontWeight: "500",
-            cursor: isLoading ? "not-allowed" : "pointer",
-            transition: "background-color 0.2s ease",
-            opacity: isLoading ? 0.6 : 1,
-          }}
-          onFocus={(e) => {
-            if (!isLoading) {
-              (e.target as HTMLButtonElement).style.backgroundColor = "#e0a800";
-            }
-          }}
-          onBlur={(e) => {
-            if (!isLoading) {
-              (e.target as HTMLButtonElement).style.backgroundColor = "#ffc107";
-            }
-          }}
-        >
-          {isLoading ? "处理中..." : "填充当前输入框"}
-        </button>
-      </div>
+      <button
+        type="button"
+        onClick={handleFillAllInputs}
+        disabled={isLoading}
+        style={{
+          width: "100%",
+          padding: "16px 20px",
+          backgroundColor: "#007bff",
+          color: "white",
+          border: "none",
+          borderRadius: "8px",
+          fontSize: "16px",
+          fontWeight: "600",
+          cursor: isLoading ? "not-allowed" : "pointer",
+          transition: "all 0.2s ease",
+          opacity: isLoading ? 0.6 : 1,
+          boxShadow: "0 2px 4px rgba(0, 123, 255, 0.2)",
+        }}
+        onFocus={(e) => {
+          if (!isLoading) {
+            (e.target as HTMLButtonElement).style.backgroundColor = "#0056b3";
+            (e.target as HTMLButtonElement).style.transform = "translateY(-1px)";
+            (e.target as HTMLButtonElement).style.boxShadow = "0 4px 8px rgba(0, 123, 255, 0.3)";
+          }
+        }}
+        onBlur={(e) => {
+          if (!isLoading) {
+            (e.target as HTMLButtonElement).style.backgroundColor = "#007bff";
+            (e.target as HTMLButtonElement).style.transform = "translateY(0)";
+            (e.target as HTMLButtonElement).style.boxShadow = "0 2px 4px rgba(0, 123, 255, 0.2)";
+          }
+        }}
+      >
+        {isLoading ? "正在填充..." : "🚀 填充所有输入框"}
+      </button>
 
       <div
         style={{

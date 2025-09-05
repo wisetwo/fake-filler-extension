@@ -22,6 +22,9 @@
     "scripting",
     "debugger"
   ],
+  "host_permissions": [
+    "<all_urls>"
+  ],
   "action": {
     "default_icon": {
       "16": "images/logo-16.png",
