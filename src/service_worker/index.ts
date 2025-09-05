@@ -137,6 +137,54 @@ async function handleMessage(message: any): Promise<any> {
           throw error;
         }
       }
+      case "FILL_ALL_INPUTS": {
+        console.log("Filling all inputs from side panel");
+        try {
+          await chrome.scripting.executeScript({
+            func: fillAllInputs,
+            target: {
+              allFrames: true,
+              tabId: await getCurrentTabId(),
+            },
+          });
+          return { success: true };
+        } catch (error) {
+          console.error("Failed to fill all inputs:", error);
+          throw error;
+        }
+      }
+      case "FILL_THIS_FORM": {
+        console.log("Filling this form from side panel");
+        try {
+          await chrome.scripting.executeScript({
+            func: fillThisForm,
+            target: {
+              allFrames: true,
+              tabId: await getCurrentTabId(),
+            },
+          });
+          return { success: true };
+        } catch (error) {
+          console.error("Failed to fill this form:", error);
+          throw error;
+        }
+      }
+      case "FILL_THIS_INPUT": {
+        console.log("Filling this input from side panel");
+        try {
+          await chrome.scripting.executeScript({
+            func: fillThisInput,
+            target: {
+              allFrames: true,
+              tabId: await getCurrentTabId(),
+            },
+          });
+          return { success: true };
+        } catch (error) {
+          console.error("Failed to fill this input:", error);
+          throw error;
+        }
+      }
       default: {
         throw new Error(`Unknown message type: ${message.type}`);
       }
@@ -199,9 +247,7 @@ function fillThisInput() {
 }
 
 // https://developer.chrome.com/docs/extensions/reference/api/sidePanel?hl=zh-cn
-chrome.sidePanel
-  .setPanelBehavior({ openPanelOnActionClick: true })
-  .catch((error) => console.error(error));
+chrome.sidePanel.setPanelBehavior({ openPanelOnActionClick: true }).catch((error) => console.error(error));
 
 // chrome.action.onClicked.addListener(async () => {
 //   await chrome.scripting.executeScript({
