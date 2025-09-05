@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { render } from "react-dom";
+import "bootstrap-icons/font/bootstrap-icons.css";
 
 const SidePanel: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -26,6 +27,18 @@ const SidePanel: React.FC = () => {
 
   const handleFillAllInputs = () => sendMessage("FILL_ALL_INPUTS");
 
+  const handleOpenSettings = () => {
+    if (chrome.runtime.openOptionsPage) {
+      chrome.runtime.openOptionsPage();
+    } else {
+      console.log("chrome.runtime.openOptionsPage not available");
+      // 方法2：使用chrome.tabs.create作为备选
+      chrome.tabs.create({
+        url: chrome.runtime.getURL("options.html"),
+      });
+    }
+  };
+
   return (
     <div
       style={{
@@ -35,7 +48,26 @@ const SidePanel: React.FC = () => {
         backgroundColor: "#f8f9fa",
       }}
     >
-      <div style={{ marginBottom: "20px" }}>
+      <div style={{ marginBottom: "20px", position: "relative" }}>
+        <button
+          type="button"
+          onClick={handleOpenSettings}
+          style={{
+            position: "absolute",
+            top: "0",
+            right: "0",
+            background: "none",
+            border: "none",
+            fontSize: "16px",
+            cursor: "pointer",
+            padding: "8px",
+            color: "#999",
+          }}
+          title="设置"
+          aria-label="设置"
+        >
+          <i className="bi bi-gear" />
+        </button>
         <h2
           style={{
             margin: "0 0 10px 0",

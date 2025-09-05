@@ -36,6 +36,27 @@ const webpackConfig: webpack.Configuration = {
         exclude: /node_modules/,
       },
       {
+        test: /\.css$/,
+        use: [
+          { loader: MiniCssExtractPlugin.loader },
+          {
+            loader: "css-loader",
+            options: {
+              sourceMap: true,
+            },
+          },
+          {
+            loader: "postcss-loader",
+            options: {
+              sourceMap: true,
+              postcssOptions: {
+                plugins: [autoprefixer(), cssnano()],
+              },
+            },
+          },
+        ],
+      },
+      {
         test: /\.(scss|sass)$/,
         use: [
           { loader: MiniCssExtractPlugin.loader },
@@ -80,6 +101,14 @@ const webpackConfig: webpack.Configuration = {
         generator: {
           filename: "media/[hash][ext]",
           publicPath: "build/media/",
+        },
+      },
+      {
+        test: /\.(woff|woff2|eot|ttf|otf)$/,
+        type: "asset/resource",
+        generator: {
+          filename: "fonts/[hash][ext]",
+          publicPath: "../",
         },
       },
     ],
