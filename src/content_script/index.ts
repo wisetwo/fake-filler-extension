@@ -41,11 +41,46 @@ function initialize(options: IFakeFillerOptions) {
   window.fakeFiller = new FakeFiller(options, profileIndex);
 }
 
-function handleMessage(request: MessageRequest): boolean | null {
+function handleMessage(request: MessageRequest, sender: any, sendResponse: any): boolean | null {
   switch (request.type) {
     case "receiveNewOptions": {
       const options = request.data.options as IFakeFillerOptions;
       initialize(options);
+      sendResponse({ success: true });
+      return true;
+    }
+
+    case "HIGHLIGHT_FORM_ELEMENTS": {
+      try {
+        if (window.fakeFiller) {
+          window.fakeFiller.highlightFormElements();
+          sendResponse({ success: true });
+        } else {
+          sendResponse({ success: false, error: "FakeFiller not initialized" });
+        }
+      } catch (error) {
+        sendResponse({
+          success: false,
+          error: error instanceof Error ? error.message : "Unknown error"
+        });
+      }
+      return true;
+    }
+
+    case "CLEAR_FORM_HIGHLIGHT": {
+      try {
+        if (window.fakeFiller) {
+          window.fakeFiller.clearFormHighlight();
+          sendResponse({ success: true });
+        } else {
+          sendResponse({ success: false, error: "FakeFiller not initialized" });
+        }
+      } catch (error) {
+        sendResponse({
+          success: false,
+          error: error instanceof Error ? error.message : "Unknown error"
+        });
+      }
       return true;
     }
 

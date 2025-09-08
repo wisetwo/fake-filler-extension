@@ -27,6 +27,10 @@ const SidePanel: React.FC = () => {
 
   const handleFillAllInputs = () => sendMessage("FILL_ALL_INPUTS");
 
+  const handleHighlightElements = () => sendMessage("HIGHLIGHT_FORM_ELEMENTS");
+
+  const handleClearHighlight = () => sendMessage("CLEAR_FORM_HIGHLIGHT");
+
   const handleOpenSettings = () => {
     if (chrome.runtime.openOptionsPage) {
       chrome.runtime.openOptionsPage();
@@ -124,6 +128,57 @@ const SidePanel: React.FC = () => {
       >
         {isLoading ? "正在填充..." : "🚀 填充所有输入框"}
       </button>
+
+      {/* 两个小按钮 */}
+      <div
+        style={{
+          display: "flex",
+          gap: "10px",
+          marginTop: "15px",
+        }}
+      >
+        <button
+          type="button"
+          onClick={handleHighlightElements}
+          disabled={isLoading}
+          style={{
+            flex: 1,
+            padding: "12px 16px",
+            backgroundColor: "#28a745",
+            color: "white",
+            border: "none",
+            borderRadius: "6px",
+            fontSize: "14px",
+            fontWeight: "500",
+            cursor: isLoading ? "not-allowed" : "pointer",
+            transition: "all 0.2s ease",
+            opacity: isLoading ? 0.6 : 1,
+          }}
+        >
+          🔍 识别表单
+        </button>
+
+        <button
+          type="button"
+          onClick={handleClearHighlight}
+          disabled={isLoading}
+          style={{
+            flex: 1,
+            padding: "12px 16px",
+            backgroundColor: "#6c757d",
+            color: "white",
+            border: "none",
+            borderRadius: "6px",
+            fontSize: "14px",
+            fontWeight: "500",
+            cursor: isLoading ? "not-allowed" : "pointer",
+            transition: "all 0.2s ease",
+            opacity: isLoading ? 0.6 : 1,
+          }}
+        >
+          🧹 清除识别
+        </button>
+      </div>
 
       <div
         style={{

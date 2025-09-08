@@ -14,11 +14,13 @@ function NotifyTabsOfNewOptions(options: IFakeFillerOptions) {
   chrome.tabs.query({}, (tabs: any[]) => {
     tabs.forEach((tab: { id: any }) => {
       if (tab && tab.id && tab.id !== chrome.tabs.TAB_ID_NONE) {
-        chrome.tabs.sendMessage(
-          tab.id,
-          { type: "receiveNewOptions", data: { options } },
-          () => chrome.runtime.lastError
-        );
+        chrome.tabs.sendMessage(tab.id, { type: "receiveNewOptions", data: { options } }, (response) => {
+          if (chrome.runtime.lastError) {
+            console.log(`Failed to notify tab ${tab.id}:`, chrome.runtime.lastError.message);
+          } else {
+            console.log(`Successfully notified tab ${tab.id}`, response);
+          }
+        });
       }
     });
   });
@@ -160,6 +162,60 @@ async function handleMessage(message: any): Promise<any> {
         } catch (error) {
           console.error("Failed to fill all inputs:", error);
           // 返回更友好的错误信息给前端
+          return {
+            success: false,
+            error: error instanceof Error ? error.message : "Unknown error occurred",
+          };
+        }
+      }
+      case "HIGHLIGHT_FORM_ELEMENTS": {
+        console.log("Highlighting form elements from side panel");
+        try {
+          const tabId = await getCurrentTabId();
+          console.log("Current tab ID:", tabId);
+
+          if (tabId === -1) {
+            throw new Error("No active tab found");
+          }
+
+          // 发送消息到content script并等待响应
+          const response = await chrome.tabs.sendMessage(tabId, { type: "HIGHLIGHT_FORM_ELEMENTS" });
+          console.log("Content script response:", response);
+
+          if (response && response.success) {
+            console.log("Successfully highlighted form elements");
+            return { success: true };
+          }
+          throw new Error(response?.error || "Content script returned failure");
+        } catch (error) {
+          console.error("Failed to highlight form elements:", error);
+          return {
+            success: false,
+            error: error instanceof Error ? error.message : "Unknown error occurred",
+          };
+        }
+      }
+      case "CLEAR_FORM_HIGHLIGHT": {
+        console.log("Clearing form highlight from side panel");
+        try {
+          const tabId = await getCurrentTabId();
+          console.log("Current tab ID:", tabId);
+
+          if (tabId === -1) {
+            throw new Error("No active tab found");
+          }
+
+          // 发送消息到content script并等待响应
+          const response = await chrome.tabs.sendMessage(tabId, { type: "CLEAR_FORM_HIGHLIGHT" });
+          console.log("Content script response:", response);
+
+          if (response && response.success) {
+            console.log("Successfully cleared form highlight");
+            return { success: true };
+          }
+          throw new Error(response?.error || "Content script returned failure");
+        } catch (error) {
+          console.error("Failed to clear form highlight:", error);
           return {
             success: false,
             error: error instanceof Error ? error.message : "Unknown error occurred",

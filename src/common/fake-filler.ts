@@ -145,6 +145,75 @@ class FakeFiller {
     }
   }
 
+  /**
+   * 获取容器内所有可填充的元素
+   * @param container 容器元素，默认为document
+   * @returns 可填充的元素数组
+   */
+  public getFillableElements(container: Document | HTMLElement = document): Element[] {
+    return [
+      // 下拉框可能是readonly的，看能否优化 TODO
+      ...Array.from(container.querySelectorAll("input:not(:disabled)")),
+      ...Array.from(container.querySelectorAll("textarea:not(:disabled):not([readonly])")),
+      ...Array.from(container.querySelectorAll("select:not(:disabled):not([readonly])")),
+      ...Array.from(container.querySelectorAll("[contenteditable]")),
+    ];
+  }
+
+  /**
+   * 高亮显示页面中所有可填充的表单元素
+   */
+  public highlightFormElements(): void {
+    if (this.urlMatchesBlockList()) {
+      return;
+    }
+
+    // 先确保CSS样式已添加
+    this.addHighlightStyles();
+
+    // 获取所有可填充的元素并添加高亮class
+    const fillableElements = this.getFillableElements();
+    fillableElements.forEach((element) => {
+      element.classList.add("fake-filler-element-highlight");
+    });
+
+    console.log(`已高亮显示 ${fillableElements.length} 个可填充元素`);
+  }
+
+  /**
+   * 清除页面中所有元素的高亮显示
+   */
+  public clearFormHighlight(): void {
+    // 移除所有带有高亮class的元素的class
+    const highlightedElements = document.querySelectorAll(".fake-filler-element-highlight");
+    highlightedElements.forEach((element) => {
+      element.classList.remove("fake-filler-element-highlight");
+    });
+
+    console.log(`已清除 ${highlightedElements.length} 个元素的高亮显示`);
+  }
+
+  /**
+   * 添加高亮显示的CSS样式到页面
+   */
+  private addHighlightStyles(): void {
+    // 检查是否已经存在样式
+    if (document.getElementById("fake-filler-highlight-styles")) {
+      return;
+    }
+
+    const style = document.createElement("style");
+    style.id = "fake-filler-highlight-styles";
+    style.textContent = `
+      .fake-filler-element-highlight {
+        outline: 2px solid #ff6b6b !important;
+        background-color: rgba(255, 107, 107, 0.1) !important;
+        transition: all 0.3s ease-in-out !important;
+      }
+    `;
+    document.head.appendChild(style);
+  }
+
   private async fillAllElements(container: Document | HTMLElement): Promise<void> {
     console.log("# fillAllElements", container);
     if (this.urlMatchesBlockList()) {
@@ -161,13 +230,7 @@ class FakeFiller {
         });
 
       // 获取所有需要填充的元素
-      const fillableElements = [
-        // 下拉框可能是readonly的，看能否优化 TODO
-        ...Array.from(container.querySelectorAll("input:not(:disabled)")),
-        ...Array.from(container.querySelectorAll("textarea:not(:disabled):not([readonly])")),
-        ...Array.from(container.querySelectorAll("select:not(:disabled):not([readonly])")),
-        ...Array.from(container.querySelectorAll("[contenteditable]")),
-      ];
+      const fillableElements = this.getFillableElements(container);
 
       // 创建一个填充单个元素的函数
       const fillElement: FillElementFunction = async (element) => {
