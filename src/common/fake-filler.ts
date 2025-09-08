@@ -19,7 +19,7 @@ class FakeFiller {
     this.urlMatchesToBlock = options.urlMatchesToBlock;
   }
 
-  private checkWrappedSelect(element: Element): { isWrappedSelect: boolean; isMultiSelect: boolean } {
+  private getInputInfo(element: Element): { isWrappedSelect: boolean; isMultiSelect: boolean } {
     let { parentElement } = element;
     let isWrappedSelect = false;
     let isMultiSelect = false;
@@ -37,7 +37,7 @@ class FakeFiller {
   }
 
   private async handleInputElement(element: HTMLInputElement): Promise<void> {
-    const { isWrappedSelect, isMultiSelect } = this.checkWrappedSelect(element);
+    const { isWrappedSelect, isMultiSelect } = this.getInputInfo(element);
     console.log("~        handle input         ~");
     console.log("# handleInputElement", element);
     console.log("isWrappedSelect, isMultiSelect", isWrappedSelect, isMultiSelect);
