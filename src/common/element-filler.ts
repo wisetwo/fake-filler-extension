@@ -229,20 +229,12 @@ class ElementFiller {
       await sleep(50);
       try {
         await this.simulateClick(option);
-        await this.clickAtBlankArea();
       } catch (error) {
         console.error("Failed to click using page operator, falling back to events", error);
         option.click();
       }
       // selected = true;
     }
-
-    // 如果是单选，点击会自动关闭下拉框
-    // 如果是多选，需要点击输入框来关闭下拉框
-    // if (selected && isMultiSelect) {
-    //   await sleep(50);
-    //   await this.clickAtBlankArea();
-    // }
   }
 
   private isAnyMatch(haystack: string, needles: string[]): boolean {
