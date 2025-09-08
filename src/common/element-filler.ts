@@ -93,21 +93,22 @@ class ElementFiller {
 
   /**
    * 在元素周围寻找安全的点击位置
-   * 按照上、右、下、左的顺序，从10px开始递增到500px搜索
+   * 按照上、右、下、左的顺序，从元素边界外10px开始递增到500px搜索
    */
   private findSafeClickPositionAroundElement(element: HTMLElement): { x: number; y: number } | null {
     const rect = element.getBoundingClientRect();
     const centerX = rect.left + rect.width / 2;
     const centerY = rect.top + rect.height / 2;
 
-    // 从10px开始，递增到500px
+    // 从10px开始，递增到500px（这个距离是从元素边界外开始计算的）
     for (let distance = 10; distance <= 500; distance += 10) {
       // 搜索四个方向：上、右、下、左
+      // 每个方向都从元素边界外开始搜索
       const directions = [
-        { x: centerX, y: centerY - distance }, // 上
-        { x: centerX + distance, y: centerY }, // 右
-        { x: centerX, y: centerY + distance }, // 下
-        { x: centerX - distance, y: centerY }, // 左
+        { x: centerX, y: rect.top - distance }, // 上：从元素上边界外开始
+        { x: rect.right + distance, y: centerY }, // 右：从元素右边界外开始
+        { x: centerX, y: rect.bottom + distance }, // 下：从元素下边界外开始
+        { x: rect.left - distance, y: centerY }, // 左：从元素左边界外开始
       ];
 
       for (const position of directions) {
