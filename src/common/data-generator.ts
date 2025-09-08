@@ -1,35 +1,30 @@
+import { faker } from "@faker-js/faker";
 import RandExp from "randexp";
 
-import * as data from "src/common/dummy-data";
 import { DEFAULT_TELEPHONE_TEMPLATE } from "src/common/helpers";
 
 class DataGenerator {
   public randomNumber(start: number, end: number, decimalPlaces = 0): number {
-    const min = Math.ceil(start);
-    const max = Math.floor(end);
-    let result = Math.random() * (max - min + 1) + min;
-
     if (decimalPlaces > 0) {
-      result = Number(result.toFixed(decimalPlaces));
-      result = result > max ? max : result;
-      return result;
+      return faker.number.float({ min: start, max: end, fractionDigits: decimalPlaces });
     }
-
-    return Math.floor(result);
+    return faker.number.int({ min: Math.ceil(start), max: Math.floor(end) });
   }
 
   public scrambledWord(minLength = 3, maxLength = 15): string {
     const wordLength = this.randomNumber(minLength, maxLength);
-    let resultWord = "";
-    let odd = true;
 
-    while (resultWord.length < wordLength) {
-      const newSymbol = odd
-        ? data.consonants[Math.floor(Math.random() * data.consonants.length)]
-        : data.vowels[Math.floor(Math.random() * data.vowels.length)];
+    // 生成一个假单词，如果长度不符合要求则调整
+    let resultWord = faker.lorem.word();
 
-      odd = !odd;
-      resultWord += newSymbol;
+    // 如果生成的单词太短，重复生成或添加字符
+    while (resultWord.length < minLength) {
+      resultWord += faker.lorem.word();
+    }
+
+    // 如果太长，截断到合适长度
+    if (resultWord.length > wordLength) {
+      resultWord = resultWord.substring(0, wordLength);
     }
 
     return resultWord;
@@ -37,14 +32,14 @@ class DataGenerator {
 
   public words(wordCount: number, minLength = 0, maxLength = 0): string {
     let resultPhrase = "";
-    let word = "";
     let phraseLength = 0;
 
-    // If the wordCount is insufficient to reach the minLength, the minLength takes precedence
+    // 如果 wordCount 不足以达到 minLength，则 minLength 优先
     for (let i = 0; i < wordCount || phraseLength < minLength; i += 1) {
-      word = data.wordBank[Math.floor(Math.random() * (data.wordBank.length - 1))];
+      let word = faker.lorem.word();
       phraseLength = resultPhrase.length;
 
+      // 句首大写处理
       if (
         phraseLength === 0 ||
         resultPhrase.substring(phraseLength - 1, phraseLength) === "." ||
@@ -54,6 +49,7 @@ class DataGenerator {
       }
 
       resultPhrase += phraseLength > 0 ? ` ${word}` : word;
+      phraseLength = resultPhrase.length;
     }
 
     if (maxLength && maxLength > 0) {
@@ -69,6 +65,11 @@ class DataGenerator {
     let returnValue = "";
     let currentCharacter = "";
     let ignore = false;
+
+    // 定义字符集
+    const alphabets = "abcdefghijklmnopqrstuvwxyz";
+    const consonants = "bcdfghjklmnpqrstvwxyz";
+    const vowels = "aeiou";
 
     for (; i < count; i += 1) {
       currentCharacter = template[i];
@@ -89,54 +90,47 @@ class DataGenerator {
         currentCharacter = "";
       }
 
-      const alphabetsLength = data.alphabets.length;
-      const consonantsLength = data.consonants.length;
-      const vowelsLength = data.vowels.length;
-
       switch (currentCharacter) {
         case "L":
-          returnValue += data.alphabets[Math.floor(Math.random() * (alphabetsLength - 1))].toUpperCase();
+          returnValue += (faker.helpers as any).arrayElement([...alphabets]).toUpperCase();
           break;
 
         case "l":
-          returnValue += data.alphabets[Math.floor(Math.random() * (alphabetsLength - 1))].toLowerCase();
+          returnValue += (faker.helpers as any).arrayElement([...alphabets]).toLowerCase();
           break;
 
         case "D":
-          returnValue +=
-            Math.random() > 0.5
-              ? data.alphabets[Math.floor(Math.random() * (alphabetsLength - 1))].toUpperCase()
-              : data.alphabets[Math.floor(Math.random() * (alphabetsLength - 1))].toLowerCase();
+          returnValue += faker.datatype.boolean()
+            ? (faker.helpers as any).arrayElement([...alphabets]).toUpperCase()
+            : (faker.helpers as any).arrayElement([...alphabets]).toLowerCase();
           break;
 
         case "C":
-          returnValue += data.consonants[Math.floor(Math.random() * (consonantsLength - 1))].toUpperCase();
+          returnValue += (faker.helpers as any).arrayElement([...consonants]).toUpperCase();
           break;
 
         case "c":
-          returnValue += data.consonants[Math.floor(Math.random() * (consonantsLength - 1))].toLowerCase();
+          returnValue += (faker.helpers as any).arrayElement([...consonants]).toLowerCase();
           break;
 
         case "E":
-          returnValue +=
-            Math.random() > 0.5
-              ? data.consonants[Math.floor(Math.random() * (consonantsLength - 1))].toUpperCase()
-              : data.consonants[Math.floor(Math.random() * (consonantsLength - 1))].toLowerCase();
+          returnValue += faker.datatype.boolean()
+            ? (faker.helpers as any).arrayElement([...consonants]).toUpperCase()
+            : (faker.helpers as any).arrayElement([...consonants]).toLowerCase();
           break;
 
         case "V":
-          returnValue += data.vowels[Math.floor(Math.random() * (vowelsLength - 1))].toUpperCase();
+          returnValue += (faker.helpers as any).arrayElement([...vowels]).toUpperCase();
           break;
 
         case "v":
-          returnValue += data.vowels[Math.floor(Math.random() * (vowelsLength - 1))].toLowerCase();
+          returnValue += (faker.helpers as any).arrayElement([...vowels]).toLowerCase();
           break;
 
         case "F":
-          returnValue +=
-            Math.random() > 0.5
-              ? data.vowels[Math.floor(Math.random() * (vowelsLength - 1))].toUpperCase()
-              : data.vowels[Math.floor(Math.random() * (vowelsLength - 1))].toLowerCase();
+          returnValue += faker.datatype.boolean()
+            ? (faker.helpers as any).arrayElement([...vowels]).toUpperCase()
+            : (faker.helpers as any).arrayElement([...vowels]).toLowerCase();
           break;
 
         case "X":
@@ -160,6 +154,7 @@ class DataGenerator {
     const wordCount = this.randomNumber(minWords, maxWords);
     let resultPhrase = this.words(wordCount, minLength, maxLength);
 
+    // 确保段落以感叹号结尾
     resultPhrase = resultPhrase.replace(/[?.!,;]? ?[^ ]*$/, "!");
 
     while (resultPhrase.length < minLength) {
@@ -173,6 +168,7 @@ class DataGenerator {
     const length = this.randomNumber(5, 20);
     let resultPhrase = this.words(length, minLength, maxLength);
 
+    // 移除标点符号和多余空格
     resultPhrase = resultPhrase.replace(/[^\w\s]|_/g, "").replace(/\s+/g, " ");
 
     if (resultPhrase.length < minLength) {
@@ -184,9 +180,8 @@ class DataGenerator {
   }
 
   public website(): string {
-    const scrambledWord = this.scrambledWord().toLowerCase();
-    const randomDomain = data.domains[this.randomNumber(0, data.domains.length - 1)];
-    return `https://www.${scrambledWord}${randomDomain}`;
+    // 生成随机网站URL
+    return faker.internet.url({ protocol: "https", appendSlash: false });
   }
 
   public phoneNumber(template: string = DEFAULT_TELEPHONE_TEMPLATE): string {
@@ -207,30 +202,27 @@ class DataGenerator {
   }
 
   public date(minimumDate?: Date, maximumDate?: Date): string {
-    let randomYear: number;
-    let randomMonth: number;
-    let randomDay: number;
+    let randomDate: Date;
 
     if (minimumDate && maximumDate) {
-      const randomDate = new Date(+minimumDate + Math.random() * (+maximumDate - +minimumDate));
-      randomYear = randomDate.getFullYear();
-      randomMonth = randomDate.getMonth() + 1;
-      randomDay = randomDate.getDate();
+      randomDate = faker.date.between({ from: minimumDate, to: maximumDate });
     } else {
-      randomYear = this.randomNumber(1970, new Date().getFullYear());
-      randomMonth = this.randomNumber(1, 12);
-      randomDay = this.randomNumber(1, 28);
+      randomDate = faker.date.between({
+        from: new Date(1970, 0, 1),
+        to: new Date(),
+      });
     }
 
-    const formattedYear = String(randomYear);
-    const formattedMonth = `0${randomMonth}`.slice(-2);
-    const formattedDay = `0${randomDay}`.slice(-2);
+    const formattedYear = String(randomDate.getFullYear());
+    const formattedMonth = `0${randomDate.getMonth() + 1}`.slice(-2);
+    const formattedDay = `0${randomDate.getDate()}`.slice(-2);
     return `${formattedYear}-${formattedMonth}-${formattedDay}`;
   }
 
   public time(): string {
-    const randomHour = `0${this.randomNumber(0, 23)}`.slice(-2);
-    const randomMinute = `0${this.randomNumber(0, 59)}`.slice(-2);
+    const randomDate = faker.date.anytime();
+    const randomHour = `0${randomDate.getHours()}`.slice(-2);
+    const randomMinute = `0${randomDate.getMinutes()}`.slice(-2);
     return `${randomHour}:${randomMinute}`;
   }
 
@@ -247,27 +239,25 @@ class DataGenerator {
   }
 
   public firstName(): string {
-    return data.firstNames[this.randomNumber(0, data.firstNames.length - 1)];
+    return faker.person.firstName();
   }
 
   public lastName(): string {
-    return data.lastNames[this.randomNumber(0, data.lastNames.length - 1)];
+    return faker.person.lastName();
   }
 
   public organizationName(): string {
-    const partOne = this.lastName();
-    const connector = Math.random() > 0.5 ? " and " : " ";
-    const partTwo = this.lastName();
-    const suffix = data.organizationSuffix[this.randomNumber(0, data.organizationSuffix.length - 1)];
-
-    return `${partOne}${connector}${partTwo} ${suffix}`;
+    return faker.company.name();
   }
 
   public color(): string {
-    // 16777215 === FFFFFF in decimal
-    return `#${Math.floor(Math.random() * 16777215)
-      .toString(16)
-      .padStart(6, "0")}`;
+    // 使用 faker 生成随机颜色值
+    const hexValues = "0123456789ABCDEF";
+    let color = "#";
+    for (let i = 0; i < 6; i += 1) {
+      color += (faker.helpers as any).arrayElement([...hexValues]);
+    }
+    return color;
   }
 
   public generateRandomStringFromRegExTemplate(regexTemplate: string): string {
