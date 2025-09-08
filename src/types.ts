@@ -187,3 +187,5 @@ export enum AIResponseFormat {
   JSON = "json_object",
   TEXT = "text",
 }
+
+export type FillElementFunction = (element: Element) => Promise<void>;

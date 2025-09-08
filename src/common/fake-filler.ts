@@ -1,7 +1,7 @@
 import ElementFiller from "src/common/element-filler";
 import PageOperator from "src/common/page-operator";
 
-import { IFakeFillerOptions } from "src/types";
+import { IFakeFillerOptions, FillElementFunction } from "src/types";
 
 class FakeFiller {
   private elementFiller: ElementFiller;
@@ -114,8 +114,6 @@ class FakeFiller {
         ...Array.from(container.querySelectorAll("select:not(:disabled):not([readonly])")),
         ...Array.from(container.querySelectorAll("[contenteditable]")),
       ];
-
-      type FillElementFunction = (element: Element) => Promise<void>;
 
       // 创建一个填充单个元素的函数
       const fillElement: FillElementFunction = async (element) => {
