@@ -8,9 +8,12 @@ class FakeFiller {
   private clickedElement: HTMLElement | undefined;
   private urlMatchesToBlock: string[];
   private readonly selectInputClass = "t-select-input";
+  private readonly cascaderClass = "t-cascader";
   private readonly selectInputMultipleClass = "t-select-input--multiple";
   private readonly selectInputDropdownClassList = ["t-select__dropdown", "t-popup__content"];
   private readonly selectInputDropdownOptionClassList = ["t-select-option", "t-avatar"];
+  private readonly cascaderDropdownClassList = ["t-popup__content"];
+  private readonly cascaderDropdownOptionClassList = ["t-cascader__item"];
   private pageOperator: PageOperator | null;
 
   constructor(options: IFakeFillerOptions, profileIndex = -1) {
@@ -19,36 +22,50 @@ class FakeFiller {
     this.urlMatchesToBlock = options.urlMatchesToBlock;
   }
 
-  private getInputInfo(element: Element): { isWrappedSelect: boolean; isMultiSelect: boolean } {
+  private getInputInfo(element: Element): { isWrappedSelect: boolean; isMultiSelect: boolean; isCascader: boolean } {
     let { parentElement } = element;
     let isWrappedSelect = false;
     let isMultiSelect = false;
+    let isCascader = false;
 
     while (parentElement) {
       if (parentElement.classList.contains(this.selectInputClass)) {
         isWrappedSelect = true;
         isMultiSelect = parentElement.classList.contains(this.selectInputMultipleClass);
+        // 检查是否为cascader（更高优先级）
+        isCascader = parentElement.classList.contains(this.cascaderClass);
         break;
       }
       parentElement = parentElement.parentElement;
     }
 
-    return { isWrappedSelect, isMultiSelect };
+    return { isWrappedSelect, isMultiSelect, isCascader };
   }
 
   private async handleInputElement(element: HTMLInputElement): Promise<void> {
-    const { isWrappedSelect, isMultiSelect } = this.getInputInfo(element);
+    const { isWrappedSelect, isMultiSelect, isCascader } = this.getInputInfo(element);
     console.log("~        handle input         ~");
     console.log("# handleInputElement", element);
-    console.log("isWrappedSelect, isMultiSelect", isWrappedSelect, isMultiSelect);
+    console.log("isWrappedSelect, isMultiSelect, isCascader", isWrappedSelect, isMultiSelect, isCascader);
 
     if (isWrappedSelect) {
-      await this.elementFiller.fillWrapedSelectElement(
-        element,
-        isMultiSelect,
-        this.selectInputDropdownClassList,
-        this.selectInputDropdownOptionClassList
-      );
+      if (isCascader) {
+        // Cascader优先级更高
+        await this.elementFiller.fillWrapedDropdownElement(
+          element,
+          false, // cascader通常是单选
+          this.cascaderDropdownClassList,
+          this.cascaderDropdownOptionClassList
+        );
+      } else {
+        // 普通的wrapped select
+        await this.elementFiller.fillWrapedDropdownElement(
+          element,
+          isMultiSelect,
+          this.selectInputDropdownClassList,
+          this.selectInputDropdownOptionClassList
+        );
+      }
     } else {
       this.elementFiller.fillInputElement(element);
     }

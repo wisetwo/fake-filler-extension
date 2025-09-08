@@ -242,13 +242,13 @@ class ElementFiller {
     });
   }
 
-  public async fillWrapedSelectElement(
+  public async fillWrapedDropdownElement(
     element: HTMLInputElement,
     isMultiSelect: boolean,
     dropdownClassList: string[],
     dropdownOptionClassList: string[]
   ): Promise<void> {
-    console.log("fillWrapedSelectElement", element, isMultiSelect, dropdownClassList);
+    console.log("fillWrapedDropdownElement", element, isMultiSelect, dropdownClassList);
     if (this.shouldIgnoreElement(element)) {
       console.log("element ignored");
       return;
