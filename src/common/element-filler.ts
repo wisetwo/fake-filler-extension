@@ -79,12 +79,121 @@ class ElementFiller {
   //   }
   // }
 
-  public async clickAtBlankArea(): Promise<void> {
-    const x = 10;
-    const y = Math.floor(window.innerHeight / 2 - 100) + 50;
-    await sleep(200);
-    await this.simulateClick(document.body, x, y);
-    await sleep(200);
+  public async clickAtBlankArea(element: HTMLElement): Promise<void> {
+    const safePosition = this.findSafeClickPositionAroundElement(element);
+    if (safePosition) {
+      console.log("Found safe click position:", safePosition);
+      await sleep(200);
+      await this.simulateClick(document.body, safePosition.x, safePosition.y);
+      await sleep(200);
+    } else {
+      console.warn("No safe position found");
+    }
+  }
+
+  /**
+   * 在元素周围寻找安全的点击位置
+   * 按照上、右、下、左的顺序，从10px开始递增到500px搜索
+   */
+  private findSafeClickPositionAroundElement(element: HTMLElement): { x: number; y: number } | null {
+    const rect = element.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
+
+    // 从10px开始，递增到500px
+    for (let distance = 10; distance <= 500; distance += 10) {
+      // 搜索四个方向：上、右、下、左
+      const directions = [
+        { x: centerX, y: centerY - distance }, // 上
+        { x: centerX + distance, y: centerY }, // 右
+        { x: centerX, y: centerY + distance }, // 下
+        { x: centerX - distance, y: centerY }, // 左
+      ];
+
+      for (const position of directions) {
+        if (this.isPositionSafe(position)) {
+          return position;
+        }
+      }
+    }
+
+    return null;
+  }
+
+  /**
+   * 检查指定位置是否安全（没有可交互元素）
+   */
+  private isPositionSafe(position: { x: number; y: number }): boolean {
+    // 检查是否在视窗内
+    if (position.x < 0 || position.x > window.innerWidth || position.y < 0 || position.y > window.innerHeight) {
+      return false;
+    }
+
+    // 获取该位置的元素
+    const elementAtPoint = document.elementFromPoint(position.x, position.y);
+    if (!elementAtPoint) return false;
+
+    // 检查是否是安全的容器元素（body、html、main、container等）
+    const tagName = elementAtPoint.tagName.toLowerCase();
+    const isContainer =
+      elementAtPoint === document.body ||
+      elementAtPoint === document.documentElement ||
+      tagName === "main" ||
+      tagName === "div" ||
+      tagName === "section" ||
+      tagName === "article";
+
+    if (!isContainer) {
+      return false;
+    }
+
+    // 检查该元素是否有交互行为
+    return !this.hasInteractiveBehavior(elementAtPoint);
+  }
+
+  /**
+   * 检查元素是否有交互行为
+   */
+  private hasInteractiveBehavior(element: Element): boolean {
+    const tagName = element.tagName.toLowerCase();
+
+    // 检查标签类型
+    const interactiveTags = ["a", "button", "input", "select", "textarea", "label"];
+    if (interactiveTags.includes(tagName)) {
+      return true;
+    }
+
+    // 检查属性
+    if (
+      element.hasAttribute("onclick") ||
+      element.hasAttribute("href") ||
+      element.hasAttribute("data-toggle") ||
+      element.hasAttribute("data-bs-toggle")
+    ) {
+      return true;
+    }
+
+    // 检查角色
+    const role = element.getAttribute("role");
+    if (role && ["button", "link", "menuitem", "tab", "option"].includes(role)) {
+      return true;
+    }
+
+    // 检查样式
+    const computedStyle = window.getComputedStyle(element);
+    if (computedStyle.cursor === "pointer") {
+      return true;
+    }
+
+    // 检查常见的交互类名
+    const interactiveClasses = ["btn", "button", "link", "clickable", "menu", "dropdown"];
+    for (const className of interactiveClasses) {
+      if (element.classList.contains(className)) {
+        return true;
+      }
+    }
+
+    return false;
   }
 
   private async waitForElementWithData(
@@ -215,7 +324,7 @@ class ElementFiller {
         await sleep(200);
         await this.simulateClick(option);
         // 关闭
-        await this.clickAtBlankArea();
+        await this.clickAtBlankArea(element);
         // 再次打开（如果不是最后一个选项）
         if (i < selectedIndices.length - 1) {
           await this.simulateClick(element);
