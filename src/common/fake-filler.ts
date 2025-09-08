@@ -9,11 +9,14 @@ class FakeFiller {
   private urlMatchesToBlock: string[];
   private readonly selectInputClass = "t-select-input";
   private readonly cascaderClass = "t-cascader";
+  private readonly datePickerClass = "t-date-picker";
   private readonly selectInputMultipleClass = "t-select-input--multiple";
   private readonly selectInputDropdownClassList = ["t-select__dropdown", "t-popup__content"];
   private readonly selectInputDropdownOptionClassList = ["t-select-option", "t-avatar"];
   private readonly cascaderDropdownClassList = ["t-popup__content"];
   private readonly cascaderDropdownOptionClassList = ["t-cascader__item"];
+  private readonly datePickerDropdownClassList = ["t-popup__content"];
+  private readonly datePickerDropdownOptionClassList = ["t-date-picker__cell"];
   private pageOperator: PageOperator | null;
 
   constructor(options: IFakeFillerOptions, profileIndex = -1) {
@@ -22,35 +25,69 @@ class FakeFiller {
     this.urlMatchesToBlock = options.urlMatchesToBlock;
   }
 
-  private getInputInfo(element: Element): { isWrappedSelect: boolean; isMultiSelect: boolean; isCascader: boolean } {
+  private getInputInfo(element: Element): {
+    isWrappedSelect: boolean;
+    isMultiSelect: boolean;
+    isCascader: boolean;
+    isDatePicker: boolean;
+  } {
     let { parentElement } = element;
     let isWrappedSelect = false;
     let isMultiSelect = false;
     let isCascader = false;
+    let isDatePicker = false;
 
     while (parentElement) {
       if (parentElement.classList.contains(this.selectInputClass)) {
         isWrappedSelect = true;
         isMultiSelect = parentElement.classList.contains(this.selectInputMultipleClass);
-        // 检查是否为cascader（更高优先级）
-        isCascader = parentElement.classList.contains(this.cascaderClass);
+
+        // 检查是否为日期选择器（最高优先级）
+        // 向上查找父节点是否有 t-date-picker
+        let datePickerParent = parentElement.parentElement;
+        while (datePickerParent) {
+          if (datePickerParent.classList.contains(this.datePickerClass)) {
+            isDatePicker = true;
+            break;
+          }
+          datePickerParent = datePickerParent.parentElement;
+        }
+
+        // 如果不是日期选择器，检查是否为cascader
+        if (!isDatePicker) {
+          isCascader = parentElement.classList.contains(this.cascaderClass);
+        }
         break;
       }
       parentElement = parentElement.parentElement;
     }
 
-    return { isWrappedSelect, isMultiSelect, isCascader };
+    return { isWrappedSelect, isMultiSelect, isCascader, isDatePicker };
   }
 
   private async handleInputElement(element: HTMLInputElement): Promise<void> {
-    const { isWrappedSelect, isMultiSelect, isCascader } = this.getInputInfo(element);
+    const { isWrappedSelect, isMultiSelect, isCascader, isDatePicker } = this.getInputInfo(element);
     console.log("~        handle input         ~");
     console.log("# handleInputElement", element);
-    console.log("isWrappedSelect, isMultiSelect, isCascader", isWrappedSelect, isMultiSelect, isCascader);
+    console.log(
+      "isWrappedSelect, isMultiSelect, isCascader, isDatePicker",
+      isWrappedSelect,
+      isMultiSelect,
+      isCascader,
+      isDatePicker
+    );
 
     if (isWrappedSelect) {
-      if (isCascader) {
-        // Cascader优先级更高
+      if (isDatePicker) {
+        // 日期选择器优先级最高
+        await this.elementFiller.fillWrapedDropdownElement(
+          element,
+          false, // 单日期选择
+          this.datePickerDropdownClassList,
+          this.datePickerDropdownOptionClassList
+        );
+      } else if (isCascader) {
+        // Cascader优先级次高
         await this.elementFiller.fillWrapedDropdownElement(
           element,
           false, // cascader通常是单选
