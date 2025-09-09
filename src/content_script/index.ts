@@ -61,7 +61,7 @@ function handleMessage(request: MessageRequest, sender: any, sendResponse: any):
       } catch (error) {
         sendResponse({
           success: false,
-          error: error instanceof Error ? error.message : "Unknown error"
+          error: error instanceof Error ? error.message : "Unknown error",
         });
       }
       return true;
@@ -78,9 +78,28 @@ function handleMessage(request: MessageRequest, sender: any, sendResponse: any):
       } catch (error) {
         sendResponse({
           success: false,
-          error: error instanceof Error ? error.message : "Unknown error"
+          error: error instanceof Error ? error.message : "Unknown error",
         });
       }
+      return true;
+    }
+
+    case "FILL_ALL_INPUTS": {
+      (async () => {
+        try {
+          if (window.fakeFiller) {
+            await window.fakeFiller.fillAllInputs();
+            sendResponse({ success: true });
+          } else {
+            sendResponse({ success: false, error: "FakeFiller not initialized" });
+          }
+        } catch (error) {
+          sendResponse({
+            success: false,
+            error: error instanceof Error ? error.message : "Unknown error",
+          });
+        }
+      })();
       return true;
     }
 

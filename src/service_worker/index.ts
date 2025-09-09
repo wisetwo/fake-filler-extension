@@ -149,19 +149,17 @@ async function handleMessage(message: any): Promise<any> {
             throw new Error("No active tab found");
           }
 
-          const results = await chrome.scripting.executeScript({
-            func: fillAllInputs,
-            target: {
-              allFrames: true,
-              tabId,
-            },
-          });
+          // 发送消息到content script并等待响应
+          const response = await chrome.tabs.sendMessage(tabId, { type: "FILL_ALL_INPUTS" });
+          console.log("Content script response:", response);
 
-          console.log("Script execution results:", results);
-          return { success: true };
+          if (response && response.success) {
+            console.log("Successfully filled all inputs");
+            return { success: true };
+          }
+          throw new Error(response?.error || "Content script returned failure");
         } catch (error) {
           console.error("Failed to fill all inputs:", error);
-          // 返回更友好的错误信息给前端
           return {
             success: false,
             error: error instanceof Error ? error.message : "Unknown error occurred",
