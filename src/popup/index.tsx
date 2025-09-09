@@ -104,7 +104,6 @@ const SidePanel: React.FC = () => {
       style={{
         padding: "20px",
         fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-        backgroundColor: "#f8f9fa",
       }}
     >
       <div style={{ marginBottom: "20px", position: "relative" }}>
