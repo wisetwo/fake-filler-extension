@@ -145,7 +145,7 @@ const SidePanel: React.FC = () => {
             lineHeight: "1.4",
           }}
         >
-          使用下面的按钮来填充页面中的表单字段
+          使用下面的按钮或右键菜单来填充页面中的表单字段
         </p>
       </div>
 
@@ -256,25 +256,6 @@ const SidePanel: React.FC = () => {
           {message.text}
         </div>
       )}
-
-      <div
-        style={{
-          marginTop: "30px",
-          paddingTop: "20px",
-          borderTop: "1px solid #e0e0e0",
-        }}
-      >
-        <p
-          style={{
-            margin: 0,
-            fontSize: "12px",
-            color: "#999",
-            textAlign: "center",
-          }}
-        >
-          你也可以使用右键菜单或键盘快捷键
-        </p>
-      </div>
     </div>
   );
 };
