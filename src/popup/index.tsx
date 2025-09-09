@@ -118,7 +118,6 @@ const SidePanel: React.FC = () => {
             border: "none",
             fontSize: "16px",
             cursor: "pointer",
-            padding: "8px",
             color: "#999",
           }}
           title="设置"
