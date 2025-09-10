@@ -33,7 +33,7 @@ function EmailOptions(props: Props) {
     emailUsernameRegEx,
   } = props;
 
-  function generateRandomEmail() {
+  async function generateRandomEmail() {
     options.fields[0].emailPrefix = emailPrefix;
     options.fields[0].emailSuffix = emailSuffix;
     options.fields[0].emailHostname = emailHostname;
@@ -49,22 +49,22 @@ function EmailOptions(props: Props) {
       element.setAttribute("id", "user");
       element.setAttribute("type", "text");
       element.setAttribute("name", "user");
-      elementFiller.fillInputElement(element);
-      element.value = "";
+      await elementFiller.fillInputElement(element);
+      // element.value = "";
     }
 
     if (options.fields[0].emailUsername === "name") {
       element.setAttribute("id", "name");
       element.setAttribute("type", "text");
       element.setAttribute("name", "name");
-      elementFiller.fillInputElement(element);
-      element.value = "";
+      await elementFiller.fillInputElement(element);
+      // element.value = "";
     }
 
     element.setAttribute("id", "email");
     element.setAttribute("type", "email");
     element.setAttribute("name", "email");
-    elementFiller.fillInputElement(element);
+    await elementFiller.fillInputElement(element);
   }
 
   return (

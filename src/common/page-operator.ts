@@ -60,6 +60,22 @@ class PageOperator {
     await this.page.keyboard.type(text);
   }
 
+  public async selectAll(): Promise<void> {
+    await this.ensureInitialized();
+    await this.page.keyboard.press({ key: "a", command: "selectAll" });
+  }
+
+  public async backspace(): Promise<void> {
+    await this.ensureInitialized();
+    await this.page.keyboard.press({ key: "Backspace" });
+  }
+
+  public async clearAndType(text: string): Promise<void> {
+    await this.ensureInitialized();
+    await this.selectAll();
+    await this.type(text);
+  }
+
   public async evaluateScript(script: string): Promise<any> {
     await this.ensureInitialized();
     if (this.page.evaluateJavaScript) {

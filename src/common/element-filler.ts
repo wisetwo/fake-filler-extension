@@ -47,6 +47,57 @@ class ElementFiller {
     });
   }
 
+  /**
+   * 使用PageOperator进行真实的用户输入操作，更适合现代框架
+   * @param element 目标元素
+   * @param value 要输入的值
+   * @returns Promise<boolean> 是否成功使用PageOperator输入
+   */
+  private async fillElementWithPageOperator(element: FillableElement, value: string): Promise<boolean> {
+    if (!this.pageOperator || !value) {
+      return false;
+    }
+
+    try {
+      // 先点击元素以获取焦点
+      const rect = element.getBoundingClientRect();
+      const x = rect.left + rect.width / 2;
+      const y = rect.top + rect.height / 2;
+
+      await this.pageOperator.click(x, y);
+      await sleep(100); // 等待焦点设置
+
+      // 清空现有内容并输入新值
+      await this.pageOperator.clearAndType(value);
+      await sleep(50); // 等待输入完成
+
+      return true;
+    } catch (error) {
+      console.warn("PageOperator input failed, will fallback to direct assignment:", error);
+      return false;
+    }
+  }
+
+  /**
+   * 统一的元素值设置方法，优先使用PageOperator，失败时回退到直接赋值
+   * @param element 目标元素
+   * @param value 要设置的值
+   */
+  private async setElementValue(element: FillableElement, value: string): Promise<void> {
+    // 尝试使用PageOperator进行真实用户输入
+    const pageOperatorSuccess = await this.fillElementWithPageOperator(element, value);
+
+    if (!pageOperatorSuccess) {
+      // 回退到直接赋值方式
+      (element as HTMLInputElement | HTMLTextAreaElement).value = value;
+
+      // 触发必要的事件
+      if (this.options.triggerClickEvents) {
+        this.fireEvents(element);
+      }
+    }
+  }
+
   private async simulateClick(element: HTMLElement, x?: number, y?: number): Promise<void> {
     console.log("-simulateClick-", element, x, y);
     if (this.pageOperator) {
@@ -825,7 +876,7 @@ class ElementFiller {
     }
   }
 
-  public fillInputElement(element: HTMLInputElement): void {
+  public async fillInputElement(element: HTMLInputElement): Promise<void> {
     if (this.shouldIgnoreElement(element)) {
       console.log("element ignored");
       return;
@@ -870,8 +921,9 @@ class ElementFiller {
       case "date": {
         const dateCustomField = this.findCustomField(this.getElementName(element), ["date"]);
 
+        let dateValue: string;
         if (dateCustomField) {
-          element.value = this.generateDummyDataForCustomField(dateCustomField, element);
+          dateValue = this.generateDummyDataForCustomField(dateCustomField, element);
         } else {
           let minDate: Date | undefined;
           let maxDate: Date | undefined;
@@ -888,8 +940,9 @@ class ElementFiller {
             }
           }
 
-          element.value = this.generator.date(minDate, maxDate);
+          dateValue = this.generator.date(minDate, maxDate);
         }
+        await this.setElementValue(element, dateValue);
         break;
       }
 
@@ -900,11 +953,13 @@ class ElementFiller {
           "randomized-list",
         ]);
 
+        let datetimeValue: string;
         if (datetimeCustomField) {
-          element.value = this.generateDummyDataForCustomField(datetimeCustomField, element);
+          datetimeValue = this.generateDummyDataForCustomField(datetimeCustomField, element);
         } else {
-          element.value = `${this.generator.date()}T${this.generator.time()}Z`;
+          datetimeValue = `${this.generator.date()}T${this.generator.time()}Z`;
         }
+        await this.setElementValue(element, datetimeValue);
         break;
       }
 
@@ -915,11 +970,13 @@ class ElementFiller {
           "randomized-list",
         ]);
 
+        let datetimeLocalValue: string;
         if (datetimeLocalCustomField) {
-          element.value = this.generateDummyDataForCustomField(datetimeLocalCustomField, element);
+          datetimeLocalValue = this.generateDummyDataForCustomField(datetimeLocalCustomField, element);
         } else {
-          element.value = `${this.generator.date()}T${this.generator.time()}`;
+          datetimeLocalValue = `${this.generator.date()}T${this.generator.time()}`;
         }
+        await this.setElementValue(element, datetimeLocalValue);
         break;
       }
 
@@ -930,11 +987,13 @@ class ElementFiller {
           "randomized-list",
         ]);
 
+        let timeValue: string;
         if (timeCustomField) {
-          element.value = this.generateDummyDataForCustomField(timeCustomField, element);
+          timeValue = this.generateDummyDataForCustomField(timeCustomField, element);
         } else {
-          element.value = this.generator.time();
+          timeValue = this.generator.time();
         }
+        await this.setElementValue(element, timeValue);
         break;
       }
 
@@ -945,11 +1004,13 @@ class ElementFiller {
           "randomized-list",
         ]);
 
+        let monthValue: string;
         if (monthCustomField) {
-          element.value = this.generateDummyDataForCustomField(monthCustomField, element);
+          monthValue = this.generateDummyDataForCustomField(monthCustomField, element);
         } else {
-          element.value = `${this.generator.year()}-${this.generator.month()}`;
+          monthValue = `${this.generator.year()}-${this.generator.month()}`;
         }
+        await this.setElementValue(element, monthValue);
         break;
       }
 
@@ -960,17 +1021,20 @@ class ElementFiller {
           "randomized-list",
         ]);
 
+        let weekValue: string;
         if (weekCustomField) {
-          element.value = this.generateDummyDataForCustomField(weekCustomField, element);
+          weekValue = this.generateDummyDataForCustomField(weekCustomField, element);
         } else {
-          element.value = `${this.generator.year()}-W${this.generator.weekNumber()}`;
+          weekValue = `${this.generator.year()}-W${this.generator.weekNumber()}`;
         }
+        await this.setElementValue(element, weekValue);
         break;
       }
 
       case "email": {
+        let emailValue: string;
         if (this.isAnyMatch(this.getElementName(element), this.options.confirmFields)) {
-          element.value = this.previousValue;
+          emailValue = this.previousValue;
         } else {
           let emailCustomField = this.findCustomField(this.getElementName(element), ["email"]);
           if (!emailCustomField) {
@@ -978,8 +1042,9 @@ class ElementFiller {
           }
 
           this.previousValue = this.generateDummyDataForCustomField(emailCustomField, element);
-          element.value = this.previousValue;
+          emailValue = this.previousValue;
         }
+        await this.setElementValue(element, emailValue);
         break;
       }
 
@@ -1009,13 +1074,15 @@ class ElementFiller {
           decimalPlaces = numberCustomField.decimalPlaces || 0;
         }
 
-        element.value = String(this.generator.randomNumber(min, max, decimalPlaces));
+        const numberValue = String(this.generator.randomNumber(min, max, decimalPlaces));
+        await this.setElementValue(element, numberValue);
         break;
       }
 
       case "password": {
+        let passwordValue: string;
         if (this.isAnyMatch(this.getElementName(element), this.options.confirmFields)) {
-          element.value = this.previousPassword;
+          passwordValue = this.previousPassword;
         } else {
           if (this.options.passwordSettings.mode === "defined") {
             this.previousPassword = this.options.passwordSettings.password;
@@ -1025,8 +1092,9 @@ class ElementFiller {
             console.info(this.previousPassword);
           }
 
-          element.value = this.previousPassword;
+          passwordValue = this.previousPassword;
         }
+        await this.setElementValue(element, passwordValue);
         break;
       }
 
@@ -1047,11 +1115,13 @@ class ElementFiller {
           "randomized-list",
         ]);
 
+        let telephoneValue: string;
         if (telephoneCustomField) {
-          element.value = this.generateDummyDataForCustomField(telephoneCustomField, element);
+          telephoneValue = this.generateDummyDataForCustomField(telephoneCustomField, element);
         } else {
-          element.value = this.generator.phoneNumber();
+          telephoneValue = this.generator.phoneNumber();
         }
+        await this.setElementValue(element, telephoneValue);
         break;
       }
 
@@ -1063,11 +1133,13 @@ class ElementFiller {
           "randomized-list",
         ]);
 
+        let urlValue: string;
         if (urlCustomField) {
-          element.value = this.generateDummyDataForCustomField(urlCustomField, element);
+          urlValue = this.generateDummyDataForCustomField(urlCustomField, element);
         } else {
-          element.value = this.generator.website();
+          urlValue = this.generator.website();
         }
+        await this.setElementValue(element, urlValue);
         break;
       }
 
@@ -1078,11 +1150,13 @@ class ElementFiller {
           "randomized-list",
         ]);
 
+        let colorValue: string;
         if (colorCustomField) {
-          element.value = this.generateDummyDataForCustomField(colorCustomField, element);
+          colorValue = this.generateDummyDataForCustomField(colorCustomField, element);
         } else {
-          element.value = this.generator.color();
+          colorValue = this.generator.color();
         }
+        await this.setElementValue(element, colorValue);
         break;
       }
 
@@ -1094,11 +1168,13 @@ class ElementFiller {
           "text",
         ]);
 
+        let searchValue: string;
         if (searchCustomField) {
-          element.value = this.generateDummyDataForCustomField(searchCustomField, element);
+          searchValue = this.generateDummyDataForCustomField(searchCustomField, element);
         } else {
-          element.value = this.generator.words(1);
+          searchValue = this.generator.words(1);
         }
+        await this.setElementValue(element, searchValue);
         break;
       }
 
@@ -1151,13 +1227,15 @@ class ElementFiller {
       }
 
       default: {
+        let defaultValue: string;
         if (this.isAnyMatch(this.getElementName(element), this.options.confirmFields)) {
-          element.value = this.previousValue;
+          defaultValue = this.previousValue;
         } else {
           const customField = this.findCustomField(this.getElementName(element));
           this.previousValue = this.generateDummyDataForCustomField(customField, element);
-          element.value = this.previousValue;
+          defaultValue = this.previousValue;
         }
+        await this.setElementValue(element, defaultValue);
         break;
       }
     }
@@ -1167,7 +1245,7 @@ class ElementFiller {
     }
   }
 
-  public fillTextAreaElement(element: HTMLTextAreaElement): void {
+  public async fillTextAreaElement(element: HTMLTextAreaElement): Promise<void> {
     if (this.shouldIgnoreElement(element)) {
       console.log("element ignored");
       return;
@@ -1180,11 +1258,8 @@ class ElementFiller {
       "randomized-list",
     ]);
 
-    element.value = this.generateDummyDataForCustomField(matchingCustomField, element);
-
-    if (this.options.triggerClickEvents) {
-      this.fireEvents(element);
-    }
+    const textValue = this.generateDummyDataForCustomField(matchingCustomField, element);
+    await this.setElementValue(element, textValue);
   }
 
   public fillSelectElement(element: HTMLSelectElement): void {
@@ -1263,8 +1338,17 @@ class ElementFiller {
   }
 
   public fillContentEditableElement(element: HTMLElement): void {
+    if (this.shouldIgnoreElement(element as FillableElement)) {
+      console.log("element ignored");
+      return;
+    }
+
     if ((element as HTMLElement).isContentEditable) {
       element.textContent = this.generator.paragraph(5, 100, 0, this.options.defaultMaxLength);
+
+      if (this.options.triggerClickEvents) {
+        this.fireEvents(element as FillableElement);
+      }
     }
   }
 

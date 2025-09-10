@@ -104,7 +104,7 @@ class FakeFiller {
         );
       }
     } else {
-      this.elementFiller.fillInputElement(element);
+      await this.elementFiller.fillInputElement(element);
     }
   }
 
@@ -239,7 +239,7 @@ class FakeFiller {
         if (tagName === "input") {
           await this.handleInputElement(element as HTMLInputElement);
         } else if (tagName === "textarea") {
-          this.elementFiller.fillTextAreaElement(element as HTMLTextAreaElement);
+          await this.elementFiller.fillTextAreaElement(element as HTMLTextAreaElement);
         } else if (tagName === "select") {
           this.elementFiller.fillSelectElement(element as HTMLSelectElement);
         } else if ((element as HTMLElement).isContentEditable) {
@@ -293,7 +293,7 @@ class FakeFiller {
         if (tagName === "input") {
           await this.handleInputElement(element as HTMLInputElement);
         } else if (tagName === "textarea") {
-          this.elementFiller.fillTextAreaElement(element as HTMLTextAreaElement);
+          await this.elementFiller.fillTextAreaElement(element as HTMLTextAreaElement);
         } else if (tagName === "select") {
           this.elementFiller.fillSelectElement(element as HTMLSelectElement);
         } else if ((element as HTMLElement).isContentEditable) {
