@@ -79,6 +79,41 @@ class ElementFiller {
   }
 
   /**
+   * 使用PageOperator进行真实的checkbox点击操作
+   * @param element checkbox元素
+   * @param shouldCheck 是否应该选中
+   * @returns Promise<boolean> 是否成功使用PageOperator点击
+   */
+  private async clickCheckboxWithPageOperator(element: HTMLInputElement, shouldCheck: boolean): Promise<boolean> {
+    if (!this.pageOperator) {
+      return false;
+    }
+
+    try {
+      const currentlyChecked = element.checked;
+
+      // 如果当前状态已经是目标状态，不需要点击
+      if (currentlyChecked === shouldCheck) {
+        return true;
+      }
+
+      // 点击checkbox来切换状态
+      const rect = element.getBoundingClientRect();
+      const x = rect.left + rect.width / 2;
+      const y = rect.top + rect.height / 2;
+
+      await this.pageOperator.click(x, y);
+      await sleep(100); // 等待状态更新
+
+      // 验证状态是否正确更新
+      return element.checked === shouldCheck;
+    } catch (error) {
+      console.warn("PageOperator checkbox click failed, will fallback to direct assignment:", error);
+      return false;
+    }
+  }
+
+  /**
    * 统一的元素值设置方法，优先使用PageOperator，失败时回退到直接赋值
    * @param element 目标元素
    * @param value 要设置的值
@@ -523,7 +558,7 @@ class ElementFiller {
     return false;
   }
 
-  private selectRandomRadio(name: string, valuesList: string[] = []): void {
+  private async selectRandomRadio(name: string, valuesList: string[] = []): Promise<void> {
     const list = [];
     const elements = document.getElementsByName(name) as NodeListOf<HTMLInputElement>;
 
@@ -533,9 +568,45 @@ class ElementFiller {
       }
     }
 
+    if (list.length === 0) return;
+
     const radioElement = list[Math.floor(Math.random() * list.length)];
-    radioElement.checked = true;
-    this.fireEvents(radioElement);
+
+    // 尝试使用PageOperator进行真实点击
+    const clickSuccess = await this.clickRadioWithPageOperator(radioElement);
+
+    if (!clickSuccess) {
+      // 回退到直接设置属性
+      radioElement.checked = true;
+      this.fireEvents(radioElement);
+    }
+  }
+
+  /**
+   * 使用PageOperator进行真实的radio按钮点击操作
+   * @param element radio元素
+   * @returns Promise<boolean> 是否成功使用PageOperator点击
+   */
+  private async clickRadioWithPageOperator(element: HTMLInputElement): Promise<boolean> {
+    if (!this.pageOperator) {
+      return false;
+    }
+
+    try {
+      // 点击radio按钮
+      const rect = element.getBoundingClientRect();
+      const x = rect.left + rect.width / 2;
+      const y = rect.top + rect.height / 2;
+
+      await this.pageOperator.click(x, y);
+      await sleep(100); // 等待状态更新
+
+      // 验证是否选中
+      return element.checked;
+    } catch (error) {
+      console.warn("PageOperator radio click failed, will fallback to direct assignment:", error);
+      return false;
+    }
   }
 
   private findCustomFieldFromList(
@@ -887,33 +958,28 @@ class ElementFiller {
 
     switch (elementType) {
       case "checkbox": {
-        // standard version of this selector:
+        let shouldCheck: boolean;
         if (this.isAnyMatch(this.getElementName(element), this.options.agreeTermsFields)) {
-          element.checked = true;
-          if (element.value && element.value === "false") {
-            element.value = "true";
-          }
+          shouldCheck = true;
         } else {
-          element.checked = Math.random() > 0.5;
+          shouldCheck = Math.random() > 0.5;
         }
 
-        // docassemble version of this selector:
-        /*
-    if (this.isAnyMatch(this.getElementName(element), this.options.agreeTermsFields)) {
-      let label: HTMLElement = element.nextElementSibling as HTMLElement;
-      if (label) {
-        label.click();
-      }
-      if (element.value && element.value == "false") {
-        element.value = "true";
-      }
-    } else {
-      let label: HTMLElement = element.nextElementSibling as HTMLElement;
-      if (label) {
-        label.click();
-      }
-    }
-    */
+        // 尝试使用PageOperator进行真实点击
+        const clickSuccess = await this.clickCheckboxWithPageOperator(element, shouldCheck);
+
+        if (!clickSuccess) {
+          // 回退到直接设置属性
+          element.checked = shouldCheck;
+          if (element.value && element.value === "false" && shouldCheck) {
+            element.value = "true";
+          }
+
+          // 触发事件
+          if (this.options.triggerClickEvents) {
+            this.fireEvents(element);
+          }
+        }
 
         break;
       }
@@ -1102,7 +1168,7 @@ class ElementFiller {
         if (element.name) {
           const matchingCustomField = this.findCustomField(this.getElementName(element), ["randomized-list"]);
           const valuesList = matchingCustomField?.list ? matchingCustomField?.list : [];
-          this.selectRandomRadio(element.name, valuesList);
+          await this.selectRandomRadio(element.name, valuesList);
         }
         fireEvent = false;
         break;
