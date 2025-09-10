@@ -316,7 +316,7 @@ const SaveFakeFillerOptions = (options: IFakeFillerOptions): void => {
 };
 
 const SanitizeText = (text: string): string => {
-  return text.replace(/[^a-zA-Z0-9]+/g, "").toLowerCase();
+  return text ? text.replace(/[^a-zA-Z0-9]+/g, "").toLowerCase() : "";
 };
 
 const CsvToArray = (csvString: string, sanitize = false): string[] => {

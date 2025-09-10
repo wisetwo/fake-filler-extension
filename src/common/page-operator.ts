@@ -83,16 +83,66 @@ class PageOperator {
     await this.page.keyboard.press({ key: "Backspace" });
   }
 
-  public async clearInput(element: import("src/shared/extractor").ElementInfo): Promise<void> {
+  public async clearInput(element: import("src/shared/extractor").ElementInfo | Element): Promise<void> {
     await this.ensureInitialized();
-    // 直接使用 page.ts 中已有的 clearInput 实现，它包含点击、选择全部、删除的完整流程
-    await this.page.clearInput(element);
+
+    if (typeof element === "object" && element !== null && "center" in element && Array.isArray(element.center)) {
+      // 如果是 ElementInfo 对象，直接使用 page.ts 中的 clearInput 方法
+      await this.page.clearInput(element as import("src/shared/extractor").ElementInfo);
+    } else if (typeof element === "object" && element !== null && "getBoundingClientRect" in element) {
+      // 如果是 DOM Element，转换为坐标后手动实现清除
+      const domElement = element as Element;
+      const rect = domElement.getBoundingClientRect();
+      const centerX = Math.round(rect.left + rect.width / 2);
+      const centerY = Math.round(rect.top + rect.height / 2);
+
+      // 点击元素
+      await this.click(centerX, centerY);
+
+      // 选择全部内容
+      await this.selectAll();
+
+      // 等待一下
+      await new Promise((resolve) => setTimeout(resolve, 100));
+
+      // 删除选中内容
+      await this.backspace();
+    } else {
+      throw new Error(`Invalid element type: expected ElementInfo or DOM Element, got ${typeof element}`);
+    }
   }
 
-  public async clearAndType(text: string, element: import("src/shared/extractor").ElementInfo): Promise<void> {
+  public async clearAndType(
+    text: string,
+    element: import("src/shared/extractor").ElementInfo | Element
+  ): Promise<void> {
     await this.ensureInitialized();
-    // 使用 page.ts 中更完整的 clearInput 方法，它包含点击、选择全部、删除的完整流程
-    await this.page.clearInput(element);
+
+    if (typeof element === "object" && element !== null && "center" in element && Array.isArray(element.center)) {
+      // 如果是 ElementInfo 对象，直接使用 page.ts 中的 clearInput 方法
+      await this.page.clearInput(element as import("src/shared/extractor").ElementInfo);
+    } else if (typeof element === "object" && element !== null && "getBoundingClientRect" in element) {
+      // 如果是 DOM Element，转换为坐标后手动实现清除和输入
+      const domElement = element as Element;
+      const rect = domElement.getBoundingClientRect();
+      const centerX = Math.round(rect.left + rect.width / 2);
+      const centerY = Math.round(rect.top + rect.height / 2);
+
+      // 点击元素
+      await this.click(centerX, centerY);
+
+      // 选择全部内容
+      await this.selectAll();
+
+      // 等待一下
+      await new Promise((resolve) => setTimeout(resolve, 100));
+
+      // 删除选中内容
+      await this.backspace();
+    } else {
+      throw new Error(`Invalid element type: expected ElementInfo or DOM Element, got ${typeof element}`);
+    }
+
     await this.type(text);
   }
 
