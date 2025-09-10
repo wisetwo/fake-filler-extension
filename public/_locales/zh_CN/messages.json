@@ -65,8 +65,8 @@
   "leftNav_keyboardShortcuts": {
     "message": "快捷键设置"
   },
-  "leftNav_backupRestore": {
-    "message": "备份/重置"
+  "leftNav_systemTools": {
+    "message": "系统工具"
   },
   "leftNav_restoreFactorySettings": {
     "message": "初始化设置"
@@ -127,6 +127,9 @@
   },
   "kbdShortcuts_notSet": {
     "message": "没有设置"
+  },
+  "systemTools_title": {
+    "message": "系统工具"
   },
   "customFieldDetails_title": {
     "message": "Custom Field Details"

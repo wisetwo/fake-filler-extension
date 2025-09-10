@@ -65,8 +65,8 @@
   "leftNav_keyboardShortcuts": {
     "message": "Keyboard Shortcuts"
   },
-  "leftNav_backupRestore": {
-    "message": "Backup and Restore"
+  "leftNav_systemTools": {
+    "message": "System Tools"
   },
   "leftNav_restoreFactorySettings": {
     "message": "Reset Settings"
@@ -127,6 +127,9 @@
   },
   "kbdShortcuts_notSet": {
     "message": "Not Set"
+  },
+  "systemTools_title": {
+    "message": "System Tools"
   },
   "customFieldDetails_title": {
     "message": "Custom Field Details"

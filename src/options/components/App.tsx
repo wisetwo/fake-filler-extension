@@ -4,11 +4,10 @@ import { Nav, Navbar } from "react-bootstrap";
 import { Link, NavLink, Route } from "react-router-dom";
 
 import { GetMessage } from "src/common/helpers";
-import BackupAndRestorePage from "src/options/components/BackupAndRestorePage";
 import ChangeLogPage from "src/options/components/ChangeLogPage";
 import CustomFieldsPage from "src/options/components/CustomFieldsPage";
 import GeneralSettingsPage from "src/options/components/GeneralSettingsPage";
-import KeyboardShortcutsPage from "src/options/components/KeyboardShortcutsPage";
+import SystemToolsPage from "src/options/components/SystemToolsPage";
 // import ExternalLink from "src/options/components/common/ExternalLink";
 // import HtmlPhrase from "src/options/components/common/HtmlPhrase";
 import ScrollToTop from "src/options/components/common/ScrollToTop";
@@ -38,11 +37,8 @@ function App() {
             <Nav.Link as={NavLink} to="/custom-fields">
               {GetMessage("leftNav_customFields")}
             </Nav.Link>
-            <Nav.Link as={NavLink} to="/keyboard-shortcuts">
-              {GetMessage("leftNav_keyboardShortcuts")}
-            </Nav.Link>
-            <Nav.Link as={NavLink} to="/backup">
-              {GetMessage("leftNav_backupRestore")}
+            <Nav.Link as={NavLink} to="/system-tools">
+              {GetMessage("leftNav_systemTools")}
             </Nav.Link>
             {/* <Nav.Link href="https://github.com/calvinballing/fake-filler-extension/wiki" target="_blank">
               Help
@@ -53,13 +49,12 @@ function App() {
       <div id="main-content" className="container">
         <Route path="/" exact component={GeneralSettingsPage} />
         <Route path="/custom-fields/:index?" component={CustomFieldsPage} />
-        <Route path="/keyboard-shortcuts" component={KeyboardShortcutsPage} />
-        <Route path="/backup" component={BackupAndRestorePage} />
+        <Route path="/system-tools" component={SystemToolsPage} />
         <Route path="/changelog" component={ChangeLogPage} />
       </div>
       <footer id="main-footer" className="container">
         {/* <HtmlPhrase phrase={sendFeedbackMessage} as="p" /> */}
-        <ul className="list-inline">
+        <ul className="list-inline" style={{ display: "none" }}>
           <li className="list-inline-item">
             <Link to="/changelog">{GetMessage("leftNav_changelog")}</Link>
           </li>
