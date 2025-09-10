@@ -273,27 +273,27 @@ export default class ChromeExtensionProxyPage implements AbstractPage {
   }
 
   private async enableWaterFlowAnimation() {
-    console.log("enableWaterFlowAnimation: starting");
+    // console.log("enableWaterFlowAnimation: starting");
     try {
       // limit open page in new tab
       if (this.forceSameTabNavigation) {
-        console.log("enableWaterFlowAnimation: forceSameTabNavigation is true, executing limitOpenNewTabScript");
+        // console.log("enableWaterFlowAnimation: forceSameTabNavigation is true, executing limitOpenNewTabScript");
         await this.sendCommandToDebugger("Runtime.evaluate", {
           expression: limitOpenNewTabScript,
         });
-        console.log("enableWaterFlowAnimation: limitOpenNewTabScript executed");
+        // console.log("enableWaterFlowAnimation: limitOpenNewTabScript executed");
       }
 
-      console.log("enableWaterFlowAnimation: getting water flow animation script");
+      // console.log("enableWaterFlowAnimation: getting water flow animation script");
       const script = await injectWaterFlowAnimation();
-      console.log("enableWaterFlowAnimation: got script, length:", script.length);
+      // console.log("enableWaterFlowAnimation: got script, length:", script.length);
 
-      console.log("enableWaterFlowAnimation: sending script to debugger");
+      // console.log("enableWaterFlowAnimation: sending script to debugger");
       // we will call this function in sendCommandToDebugger, so we have to use the chrome.debugger.sendCommand
       await this.sendCommandToDebugger("Runtime.evaluate", {
         expression: script,
       });
-      console.log("enableWaterFlowAnimation: script executed successfully");
+      // console.log("enableWaterFlowAnimation: script executed successfully");
     } catch (error) {
       console.error("enableWaterFlowAnimation: error occurred:", error);
       throw error;
@@ -301,10 +301,10 @@ export default class ChromeExtensionProxyPage implements AbstractPage {
   }
 
   private async disableWaterFlowAnimation(tabId: number) {
-    console.log("disableWaterFlowAnimation: starting for tab:", tabId);
+    // console.log("disableWaterFlowAnimation: starting for tab:", tabId);
     try {
       const script = await injectStopWaterFlowAnimation();
-      console.log("disableWaterFlowAnimation: got script, length:", script.length);
+      // console.log("disableWaterFlowAnimation: got script, length:", script.length);
 
       await this.sendMessage({
         type: "SEND_DEBUGGER_COMMAND",
@@ -312,7 +312,7 @@ export default class ChromeExtensionProxyPage implements AbstractPage {
         command: "Runtime.evaluate",
         params: { expression: script },
       });
-      console.log("disableWaterFlowAnimation: script executed successfully");
+      // console.log("disableWaterFlowAnimation: script executed successfully");
     } catch (error) {
       console.warn("disableWaterFlowAnimation: failed to disable water flow animation:", error);
       // 不要抛出错误，因为这通常在页面关闭时发生
