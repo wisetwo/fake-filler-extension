@@ -123,7 +123,7 @@
     "message": "快捷键设置"
   },
   "kbdShortcuts_changeInstructions": {
-    "message": "修改快捷键设置，<a href='chrome://extensions/configureCommands'>keyboard shortcuts</a> "
+    "message": "打开 <span style=\"background-color: #f0f0f0; padding: 2px 4px; border-radius: 4px;\">chrome://extensions/shortcuts</span> 修改快捷键设置"
   },
   "kbdShortcuts_notSet": {
     "message": "没有设置"

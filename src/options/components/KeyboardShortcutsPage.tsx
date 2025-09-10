@@ -49,7 +49,7 @@ function KeyboardShortcutsPage() {
           })}
         </tbody>
       </table>
-      {/* TODO: <HtmlPhrase phrase={GetMessage("kbdShortcuts_changeInstructions")} as="p" /> */}
+      <HtmlPhrase phrase={GetMessage("kbdShortcuts_changeInstructions")} as="p" />
     </>
   );
 }
