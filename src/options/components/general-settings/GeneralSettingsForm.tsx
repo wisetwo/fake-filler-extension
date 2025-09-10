@@ -59,7 +59,7 @@ function GeneralSettingsForm(props: Props) {
   initialValues.ignoreFieldsWithContent = props.options.ignoreFieldsWithContent;
   initialValues.ignoreHiddenFields = props.options.ignoreHiddenFields;
   initialValues.ignoredFields = props.options.ignoredFields.join(", ");
-  initialValues.triggerClickEvents = props.options.triggerClickEvents;
+  // initialValues.triggerClickEvents = props.options.triggerClickEvents;
   initialValues.uploadFiles = props.options.uploadFiles;
   initialValues.passwordSettingsMode = props.options.passwordSettings.mode;
   initialValues.passwordSettingsPassword = props.options.passwordSettings.password;
@@ -205,11 +205,11 @@ function GeneralSettingsForm(props: Props) {
           />
 
           <h2>{GetMessage("generalSettings")}</h2>
-          <CheckboxField
+          {/* <CheckboxField
             name="triggerClickEvents"
             label={GetMessage("generalSettings_triggerEventsLabel")}
             title={GetMessage("generalSettings_triggerEvents")}
-          />
+          /> */}
           <CheckboxField
             name="uploadFiles"
             label={GetMessage("generalSettings_uploadFilesLabel")}

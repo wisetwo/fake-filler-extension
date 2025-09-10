@@ -127,9 +127,9 @@ class ElementFiller {
       (element as HTMLInputElement | HTMLTextAreaElement).value = value;
 
       // 触发必要的事件
-      if (this.options.triggerClickEvents) {
-        this.fireEvents(element);
-      }
+      // if (this.options.triggerClickEvents) {
+      //   this.fireEvents(element);
+      // }
     }
   }
 
@@ -346,9 +346,9 @@ class ElementFiller {
     } catch (error) {
       console.error("Failed to click using page operator, falling back to events", error);
       element.click();
-      if (this.options.triggerClickEvents) {
-        this.fireEvents(element);
-      }
+      // if (this.options.triggerClickEvents) {
+      //   this.fireEvents(element);
+      // }
     }
 
     // 等待下拉框出现并且有数据
@@ -578,7 +578,7 @@ class ElementFiller {
     if (!clickSuccess) {
       // 回退到直接设置属性
       radioElement.checked = true;
-      this.fireEvents(radioElement);
+      // this.fireEvents(radioElement);
     }
   }
 
@@ -976,9 +976,9 @@ class ElementFiller {
           }
 
           // 触发事件
-          if (this.options.triggerClickEvents) {
-            this.fireEvents(element);
-          }
+          // if (this.options.triggerClickEvents) {
+          //   this.fireEvents(element);
+          // }
         }
 
         break;
@@ -1306,9 +1306,9 @@ class ElementFiller {
       }
     }
 
-    if (this.options.triggerClickEvents && fireEvent) {
-      this.fireEvents(element);
-    }
+    // if (this.options.triggerClickEvents && fireEvent) {
+    //   this.fireEvents(element);
+    // }
   }
 
   public async fillTextAreaElement(element: HTMLTextAreaElement): Promise<void> {
@@ -1398,9 +1398,9 @@ class ElementFiller {
       }
     }
 
-    if (valueSelected && this.options.triggerClickEvents) {
-      this.fireEvents(element);
-    }
+    // if (valueSelected && this.options.triggerClickEvents) {
+    //   this.fireEvents(element);
+    // }
   }
 
   public fillContentEditableElement(element: HTMLElement): void {
@@ -1412,9 +1412,9 @@ class ElementFiller {
     if ((element as HTMLElement).isContentEditable) {
       element.textContent = this.generator.paragraph(5, 100, 0, this.options.defaultMaxLength);
 
-      if (this.options.triggerClickEvents) {
-        this.fireEvents(element as FillableElement);
-      }
+      // if (this.options.triggerClickEvents) {
+      //   this.fireEvents(element as FillableElement);
+      // }
     }
   }
 

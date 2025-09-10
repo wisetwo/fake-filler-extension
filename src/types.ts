@@ -114,7 +114,7 @@ export interface IFakeFillerOptions {
   ignoreHiddenFields: boolean;
   passwordSettings: IPasswordSettings;
   profiles: IProfile[];
-  triggerClickEvents: boolean;
+  // triggerClickEvents: boolean;
   uploadFiles: boolean;
   urlMatchesToBlock: string[];
   modelEnvConfig: { [key: string]: string };
@@ -140,7 +140,7 @@ export interface IFakeFillerOptionsForm {
   ignoredFields: string;
   passwordSettingsMode: PasswordModeType;
   passwordSettingsPassword: string;
-  triggerClickEvents: boolean;
+  // triggerClickEvents: boolean;
   uploadFiles: boolean;
   urlMatchesToBlock: string;
   modelEnvConfig: string;

@@ -79,7 +79,7 @@ export function saveOptions(options: IFakeFillerOptions, formValues?: IFakeFille
         draft.ignoreFieldsWithContent = formValues.ignoreFieldsWithContent;
         draft.ignoreHiddenFields = formValues.ignoreHiddenFields;
         draft.ignoredFields = CsvToArray(formValues.ignoredFields);
-        draft.triggerClickEvents = formValues.triggerClickEvents;
+        // draft.triggerClickEvents = formValues.triggerClickEvents;
         draft.uploadFiles = formValues.uploadFiles;
         if (!formValues.urlMatchesToBlock) {
           draft.urlMatchesToBlock = [];

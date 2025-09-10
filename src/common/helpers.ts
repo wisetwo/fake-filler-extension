@@ -45,7 +45,7 @@ const FakeFillerDefaultOptions = (): IFakeFillerOptions => {
       password: "Pa$$w0rd!",
     },
     profiles: [],
-    triggerClickEvents: true,
+    // triggerClickEvents: true,
     uploadFiles: true,
     urlMatchesToBlock: ["trello"],
     modelEnvConfig: {},
