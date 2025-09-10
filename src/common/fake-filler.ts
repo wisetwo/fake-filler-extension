@@ -148,16 +148,54 @@ class FakeFiller {
   /**
    * 获取容器内所有可填充的元素
    * @param container 容器元素，默认为document
-   * @returns 可填充的元素数组
+   * @returns 可填充的元素数组，按位置排序（从上到下，从左到右）
    */
   public getFillableElements(container: Document | HTMLElement = document): Element[] {
-    return [
+    // 1. 先获取所有可填充的元素
+    const allElements: Element[] = [
       // 下拉框可能是readonly的，看能否优化 TODO
       ...Array.from(container.querySelectorAll("input:not(:disabled)")),
       ...Array.from(container.querySelectorAll("textarea:not(:disabled):not([readonly])")),
       ...Array.from(container.querySelectorAll("select:not(:disabled):not([readonly])")),
       ...Array.from(container.querySelectorAll("[contenteditable]")),
     ];
+
+    // 2. 按位置排序（从上到下，从左到右）
+    return this.sortElementsByPosition(allElements);
+  }
+
+  /**
+   * 按位置对元素进行排序（从上到下，从左到右）
+   * @param elements 要排序的元素数组
+   * @returns 排序后的元素数组
+   */
+  private sortElementsByPosition(elements: Element[]): Element[] {
+    return elements.sort((a, b) => {
+      // 获取元素的边界矩形
+      const rectA = a.getBoundingClientRect();
+      const rectB = b.getBoundingClientRect();
+
+      // 计算元素中心点坐标
+      const centerA = {
+        x: rectA.left + rectA.width / 2,
+        y: rectA.top + rectA.height / 2,
+      };
+      const centerB = {
+        x: rectB.left + rectB.width / 2,
+        y: rectB.top + rectB.height / 2,
+      };
+
+      // 定义一个容差值，用于判断两个元素是否在同一行
+      const tolerance = 10;
+
+      // 如果两个元素在同一行（Y坐标相近），则按X坐标排序（从左到右）
+      if (Math.abs(centerA.y - centerB.y) <= tolerance) {
+        return centerA.x - centerB.x;
+      }
+
+      // 否则按Y坐标排序（从上到下）
+      return centerA.y - centerB.y;
+    });
   }
 
   /**
