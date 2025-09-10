@@ -1,4 +1,4 @@
-import { Form, Formik, FormikErrors, FormikHelpers } from "formik";
+import { Form, Formik, FormikErrors, FormikHelpers, Field } from "formik";
 
 import React from "react";
 
@@ -76,6 +76,8 @@ function GeneralSettingsForm(props: Props) {
   } else {
     initialValues.fieldMatchCustomAttributes = props.options.fieldMatchSettings.customAttributes.join(", ");
   }
+
+  initialValues.locale = props.options.locale || "en";
 
   if (!props.options.urlMatchesToBlock) {
     initialValues.urlMatchesToBlock = "";
@@ -205,6 +207,20 @@ function GeneralSettingsForm(props: Props) {
           />
 
           <h2>{GetMessage("generalSettings")}</h2>
+
+          <div className="form-group row mb-3">
+            <label className="col-sm-3 col-form-label text-sm-end" htmlFor="locale">
+              {GetMessage("generalSettings_dataLocale")}
+            </label>
+            <div className="col-sm-9">
+              <Field as="select" name="locale" className="form-select">
+                <option value="en">{GetMessage("generalSettings_dataLocale_english")}</option>
+                <option value="zh_CN">{GetMessage("generalSettings_dataLocale_chinese")}</option>
+              </Field>
+              <div className="form-text text-muted">{GetMessage("generalSettings_dataLocale_help")}</div>
+            </div>
+          </div>
+
           <CheckboxField
             name="triggerClickEvents"
             label={GetMessage("generalSettings_triggerEventsLabel")}

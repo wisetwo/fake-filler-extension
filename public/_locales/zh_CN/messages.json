@@ -521,6 +521,18 @@
   "generalSettings": {
     "message": "通用设置"
   },
+  "generalSettings_dataLocale": {
+    "message": "数据语言"
+  },
+  "generalSettings_dataLocale_english": {
+    "message": "英文"
+  },
+  "generalSettings_dataLocale_chinese": {
+    "message": "中文（简体）"
+  },
+  "generalSettings_dataLocale_help": {
+    "message": "选择生成假数据的语言（姓名、地址等）"
+  },
   "generalSettings_triggerEventsLabel": {
     "message": "对input字段触发click/change 事件"
   },

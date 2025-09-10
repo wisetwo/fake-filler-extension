@@ -27,6 +27,13 @@ class ElementFiller {
     this.options = options;
     this.profileIndex = profileIndex;
     this.generator = new DataGenerator();
+    // 设置语言配置
+    console.log("ElementFiller constructor - options.locale:", options.locale);
+    if (options.locale) {
+      this.generator.setLocale(options.locale);
+    } else {
+      console.log("ElementFiller constructor - no locale found in options, using default");
+    }
     this.pageOperator = pageOperator;
 
     this.previousValue = "";

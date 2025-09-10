@@ -98,6 +98,8 @@ export function saveOptions(options: IFakeFillerOptions, formValues?: IFakeFille
           password: formValues.passwordSettingsPassword,
         };
 
+        draft.locale = formValues.locale || "en";
+
         let draftCustomAttributes: string[] = [];
 
         if (formValues.fieldMatchCustomAttributes) {

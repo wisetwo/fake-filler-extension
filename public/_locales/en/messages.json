@@ -521,6 +521,18 @@
   "generalSettings": {
     "message": "General Settings"
   },
+  "generalSettings_dataLocale": {
+    "message": "Data Language"
+  },
+  "generalSettings_dataLocale_english": {
+    "message": "English"
+  },
+  "generalSettings_dataLocale_chinese": {
+    "message": "Chinese (Simplified)"
+  },
+  "generalSettings_dataLocale_help": {
+    "message": "Select the language for generated fake data (names, addresses, etc.)"
+  },
   "generalSettings_triggerEventsLabel": {
     "message": "Trigger click/change events on input fields"
   },

@@ -118,6 +118,7 @@ export interface IFakeFillerOptions {
   uploadFiles: boolean;
   urlMatchesToBlock: string[];
   modelEnvConfig: { [key: string]: string };
+  locale: string;
 }
 
 export interface IFakeFillerOptionsForm {
@@ -144,6 +145,7 @@ export interface IFakeFillerOptionsForm {
   uploadFiles: boolean;
   urlMatchesToBlock: string;
   modelEnvConfig: string;
+  locale: string;
 }
 
 export interface IOptionsState {
