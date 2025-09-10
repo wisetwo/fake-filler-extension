@@ -62,7 +62,20 @@ class PageOperator {
 
   public async selectAll(): Promise<void> {
     await this.ensureInitialized();
-    await this.page.keyboard.press({ key: "a", command: "selectAll" });
+    // 使用与 page.ts 中 clearInput 相同的 selectAll 实现
+    await this.sendCommandToDebugger("Input.dispatchKeyEvent", {
+      type: "keyDown",
+      commands: ["selectAll"],
+    });
+    await this.sendCommandToDebugger("Input.dispatchKeyEvent", {
+      type: "keyUp",
+      commands: ["selectAll"],
+    });
+  }
+
+  private async sendCommandToDebugger(command: string, params: any): Promise<any> {
+    // 直接调用 page 的 sendCommandToDebugger 方法
+    return (this.page as any).sendCommandToDebugger(command, params);
   }
 
   public async backspace(): Promise<void> {
@@ -70,9 +83,16 @@ class PageOperator {
     await this.page.keyboard.press({ key: "Backspace" });
   }
 
-  public async clearAndType(text: string): Promise<void> {
+  public async clearInput(element: import("src/shared/extractor").ElementInfo): Promise<void> {
     await this.ensureInitialized();
-    await this.selectAll();
+    // 直接使用 page.ts 中已有的 clearInput 实现，它包含点击、选择全部、删除的完整流程
+    await this.page.clearInput(element);
+  }
+
+  public async clearAndType(text: string, element: import("src/shared/extractor").ElementInfo): Promise<void> {
+    await this.ensureInitialized();
+    // 使用 page.ts 中更完整的 clearInput 方法，它包含点击、选择全部、删除的完整流程
+    await this.page.clearInput(element);
     await this.type(text);
   }
 
@@ -93,6 +113,50 @@ class PageOperator {
         console.warn("waitUntilNetworkIdle failed:", error);
       }
     }
+  }
+
+  public async drag(from: { x: number; y: number }, to: { x: number; y: number }): Promise<void> {
+    await this.ensureInitialized();
+    await this.page.mouse.drag(from, to);
+  }
+
+  public async scrollUp(distance?: number, startingPoint?: { x: number; y: number }): Promise<void> {
+    await this.ensureInitialized();
+    const point = startingPoint ? { left: startingPoint.x, top: startingPoint.y } : undefined;
+    await this.page.scrollUp(distance, point);
+  }
+
+  public async scrollDown(distance?: number, startingPoint?: { x: number; y: number }): Promise<void> {
+    await this.ensureInitialized();
+    const point = startingPoint ? { left: startingPoint.x, top: startingPoint.y } : undefined;
+    await this.page.scrollDown(distance, point);
+  }
+
+  public async scrollLeft(distance?: number, startingPoint?: { x: number; y: number }): Promise<void> {
+    await this.ensureInitialized();
+    const point = startingPoint ? { left: startingPoint.x, top: startingPoint.y } : undefined;
+    await this.page.scrollLeft(distance, point);
+  }
+
+  public async scrollRight(distance?: number, startingPoint?: { x: number; y: number }): Promise<void> {
+    await this.ensureInitialized();
+    const point = startingPoint ? { left: startingPoint.x, top: startingPoint.y } : undefined;
+    await this.page.scrollRight(distance, point);
+  }
+
+  public async getUrl(): Promise<string> {
+    await this.ensureInitialized();
+    return this.page.url();
+  }
+
+  public async getPageSize(): Promise<import("src/shared/types").Size> {
+    await this.ensureInitialized();
+    return this.page.size();
+  }
+
+  public async takeScreenshot(): Promise<string> {
+    await this.ensureInitialized();
+    return this.page.screenshotBase64();
   }
 
   public async destroy(): Promise<void> {

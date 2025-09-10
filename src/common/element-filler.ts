@@ -121,7 +121,7 @@ class ElementFiller {
       await sleep(100); // 等待焦点设置
 
       // 清空现有内容并输入新值
-      await this.pageOperator.clearAndType(value);
+      await this.pageOperator.clearAndType(element, value);
       await sleep(50); // 等待输入完成
 
       return true;
