@@ -40,11 +40,66 @@ class ElementFiller {
     this.pageOperator = pageOperator;
   }
 
-  private fireEvents(element: FillableElement): void {
-    ["input", "click", "change", "blur"].forEach((event) => {
-      const changeEvent = new Event(event, { bubbles: true, cancelable: true });
-      element.dispatchEvent(changeEvent);
-    });
+  // private fireEvents(element: FillableElement): void {
+  //   ["input", "click", "change", "blur"].forEach((event) => {
+  //     const changeEvent = new Event(event, { bubbles: true, cancelable: true });
+  //     element.dispatchEvent(changeEvent);
+  //   });
+  // }
+
+  /**
+   * 获取元素在主文档中的准确坐标，考虑iframe等嵌套情况
+   * @param element 目标元素
+   * @returns 在主文档坐标系中的位置和尺寸
+   */
+  private getElementGlobalRect(element: Element): DOMRect {
+    let rect = element.getBoundingClientRect();
+    let currentWindow = element.ownerDocument?.defaultView;
+
+    // 如果元素在iframe中，需要累加iframe的偏移
+    while (currentWindow && currentWindow.parent !== currentWindow) {
+      try {
+        const { frameElement } = currentWindow;
+        if (frameElement) {
+          const frameRect = frameElement.getBoundingClientRect();
+          const frameStyle = currentWindow.getComputedStyle(frameElement);
+
+          // 获取iframe的边框和内边距
+          const borderLeft = parseFloat(frameStyle.borderLeftWidth) || 0;
+          const borderTop = parseFloat(frameStyle.borderTopWidth) || 0;
+          const paddingLeft = parseFloat(frameStyle.paddingLeft) || 0;
+          const paddingTop = parseFloat(frameStyle.paddingTop) || 0;
+
+          // 累加iframe的位置偏移
+          rect = new DOMRect(
+            rect.left + frameRect.left + borderLeft + paddingLeft,
+            rect.top + frameRect.top + borderTop + paddingTop,
+            rect.width,
+            rect.height
+          );
+        }
+        currentWindow = currentWindow.parent as typeof window;
+      } catch (error) {
+        // 跨域iframe无法访问，跳出循环
+        console.warn("Cross-origin iframe detected, cannot calculate accurate coordinates:", error);
+        break;
+      }
+    }
+
+    return rect;
+  }
+
+  /**
+   * 获取元素中心点的全局坐标
+   * @param element 目标元素
+   * @returns {x, y} 全局坐标
+   */
+  private getElementCenterCoordinates(element: Element): { x: number; y: number } {
+    const rect = this.getElementGlobalRect(element);
+    return {
+      x: rect.left + rect.width / 2,
+      y: rect.top + rect.height / 2,
+    };
   }
 
   /**
@@ -59,10 +114,8 @@ class ElementFiller {
     }
 
     try {
-      // 先点击元素以获取焦点
-      const rect = element.getBoundingClientRect();
-      const x = rect.left + rect.width / 2;
-      const y = rect.top + rect.height / 2;
+      // 先点击元素以获取焦点，使用准确的全局坐标
+      const { x, y } = this.getElementCenterCoordinates(element);
 
       await this.pageOperator.click(x, y);
       await sleep(100); // 等待焦点设置
@@ -97,10 +150,8 @@ class ElementFiller {
         return true;
       }
 
-      // 点击checkbox来切换状态
-      const rect = element.getBoundingClientRect();
-      const x = rect.left + rect.width / 2;
-      const y = rect.top + rect.height / 2;
+      // 点击checkbox来切换状态，使用准确的全局坐标
+      const { x, y } = this.getElementCenterCoordinates(element);
 
       await this.pageOperator.click(x, y);
       await sleep(100); // 等待状态更新
@@ -136,9 +187,18 @@ class ElementFiller {
   private async simulateClick(element: HTMLElement, x?: number, y?: number): Promise<void> {
     console.log("-simulateClick-", element, x, y);
     if (this.pageOperator) {
-      const rect = element.getBoundingClientRect();
-      const finalX = x ?? rect.left + rect.width / 2;
-      const finalY = y ?? rect.top + rect.height / 2;
+      let finalX: number;
+      let finalY: number;
+
+      if (x !== undefined && y !== undefined) {
+        finalX = x;
+        finalY = y;
+      } else {
+        const coordinates = this.getElementCenterCoordinates(element);
+        finalX = coordinates.x;
+        finalY = coordinates.y;
+      }
+
       try {
         await this.pageOperator.click(finalX, finalY);
       } catch (error) {
@@ -182,7 +242,7 @@ class ElementFiller {
    * 按照上、右、下、左的顺序，从元素边界外10px开始递增到500px搜索
    */
   private findSafeClickPositionAroundElement(element: HTMLElement): { x: number; y: number } | null {
-    const rect = element.getBoundingClientRect();
+    const rect = this.getElementGlobalRect(element);
     const centerX = rect.left + rect.width / 2;
     const centerY = rect.top + rect.height / 2;
 
@@ -593,10 +653,8 @@ class ElementFiller {
     }
 
     try {
-      // 点击radio按钮
-      const rect = element.getBoundingClientRect();
-      const x = rect.left + rect.width / 2;
-      const y = rect.top + rect.height / 2;
+      // 点击radio按钮，使用准确的全局坐标
+      const { x, y } = this.getElementCenterCoordinates(element);
 
       await this.pageOperator.click(x, y);
       await sleep(100); // 等待状态更新
@@ -953,7 +1011,6 @@ class ElementFiller {
       return;
     }
 
-    let fireEvent = true;
     const elementType = element.type ? element.type.toLowerCase() : "";
 
     switch (elementType) {
@@ -1170,7 +1227,6 @@ class ElementFiller {
           const valuesList = matchingCustomField?.list ? matchingCustomField?.list : [];
           await this.selectRandomRadio(element.name, valuesList);
         }
-        fireEvent = false;
         break;
       }
 
@@ -1339,7 +1395,6 @@ class ElementFiller {
     }
 
     let valueExists = false;
-    let valueSelected = false;
     const matchingCustomField = this.findCustomField(this.getElementName(element));
 
     // If a custom field exists for this element, we use that to determine the value.
@@ -1351,7 +1406,6 @@ class ElementFiller {
         if (element.options[i].value === value) {
           element.options[i].selected = true;
           valueExists = true;
-          valueSelected = true;
           break;
         }
       }
@@ -1375,7 +1429,6 @@ class ElementFiller {
         for (let i = 0; i < numberOfOptionsToSelect; i += 1) {
           if (!element.options[i].disabled) {
             element.options[this.generator.randomNumber(1, optionsCount - 1)].selected = true;
-            valueSelected = true;
           }
         }
       } else {
@@ -1389,7 +1442,6 @@ class ElementFiller {
 
           if (!element.options[randomOptionIndex].disabled) {
             element.options[randomOptionIndex].selected = true;
-            valueSelected = true;
             break;
           } else {
             iterations += 1;
