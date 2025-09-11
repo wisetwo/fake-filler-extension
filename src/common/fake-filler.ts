@@ -20,8 +20,11 @@ class FakeFiller {
   private pageOperator: PageOperator | null;
   // 用于存储事件监听器引用，以便后续清理
   private hoverEventHandler: ((event: Event) => void) | null = null;
+  private mouseMoveHandler: ((event: MouseEvent) => void) | null = null;
   // 用于延迟隐藏弹出框的计时器
   private hidePopupTimer: NodeJS.Timeout | null = null;
+  // 记录当前活跃的弹出框元素，用于改进hover交互
+  private activePopupElement: HTMLElement | null = null;
   // 用于控制停止填充的标志
   private shouldStop = false;
 
@@ -236,7 +239,7 @@ class FakeFiller {
         // 检查目标元素或其父级是否有高亮class
         if (target.classList && target.classList.contains("fake-filler-element-highlight")) {
           // 延迟隐藏弹出框，给用户时间移动到弹出框上
-          this.scheduleHidePopup();
+          this.scheduleHidePopupWithCheck();
         }
       }
     };
@@ -244,6 +247,12 @@ class FakeFiller {
     // 使用事件代理在document上监听mouseenter和mouseleave事件
     document.addEventListener("mouseenter", this.hoverEventHandler, true);
     document.addEventListener("mouseleave", this.hoverEventHandler, true);
+
+    // 添加鼠标移动监听器以跟踪鼠标位置
+    this.mouseMoveHandler = (event: MouseEvent) => {
+      this.lastMousePosition = { x: event.clientX, y: event.clientY };
+    };
+    document.addEventListener("mousemove", this.mouseMoveHandler, { passive: true });
 
     console.log(`已高亮显示 ${fillableElements.length} 个可填充元素`);
   }
@@ -263,6 +272,11 @@ class FakeFiller {
       document.removeEventListener("mouseenter", this.hoverEventHandler, true);
       document.removeEventListener("mouseleave", this.hoverEventHandler, true);
       this.hoverEventHandler = null;
+    }
+
+    if (this.mouseMoveHandler) {
+      document.removeEventListener("mousemove", this.mouseMoveHandler);
+      this.mouseMoveHandler = null;
     }
 
     // 取消任何pending的隐藏计时器并隐藏弹出框
@@ -285,8 +299,8 @@ class FakeFiller {
     style.id = "fake-filler-highlight-styles";
     style.textContent = `
       .fake-filler-element-highlight {
-        outline: 2px solid #ff6b6b !important;
-        background-color: rgba(255, 107, 107, 0.1) !important;
+        outline: 2px solid #f5ba18 !important;
+        background-color: rgba(245, 186, 24, 0.1) !important;
         transition: all 0.3s ease-in-out !important;
       }
 
@@ -482,11 +496,14 @@ class FakeFiller {
     });
 
     popup.addEventListener("mouseleave", () => {
-      // 当鼠标离开弹出框时，立即隐藏
-      this.hideElementPopup();
+      // 当鼠标离开弹出框时，使用相同的延迟隐藏机制
+      this.scheduleHidePopupWithCheck();
     });
 
     document.body.appendChild(popup);
+
+    // 记录当前活跃的弹出框元素
+    this.activePopupElement = element;
 
     // 计算弹出框位置
     const rect = element.getBoundingClientRect();
@@ -534,8 +551,10 @@ class FakeFiller {
     if (existingPopup) {
       existingPopup.remove();
     }
-    // 清除计时器
+    // 清除计时器和活跃元素引用
     this.cancelHidePopupTimer();
+    this.activePopupElement = null;
+    this.lastMousePosition = null;
   }
 
   /**
@@ -545,11 +564,77 @@ class FakeFiller {
     // 清除之前的计时器
     this.cancelHidePopupTimer();
 
-    // 设置300ms延迟隐藏
+    // 设置500ms延迟隐藏，给用户更多时间移动鼠标
     this.hidePopupTimer = setTimeout(() => {
       this.hideElementPopup();
+    }, 500);
+  }
+
+  /**
+   * 带检查的延迟隐藏弹出框 - 检查鼠标是否真的离开了整个交互区域
+   */
+  private scheduleHidePopupWithCheck(): void {
+    // 清除之前的计时器
+    this.cancelHidePopupTimer();
+
+    // 设置300ms延迟，然后检查鼠标位置
+    this.hidePopupTimer = setTimeout(() => {
+      // 检查鼠标是否在弹出框或活跃元素上
+      if (this.isMouseOverInteractiveArea()) {
+        // 如果鼠标仍在交互区域，重新安排检查
+        this.scheduleHidePopupWithCheck();
+      } else {
+        // 鼠标确实离开了，隐藏弹出框
+        this.hideElementPopup();
+      }
     }, 300);
   }
+
+  /**
+   * 检查鼠标是否在交互区域内（弹出框或活跃元素）
+   */
+  private isMouseOverInteractiveArea(): boolean {
+    const popup = document.getElementById("fake-filler-popup");
+    if (!popup) {
+      return false;
+    }
+
+    // 获取当前鼠标悬停的元素
+    const elementAtMouse = document.elementFromPoint(
+      this.getCurrentMousePosition().x,
+      this.getCurrentMousePosition().y
+    );
+
+    if (!elementAtMouse) {
+      return false;
+    }
+
+    // 检查是否在弹出框内
+    if (popup.contains(elementAtMouse)) {
+      return true;
+    }
+
+    // 检查是否在活跃元素上
+    if (
+      this.activePopupElement &&
+      (elementAtMouse === this.activePopupElement || this.activePopupElement.contains(elementAtMouse))
+    ) {
+      return true;
+    }
+
+    return false;
+  }
+
+  /**
+   * 获取当前鼠标位置（需要通过全局监听跟踪）
+   */
+  private getCurrentMousePosition(): { x: number; y: number } {
+    // 使用存储的鼠标位置，如果没有则返回默认值
+    return this.lastMousePosition || { x: 0, y: 0 };
+  }
+
+  // 添加鼠标位置跟踪
+  private lastMousePosition: { x: number; y: number } | null = null;
 
   /**
    * 取消隐藏弹出框的计时器
