@@ -496,10 +496,36 @@ class ElementFiller {
   private isAnyMatch(haystacks: string[], needles: string[]): boolean {
     console.log("#isAnyMatch#");
     console.log("haystacks:", haystacks, "needles:", needles);
+
     for (let i = 0, haystackCount = haystacks.length; i < haystackCount; i += 1) {
       const haystack = haystacks[i];
       for (let j = 0, needleCount = needles.length; j < needleCount; j += 1) {
-        if (new RegExp(needles[j], "iu").test(haystack)) {
+        const needle = needles[j];
+
+        // 检查是否是正则表达式格式 (以 / 开头和结尾，可能带标志)
+        const regexMatch = needle.match(/^\/(.+?)\/([igm]*)$/);
+
+        if (regexMatch) {
+          // 解析正则表达式
+          const [, pattern, flags] = regexMatch;
+          try {
+            const regex = new RegExp(pattern, flags || "iu");
+            console.log("Using strict regex:", pattern, "with flags:", flags || "iu", "testing:", haystack);
+            if (regex.test(haystack)) {
+              console.log("Strict regex match found!");
+              return true;
+            }
+          } catch (error) {
+            console.warn("Invalid regex pattern:", needle, error);
+            // 如果正则表达式无效，回退到普通匹配
+            if (new RegExp(needle, "iu").test(haystack)) {
+              console.log("Fallback regex match found!");
+              return true;
+            }
+          }
+        } else if (new RegExp(needle, "iu").test(haystack)) {
+          // 普通匹配模式
+          console.log("Normal regex match found!");
           return true;
         }
       }
