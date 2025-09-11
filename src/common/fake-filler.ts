@@ -377,7 +377,77 @@ class FakeFiller {
     // 创建标题
     const header = document.createElement("div");
     header.className = "fake-filler-popup-header";
-    header.textContent = `${element.tagName.toLowerCase()} Element HTML`;
+
+    // 设置标题内容
+    const tagName = document.createElement("span");
+    tagName.textContent = `${element.tagName}`;
+    tagName.style.fontWeight = "bold";
+    header.appendChild(tagName);
+
+    // 如果元素有 name 属性，添加次级信息和复制功能
+    const nameAttr = element.getAttribute("name");
+    if (nameAttr) {
+      const nameInfo = document.createElement("span");
+      nameInfo.style.marginLeft = "10px";
+      nameInfo.style.fontSize = "0.9em";
+      nameInfo.style.color = "#666";
+      const nameText = document.createElement("span");
+      nameText.textContent = `name="${nameAttr}" `;
+      nameInfo.appendChild(nameText);
+
+      const copyButton = document.createElement("span");
+      copyButton.textContent = "复制";
+      copyButton.style.color = "#63b3ed";
+      copyButton.style.cursor = "pointer";
+      copyButton.style.textDecoration = "underline";
+      copyButton.title = "点击复制 name 值";
+
+      // 添加复制功能
+      copyButton.addEventListener("click", async (e) => {
+        e.stopPropagation();
+        try {
+          await navigator.clipboard.writeText(nameAttr);
+          // 临时显示复制成功提示
+          const originalText = copyButton.textContent;
+          copyButton.textContent = "已复制";
+          copyButton.style.color = "#28a745";
+          setTimeout(() => {
+            copyButton.textContent = originalText;
+            copyButton.style.color = "#63b3ed";
+          }, 1500);
+        } catch (err) {
+          console.error("复制失败:", err);
+          // 降级方案：使用 execCommand
+          try {
+            const textArea = document.createElement("textarea");
+            textArea.value = nameAttr;
+            document.body.appendChild(textArea);
+            textArea.select();
+            document.execCommand("copy");
+            document.body.removeChild(textArea);
+
+            const originalText = copyButton.textContent;
+            copyButton.textContent = "已复制";
+            copyButton.style.color = "#28a745";
+            setTimeout(() => {
+              copyButton.textContent = originalText;
+              copyButton.style.color = "#63b3ed";
+            }, 1500);
+          } catch (fallbackErr) {
+            console.error("降级复制方案也失败:", fallbackErr);
+            copyButton.textContent = "复制失败";
+            copyButton.style.color = "#dc3545";
+            setTimeout(() => {
+              copyButton.textContent = "复制";
+              copyButton.style.color = "#63b3ed";
+            }, 1500);
+          }
+        }
+      });
+
+      nameInfo.appendChild(copyButton);
+      header.appendChild(nameInfo);
+    }
 
     // 创建内容区域
     const content = document.createElement("div");
