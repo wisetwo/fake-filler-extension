@@ -185,7 +185,7 @@ class ElementFiller {
   }
 
   private async simulateClick(element: HTMLElement, x?: number, y?: number): Promise<void> {
-    console.log("-simulateClick-", element, x, y);
+    // console.log("-simulateClick-", element, x, y);
     if (this.pageOperator) {
       let finalX: number;
       let finalY: number;
@@ -770,7 +770,7 @@ class ElementFiller {
         }
       }
     }
-
+    console.log("normalizedName->", normalizedName);
     return normalizedName;
   }
 

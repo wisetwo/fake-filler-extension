@@ -244,32 +244,32 @@ export default class ChromeExtensionProxyPage implements AbstractPage {
   }
 
   private async initializeWaterFlowAnimation(): Promise<void> {
-    console.log("initializeWaterFlowAnimation: starting");
+    // console.log("initializeWaterFlowAnimation: starting");
 
     // limit open page in new tab
     if (this.forceSameTabNavigation) {
-      console.log("initializeWaterFlowAnimation: executing limitOpenNewTabScript");
+      // console.log("initializeWaterFlowAnimation: executing limitOpenNewTabScript");
       await this.sendMessage({
         type: "SEND_DEBUGGER_COMMAND",
         tabId: this.tabIdOfDebuggerAttached!,
         command: "Runtime.evaluate",
         params: { expression: limitOpenNewTabScript },
       });
-      console.log("initializeWaterFlowAnimation: limitOpenNewTabScript executed");
+      // console.log("initializeWaterFlowAnimation: limitOpenNewTabScript executed");
     }
 
-    console.log("initializeWaterFlowAnimation: getting water flow animation script");
+    // console.log("initializeWaterFlowAnimation: getting water flow animation script");
     const script = await injectWaterFlowAnimation();
-    console.log("initializeWaterFlowAnimation: got script, length:", script.length);
+    // console.log("initializeWaterFlowAnimation: got script, length:", script.length);
 
-    console.log("initializeWaterFlowAnimation: sending script to debugger");
+    // console.log("initializeWaterFlowAnimation: sending script to debugger");
     await this.sendMessage({
       type: "SEND_DEBUGGER_COMMAND",
       tabId: this.tabIdOfDebuggerAttached!,
       command: "Runtime.evaluate",
       params: { expression: script },
     });
-    console.log("initializeWaterFlowAnimation: script executed successfully");
+    // console.log("initializeWaterFlowAnimation: script executed successfully");
   }
 
   private async enableWaterFlowAnimation() {
