@@ -346,7 +346,7 @@ export default class ChromeExtensionProxyPage implements AbstractPage {
       try {
         await this.initializeWaterFlowAnimation();
         this.waterFlowAnimationInitialized = true;
-        console.log("sendCommandToDebugger: water flow animation initialized successfully");
+        // console.log("sendCommandToDebugger: water flow animation initialized successfully");
       } catch (error) {
         console.warn("sendCommandToDebugger: failed to initialize water flow animation:", error);
         // 继续执行，不要因为动画初始化失败而阻止其他操作

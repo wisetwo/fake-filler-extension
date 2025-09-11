@@ -12,14 +12,14 @@ export const getHtmlElementScript = async () => {
 // inject water flow animation
 let waterFlowScriptFileContentCache: string | null = null;
 export const injectWaterFlowAnimation = async () => {
-  console.log("injectWaterFlowAnimation: starting");
+  // console.log("injectWaterFlowAnimation: starting");
   try {
     if (waterFlowScriptFileContentCache) {
-      console.log("injectWaterFlowAnimation: returning cached content");
+      // console.log("injectWaterFlowAnimation: returning cached content");
       return waterFlowScriptFileContentCache;
     }
 
-    console.log("injectWaterFlowAnimation: requesting script from service worker");
+    // console.log("injectWaterFlowAnimation: requesting script from service worker");
     const response = await new Promise<{ content: string }>((resolve, reject) => {
       chrome.runtime.sendMessage(
         {
@@ -40,7 +40,7 @@ export const injectWaterFlowAnimation = async () => {
       );
     });
 
-    console.log("injectWaterFlowAnimation: script loaded, length:", response.content.length);
+    // console.log("injectWaterFlowAnimation: script loaded, length:", response.content.length);
     waterFlowScriptFileContentCache = response.content;
     return waterFlowScriptFileContentCache;
   } catch (error) {

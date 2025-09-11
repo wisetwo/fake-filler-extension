@@ -788,6 +788,11 @@ class ElementFiller {
     return 0;
   }
 
+  private logAndReturn(value: string, type: string): string {
+    console.log(`generateDummyDataForCustomField return (${type}):`, value);
+    return value;
+  }
+
   private generateDummyDataForCustomField(
     customField: ICustomField | undefined,
     element: HTMLInputElement | HTMLTextAreaElement | undefined = undefined
@@ -797,32 +802,35 @@ class ElementFiller {
     console.log(element);
     if (!customField) {
       if (element && element instanceof HTMLInputElement && element.pattern) {
-        return this.generator.generateRandomStringFromRegExTemplate(element.pattern);
+        return this.logAndReturn(this.generator.generateRandomStringFromRegExTemplate(element.pattern), "pattern");
       }
 
-      return this.generator.phrase(this.getElementMinLength(element), this.getElementMaxLength(element));
+      return this.logAndReturn(
+        this.generator.phrase(this.getElementMinLength(element), this.getElementMaxLength(element)),
+        "phrase"
+      );
     }
 
     switch (customField.type) {
       case "username": {
         this.previousUsername = this.generator.scrambledWord(5, 10).toLowerCase();
-        return this.previousUsername;
+        return this.logAndReturn(this.previousUsername, "username");
       }
 
       case "first-name": {
         this.previousFirstName = this.generator.firstName();
-        return this.previousFirstName;
+        return this.logAndReturn(this.previousFirstName, "first-name");
       }
 
       case "last-name": {
         this.previousLastName = this.generator.lastName();
-        return this.previousLastName;
+        return this.logAndReturn(this.previousLastName, "last-name");
       }
 
       case "full-name": {
         this.previousFirstName = this.generator.firstName();
         this.previousLastName = this.generator.lastName();
-        return `${this.previousFirstName} ${this.previousLastName}`;
+        return this.logAndReturn(`${this.previousFirstName} ${this.previousLastName}`, "full-name");
       }
 
       case "email": {
@@ -909,22 +917,22 @@ class ElementFiller {
 
         suffix = suffix.replace(/\[hostname\]/g, window.location.hostname);
 
-        return prefix + username + suffix + domain;
+        return this.logAndReturn(prefix + username + suffix + domain, "email");
       }
 
       case "organization": {
-        return this.generator.organizationName();
+        return this.logAndReturn(this.generator.organizationName(), "organization");
       }
 
       case "telephone": {
-        return this.generator.phoneNumber(customField.template);
+        return this.logAndReturn(this.generator.phoneNumber(customField.template), "telephone");
       }
 
       case "number": {
         const minValue = customField.min === 0 ? 0 : customField.min || 1;
         const maxValue = customField.max || 100;
         const decimalValue = customField.decimalPlaces || 0;
-        return String(this.generator.randomNumber(minValue, maxValue, decimalValue));
+        return this.logAndReturn(String(this.generator.randomNumber(minValue, maxValue, decimalValue)), "number");
       }
 
       case "date": {
@@ -954,19 +962,25 @@ class ElementFiller {
             maxDate = moment(dateElement.max).toDate();
           }
 
-          return this.generator.date(minDate, maxDate);
+          return this.logAndReturn(this.generator.date(minDate, maxDate), "date-element");
         }
 
-        return moment(this.generator.date(minDate, maxDate)).format(customField.template);
+        return this.logAndReturn(
+          moment(this.generator.date(minDate, maxDate)).format(customField.template),
+          "date-formatted"
+        );
       }
 
       case "url": {
-        return this.generator.website();
+        return this.logAndReturn(this.generator.website(), "url");
       }
 
       case "text": {
         if (element && element instanceof HTMLInputElement && element.pattern) {
-          return this.generator.generateRandomStringFromRegExTemplate(element.pattern);
+          return this.logAndReturn(
+            this.generator.generateRandomStringFromRegExTemplate(element.pattern),
+            "text-pattern"
+          );
         }
 
         const minWords = customField.min || 10;
@@ -979,28 +993,34 @@ class ElementFiller {
         if (element && element.minLength) {
           minLength = element.minLength;
         }
-        return this.generator.paragraph(minWords, maxWords, minLength, maxLength);
+        return this.logAndReturn(this.generator.paragraph(minWords, maxWords, minLength, maxLength), "text-paragraph");
       }
 
       case "alphanumeric": {
-        return this.generator.alphanumeric(customField.template || "");
+        return this.logAndReturn(this.generator.alphanumeric(customField.template || ""), "alphanumeric");
       }
 
       case "regex": {
         const regExGenerator = new RandExp(customField.template || "");
         regExGenerator.defaultRange.add(0, 65535);
-        return regExGenerator.gen();
+        return this.logAndReturn(regExGenerator.gen(), "regex");
       }
 
       case "randomized-list": {
         if (customField.list && customField.list.length > 0) {
-          return customField.list[this.generator.randomNumber(0, customField.list.length - 1)];
+          return this.logAndReturn(
+            customField.list[this.generator.randomNumber(0, customField.list.length - 1)],
+            "randomized-list"
+          );
         }
-        return "";
+        return this.logAndReturn("", "randomized-list-empty");
       }
 
       default: {
-        return this.generator.phrase(this.getElementMinLength(element), this.getElementMaxLength(element));
+        return this.logAndReturn(
+          this.generator.phrase(this.getElementMinLength(element), this.getElementMaxLength(element)),
+          "default"
+        );
       }
     }
   }
