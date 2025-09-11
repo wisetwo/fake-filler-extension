@@ -3,6 +3,7 @@ import React from "react";
 import { Modal } from "react-bootstrap";
 
 import { CsvToArray, GetMessage, DEFAULT_EMAIL_CUSTOM_FIELD, SanitizeText } from "src/common/helpers";
+import TextAreaField from "src/options/components/common/TextAreaField";
 import TextField from "src/options/components/common/TextField";
 import DataTypeSelectField from "src/options/components/custom-fields/DataTypeSelectField";
 import AlphanumericOptions from "src/options/components/custom-fields/data-types/AlphanumericOptions";
@@ -206,7 +207,7 @@ function CustomFieldModal(props: Props) {
     initialValues.type = customField.type;
 
     // initialValues.textMatch = customField.match.filter((match) => match === SanitizeText(match)).join(", ");
-    initialValues.regexMatch = customField.match.filter((match) => match !== SanitizeText(match)).join(", ");
+    initialValues.regexMatch = customField.match.filter((match) => match !== SanitizeText(match)).join("\n");
 
     switch (initialValues.type) {
       case "alphanumeric":
@@ -295,7 +296,7 @@ function CustomFieldModal(props: Props) {
                 placeholder={GetMessage("customFields_label_text_match_placeholder")}
                 helpText={GetMessage("customFields_label_text_match_helpText")}
               /> */}
-              <TextField
+              <TextAreaField
                 name="regexMatch"
                 label={GetMessage("customFields_label_regex_match")}
                 placeholder={GetMessage("customFields_label_regex_match_placeholder")}

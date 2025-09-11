@@ -279,10 +279,10 @@
     "message": "Regex Match"
   },
   "customFields_label_regex_match_placeholder": {
-    "message": "Comma-separated regular expressions"
+    "message": "Enter each regular expression on a new line."
   },
   "customFields_label_regex_match_helpText": {
-    "message": "Enter comma separated regular expressions to match. eg. /^\\d{3}-\\d{3}-\\d{4}$\/i or (a|b)(\\d). Ensure your regular expressions do not contain any commas."
+    "message": "Enter each regular expressions on a new line to match. eg. /^\\d{3}-\\d{3}-\\d{4}/i or (a|b)(\\d). Ensure your regular expressions do not contain any commas."
   },
   "customFields_label_template": {
     "message": "模板"

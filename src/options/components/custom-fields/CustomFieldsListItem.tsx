@@ -66,7 +66,7 @@ function CustomFieldsListItem(props: Props) {
                 </tr>
                 <tr>
                   <td>{GetMessage("customFields_label_match")}</td>
-                  <td className="text-break">{customField.match.join(", ")}</td>
+                  <td className="text-break">{customField.match.join(" ")}</td>
                 </tr>
                 {customField.template && (
                   <tr>
