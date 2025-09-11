@@ -336,7 +336,6 @@ class FakeFiller {
         padding: 8px !important;
         margin-top: 8px !important;
         cursor: text !important;
-        user-select: all !important;
       }
 
       .fake-filler-popup-content::-webkit-scrollbar {
@@ -468,13 +467,13 @@ class FakeFiller {
     }
 
     // 创建提示文字
-    const tip = document.createElement("div");
-    tip.className = "fake-filler-popup-tip";
-    tip.textContent = "点击内容区域可选中全部文本进行复制";
+    // const tip = document.createElement("div");
+    // tip.className = "fake-filler-popup-tip";
+    // tip.textContent = "点击内容区域可全选文本进行复制";
 
     popup.appendChild(header);
     popup.appendChild(content);
-    popup.appendChild(tip);
+    // popup.appendChild(tip);
 
     // 为弹出框添加事件监听器
     popup.addEventListener("mouseenter", () => {
