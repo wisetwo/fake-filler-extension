@@ -22,6 +22,8 @@ class FakeFiller {
   private hoverEventHandler: ((event: Event) => void) | null = null;
   // 用于延迟隐藏弹出框的计时器
   private hidePopupTimer: NodeJS.Timeout | null = null;
+  // 用于控制停止填充的标志
+  private shouldStop = false;
 
   constructor(options: IFakeFillerOptions, profileIndex = -1) {
     this.pageOperator = new PageOperator();
@@ -526,6 +528,13 @@ class FakeFiller {
       // 串行处理所有元素
       await fillableElements.reduce(async (promise, element) => {
         await promise;
+
+        // 检查是否需要停止填充
+        if (this.shouldStop) {
+          console.log("Filling stopped by user request");
+          return;
+        }
+
         await fillElement(element);
         await delay(200); // 每个元素处理完后等待200ms
       }, Promise.resolve());
@@ -542,6 +551,7 @@ class FakeFiller {
   }
 
   public async fillAllInputs(): Promise<void> {
+    this.shouldStop = false; // 重置停止标志
     try {
       await this.getPageOperator();
       await this.fillAllElements(document);
@@ -550,7 +560,13 @@ class FakeFiller {
         await this.pageOperator.destroy();
         this.pageOperator = null;
       }
+      this.shouldStop = false; // 清理停止标志
     }
+  }
+
+  public stopFilling(): void {
+    console.log("Setting stop flag for filling");
+    this.shouldStop = true;
   }
 
   public async fillThisInput(): Promise<void> {

@@ -103,6 +103,23 @@ function handleMessage(request: MessageRequest, sender: any, sendResponse: any):
       return true;
     }
 
+    case "STOP_FILLING": {
+      try {
+        if (window.fakeFiller) {
+          window.fakeFiller.stopFilling();
+          sendResponse({ success: true });
+        } else {
+          sendResponse({ success: false, error: "FakeFiller not initialized" });
+        }
+      } catch (error) {
+        sendResponse({
+          success: false,
+          error: error instanceof Error ? error.message : "Unknown error",
+        });
+      }
+      return true;
+    }
+
     default:
       return null;
   }

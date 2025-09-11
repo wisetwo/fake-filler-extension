@@ -83,6 +83,17 @@ const SidePanel: React.FC = () => {
 
   const handleFillAllInputs = () => sendMessage("FILL_ALL_INPUTS", "fillAll");
 
+  const handleStopFilling = async () => {
+    try {
+      await chrome.runtime.sendMessage({ type: "STOP_FILLING" });
+      setLoadingStates((prev) => ({ ...prev, fillAll: false }));
+      setMessage({ type: "info", text: "已请求停止填充" });
+    } catch (error) {
+      console.error("Failed to stop filling:", error);
+      setMessage({ type: "error", text: "停止填充失败" });
+    }
+  };
+
   const handleHighlightElements = () => sendMessage("HIGHLIGHT_FORM_ELEMENTS", "highlight");
 
   const handleClearHighlight = () => sendMessage("CLEAR_FORM_HIGHLIGHT", "clear");
@@ -147,41 +158,80 @@ const SidePanel: React.FC = () => {
         </p>
       </div>
 
-      <button
-        type="button"
-        onClick={handleFillAllInputs}
-        disabled={loadingStates.fillAll}
-        style={{
-          width: "100%",
-          padding: "16px 20px",
-          backgroundColor: "#007bff",
-          color: "white",
-          border: "none",
-          borderRadius: "8px",
-          fontSize: "16px",
-          fontWeight: "600",
-          cursor: loadingStates.fillAll ? "not-allowed" : "pointer",
-          transition: "all 0.2s ease",
-          opacity: loadingStates.fillAll ? 0.6 : 1,
-          boxShadow: "0 2px 4px rgba(0, 123, 255, 0.2)",
-        }}
-        onFocus={(e) => {
-          if (!loadingStates.fillAll) {
-            (e.target as HTMLButtonElement).style.backgroundColor = "#0056b3";
-            (e.target as HTMLButtonElement).style.transform = "translateY(-1px)";
-            (e.target as HTMLButtonElement).style.boxShadow = "0 4px 8px rgba(0, 123, 255, 0.3)";
-          }
-        }}
-        onBlur={(e) => {
-          if (!loadingStates.fillAll) {
-            (e.target as HTMLButtonElement).style.backgroundColor = "#007bff";
-            (e.target as HTMLButtonElement).style.transform = "translateY(0)";
-            (e.target as HTMLButtonElement).style.boxShadow = "0 2px 4px rgba(0, 123, 255, 0.2)";
-          }
-        }}
-      >
-        {loadingStates.fillAll ? "正在填充..." : "🚀 填充所有输入框"}
-      </button>
+      <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+        <button
+          type="button"
+          onClick={handleFillAllInputs}
+          disabled={loadingStates.fillAll}
+          style={{
+            flex: 1,
+            padding: "16px 20px",
+            backgroundColor: "#007bff",
+            color: "white",
+            border: "none",
+            borderRadius: "8px",
+            fontSize: "16px",
+            fontWeight: "600",
+            cursor: loadingStates.fillAll ? "not-allowed" : "pointer",
+            transition: "all 0.2s ease",
+            opacity: loadingStates.fillAll ? 0.6 : 1,
+            boxShadow: "0 2px 4px rgba(0, 123, 255, 0.2)",
+          }}
+          onFocus={(e) => {
+            if (!loadingStates.fillAll) {
+              (e.target as HTMLButtonElement).style.backgroundColor = "#0056b3";
+              (e.target as HTMLButtonElement).style.transform = "translateY(-1px)";
+              (e.target as HTMLButtonElement).style.boxShadow = "0 4px 8px rgba(0, 123, 255, 0.3)";
+            }
+          }}
+          onBlur={(e) => {
+            if (!loadingStates.fillAll) {
+              (e.target as HTMLButtonElement).style.backgroundColor = "#007bff";
+              (e.target as HTMLButtonElement).style.transform = "translateY(0)";
+              (e.target as HTMLButtonElement).style.boxShadow = "0 2px 4px rgba(0, 123, 255, 0.2)";
+            }
+          }}
+        >
+          {loadingStates.fillAll ? "正在填充..." : "🚀 填充所有输入框"}
+        </button>
+
+        {loadingStates.fillAll && (
+          <button
+            type="button"
+            onClick={handleStopFilling}
+            style={{
+              width: "48px",
+              height: "48px",
+              backgroundColor: "#dc3545",
+              color: "white",
+              border: "none",
+              borderRadius: "50%",
+              fontSize: "14px",
+              fontWeight: "600",
+              cursor: "pointer",
+              transition: "all 0.2s ease",
+              boxShadow: "0 2px 4px rgba(220, 53, 69, 0.2)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+            onFocus={(e) => {
+              (e.target as HTMLButtonElement).style.backgroundColor = "#c82333";
+              (e.target as HTMLButtonElement).style.transform = "translateY(-1px)";
+              (e.target as HTMLButtonElement).style.boxShadow = "0 4px 8px rgba(220, 53, 69, 0.3)";
+            }}
+            onBlur={(e) => {
+              (e.target as HTMLButtonElement).style.backgroundColor = "#dc3545";
+              (e.target as HTMLButtonElement).style.transform = "translateY(0)";
+              (e.target as HTMLButtonElement).style.boxShadow = "0 2px 4px rgba(220, 53, 69, 0.2)";
+            }}
+            title="停止填充"
+            aria-label="停止填充"
+          >
+            ⏹
+          </button>
+        )}
+      </div>
 
       {/* 两个小按钮 */}
       <div

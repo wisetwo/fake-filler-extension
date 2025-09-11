@@ -220,6 +220,33 @@ async function handleMessage(message: any): Promise<any> {
           };
         }
       }
+      case "STOP_FILLING": {
+        console.log("Stopping filling from side panel");
+        try {
+          const tabId = await getCurrentTabId();
+          console.log("Current tab ID:", tabId);
+
+          if (tabId === -1) {
+            throw new Error("No active tab found");
+          }
+
+          // 发送消息到content script停止填充
+          const response = await chrome.tabs.sendMessage(tabId, { type: "STOP_FILLING" });
+          console.log("Content script response:", response);
+
+          if (response && response.success) {
+            console.log("Successfully stopped filling");
+            return { success: true };
+          }
+          throw new Error(response?.error || "Content script returned failure");
+        } catch (error) {
+          console.error("Failed to stop filling:", error);
+          return {
+            success: false,
+            error: error instanceof Error ? error.message : "Unknown error occurred",
+          };
+        }
+      }
       default: {
         throw new Error(`Unknown message type: ${message.type}`);
       }
