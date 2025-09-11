@@ -493,10 +493,15 @@ class ElementFiller {
     }
   }
 
-  private isAnyMatch(haystack: string, needles: string[]): boolean {
-    for (let i = 0, count = needles.length; i < count; i += 1) {
-      if (new RegExp(needles[i], "iu").test(haystack)) {
-        return true;
+  private isAnyMatch(haystacks: string[], needles: string[]): boolean {
+    console.log("#isAnyMatch#");
+    console.log("haystacks:", haystacks, "needles:", needles);
+    for (let i = 0, haystackCount = haystacks.length; i < haystackCount; i += 1) {
+      const haystack = haystacks[i];
+      for (let j = 0, needleCount = needles.length; j < needleCount; j += 1) {
+        if (new RegExp(needles[j], "iu").test(haystack)) {
+          return true;
+        }
       }
     }
     return false;
@@ -669,13 +674,13 @@ class ElementFiller {
 
   private findCustomFieldFromList(
     fields: ICustomField[],
-    elementName: string,
+    elementNames: string[],
     matchTypes: CustomFieldTypes[] = []
   ): ICustomField | undefined {
     const doMatchType = matchTypes.length > 0;
 
     for (let i = 0; i < fields.length; i += 1) {
-      if (this.isAnyMatch(elementName, fields[i].match)) {
+      if (this.isAnyMatch(elementNames, fields[i].match)) {
         if (doMatchType) {
           for (let j = 0; j < matchTypes.length; j += 1) {
             if (fields[i].type === matchTypes[j]) {
@@ -691,21 +696,21 @@ class ElementFiller {
     return undefined;
   }
 
-  private findCustomField(elementName: string, matchTypes: CustomFieldTypes[] = []): ICustomField | undefined {
+  private findCustomField(elementNames: string[], matchTypes: CustomFieldTypes[] = []): ICustomField | undefined {
     let foundField: ICustomField | undefined;
 
     // Try finding the custom field from a profile if available.
     if (this.profileIndex > -1) {
       foundField = this.findCustomFieldFromList(
         this.options.profiles[this.profileIndex].fields,
-        elementName,
+        elementNames,
         matchTypes
       );
     }
 
     // If a custom field could not be found from the profile, try getting one from the default list.
     if (!foundField) {
-      foundField = this.findCustomFieldFromList(this.options.fields, elementName, matchTypes);
+      foundField = this.findCustomFieldFromList(this.options.fields, elementNames, matchTypes);
     }
 
     return foundField;
@@ -721,23 +726,27 @@ class ElementFiller {
     return `${sanitizedText} ${text}`;
   }
 
-  private getElementName(element: FillableElement): string {
-    let normalizedName = "";
+  private getElementName(element: FillableElement): string[] {
+    let normalizedNames: string[] = [];
 
     if (this.options.fieldMatchSettings.matchName) {
-      normalizedName += ` ${this.NormalizeTextForElementName(element.name)}`;
+      const name = this.NormalizeTextForElementName(element.name);
+      normalizedNames.push(name.trim());
     }
 
     if (this.options.fieldMatchSettings.matchId) {
-      normalizedName += ` ${this.NormalizeTextForElementName(element.id)}`;
+      const id = this.NormalizeTextForElementName(element.id);
+      normalizedNames.push(id.trim());
     }
 
     if (this.options.fieldMatchSettings.matchClass) {
-      normalizedName += ` ${this.NormalizeTextForElementName(element.className)}`;
+      const className = this.NormalizeTextForElementName(element.className);
+      normalizedNames.push(className.trim());
     }
 
     if (this.options.fieldMatchSettings.matchPlaceholder) {
-      normalizedName += ` ${this.NormalizeTextForElementName(element.getAttribute("placeholder") || "")}`;
+      const placeholder = this.NormalizeTextForElementName(element.getAttribute("placeholder") || "");
+      normalizedNames.push(placeholder.trim());
     }
 
     if (
@@ -745,7 +754,8 @@ class ElementFiller {
       this.options.fieldMatchSettings.customAttributes.length > 0
     ) {
       this.options.fieldMatchSettings.customAttributes.forEach((customAttribute) => {
-        normalizedName += ` ${this.NormalizeTextForElementName(element.getAttribute(customAttribute) || "")}`;
+        const attributeValue = this.NormalizeTextForElementName(element.getAttribute(customAttribute) || "");
+        normalizedNames.push(attributeValue.trim());
       });
     }
 
@@ -753,12 +763,14 @@ class ElementFiller {
       const normalizedId = cssesc(element.id);
       const labels = document.querySelectorAll(`label[for='${normalizedId}']`);
       for (let i = 0; i < labels.length; i += 1) {
-        normalizedName += ` ${this.NormalizeTextForElementName(labels[i].innerHTML)}`;
+        const labelText = this.NormalizeTextForElementName(labels[i].innerHTML);
+        normalizedNames.push(labelText.trim());
       }
     }
 
     if (this.options.fieldMatchSettings.matchAriaLabel) {
-      normalizedName += ` ${this.NormalizeTextForElementName(element.getAttribute("aria-label") || "")}`;
+      const ariaLabel = this.NormalizeTextForElementName(element.getAttribute("aria-label") || "");
+      normalizedNames.push(ariaLabel.trim());
     }
 
     if (this.options.fieldMatchSettings.matchAriaLabelledBy) {
@@ -766,12 +778,14 @@ class ElementFiller {
       for (let i = 0; i < labelIds.length; i += 1) {
         const labelElement = document.getElementById(labelIds[i]);
         if (labelElement) {
-          normalizedName += ` ${this.NormalizeTextForElementName(labelElement.innerHTML || "")}`;
+          const labelText = this.NormalizeTextForElementName(labelElement.innerHTML || "");
+          normalizedNames.push(labelText.trim());
         }
       }
     }
-    console.log("normalizedName->", normalizedName);
-    return normalizedName;
+    normalizedNames = normalizedNames.filter((name) => name !== "");
+    console.log("normalizedNames->", normalizedNames);
+    return normalizedNames;
   }
 
   private getElementMaxLength(element: HTMLInputElement | HTMLTextAreaElement | undefined): number {
@@ -798,8 +812,8 @@ class ElementFiller {
     element: HTMLInputElement | HTMLTextAreaElement | undefined = undefined
   ): string {
     console.log("- generateDummyDataForCustomField -");
-    console.log(customField);
-    console.log(element);
+    console.log("customField->", customField);
+    console.log("element->", element);
     if (!customField) {
       if (element && element instanceof HTMLInputElement && element.pattern) {
         return this.logAndReturn(this.generator.generateRandomStringFromRegExTemplate(element.pattern), "pattern");
