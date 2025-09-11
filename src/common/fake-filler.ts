@@ -225,14 +225,14 @@ class FakeFiller {
 
       if (event.type === "mouseenter") {
         // 检查目标元素或其父级是否有高亮class
-        if (target.classList.contains("fake-filler-element-highlight")) {
+        if (target.classList && target.classList.contains("fake-filler-element-highlight")) {
           // 取消任何pending的隐藏计时器
           this.cancelHidePopupTimer();
           this.showElementPopup(target, event as MouseEvent);
         }
       } else if (event.type === "mouseleave") {
         // 检查目标元素或其父级是否有高亮class
-        if (target.classList.contains("fake-filler-element-highlight")) {
+        if (target.classList && target.classList.contains("fake-filler-element-highlight")) {
           // 延迟隐藏弹出框，给用户时间移动到弹出框上
           this.scheduleHidePopup();
         }
@@ -380,7 +380,20 @@ class FakeFiller {
     // 创建内容区域
     const content = document.createElement("div");
     content.className = "fake-filler-popup-content";
+
+    // 临时移除高亮类以获取原始HTML
+    const hadHighlightClass = element.classList.contains("fake-filler-element-highlight");
+    if (hadHighlightClass) {
+      element.classList.remove("fake-filler-element-highlight");
+    }
+
+    // 获取不包含插件添加类的原始HTML
     content.textContent = element.outerHTML;
+
+    // 恢复高亮类
+    if (hadHighlightClass) {
+      element.classList.add("fake-filler-element-highlight");
+    }
 
     // 创建提示文字
     const tip = document.createElement("div");
