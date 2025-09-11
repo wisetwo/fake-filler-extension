@@ -166,11 +166,12 @@ export function saveSortedCustomFields(customFields: ICustomField[], profileInde
 }
 
 function createCustomFieldFromFormData(formData: ICustomFieldForm): ICustomField {
-  const textMatchArray = CsvToArray(formData.textMatch, true);
+  // const textMatchArray = CsvToArray(formData.textMatch, true);
   const regexMatchArray = CsvToArray(formData.regexMatch, false);
 
   const customField: ICustomField = {
-    match: textMatchArray.concat(regexMatchArray),
+    // match: textMatchArray.concat(regexMatchArray),
+    match: regexMatchArray,
     name: formData.name.trim(),
     type: formData.type,
   };

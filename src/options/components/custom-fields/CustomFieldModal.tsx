@@ -28,12 +28,13 @@ const validate = (values: ICustomFieldForm): FormikErrors<ICustomFieldForm> => {
     errors.name = GetMessage("customFields_validation_missingName");
   }
 
-  if (
-    (!values.textMatch && !values.regexMatch) ||
-    (!values.textMatch && CsvToArray(values.regexMatch, false).length === 0) ||
-    (CsvToArray(values.textMatch, true).length === 0 && !values.regexMatch) ||
-    (CsvToArray(values.textMatch, true).length === 0 && CsvToArray(values.regexMatch, false).length === 0)
-  ) {
+  // if (
+  //   (!values.textMatch && !values.regexMatch) ||
+  //   (!values.textMatch && CsvToArray(values.regexMatch, false).length === 0) ||
+  //   (CsvToArray(values.textMatch, true).length === 0 && !values.regexMatch) ||
+  //   (CsvToArray(values.textMatch, true).length === 0 && CsvToArray(values.regexMatch, false).length === 0)
+  // ) {
+  if (!values.regexMatch || CsvToArray(values.regexMatch, false).length === 0) {
     errors.regexMatch = GetMessage("customFields_validation_missingMatch");
   }
 
@@ -171,7 +172,7 @@ function CustomFieldModal(props: Props) {
   const { customField } = props;
 
   const initialValues: Partial<ICustomFieldForm> = {
-    textMatch: "",
+    // textMatch: "",
     regexMatch: "",
     name: "",
     numberMin: "",
@@ -204,7 +205,7 @@ function CustomFieldModal(props: Props) {
     initialValues.name = customField.name;
     initialValues.type = customField.type;
 
-    initialValues.textMatch = customField.match.filter((match) => match === SanitizeText(match)).join(", ");
+    // initialValues.textMatch = customField.match.filter((match) => match === SanitizeText(match)).join(", ");
     initialValues.regexMatch = customField.match.filter((match) => match !== SanitizeText(match)).join(", ");
 
     switch (initialValues.type) {
@@ -288,12 +289,12 @@ function CustomFieldModal(props: Props) {
             <Modal.Body>
               <DataTypeSelectField />
               <TextField name="name" label={GetMessage("customFields_label_friendlyName")} />
-              <TextField
+              {/* <TextField
                 name="textMatch"
                 label={GetMessage("customFields_label_text_match")}
                 placeholder={GetMessage("customFields_label_text_match_placeholder")}
                 helpText={GetMessage("customFields_label_text_match_helpText")}
-              />
+              /> */}
               <TextField
                 name="regexMatch"
                 label={GetMessage("customFields_label_regex_match")}

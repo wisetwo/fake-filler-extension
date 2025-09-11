@@ -50,7 +50,7 @@ export interface ICustomField {
 }
 
 export interface ICustomFieldForm {
-  textMatch: string;
+  // textMatch: string;
   regexMatch: string;
   name: string;
   numberMin: string;

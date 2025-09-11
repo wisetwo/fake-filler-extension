@@ -503,7 +503,7 @@ class ElementFiller {
         const needle = needles[j];
 
         // 检查是否是正则表达式格式 (以 / 开头和结尾，可能带标志)
-        const regexMatch = needle.match(/^\/(.+?)\/([igm]*)$/);
+        const regexMatch = needle.match(/^\/(.+?)\/([igmu]*)$/);
 
         if (regexMatch) {
           // 解析正则表达式
