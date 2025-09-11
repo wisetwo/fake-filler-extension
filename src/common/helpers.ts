@@ -295,13 +295,13 @@ const CreateContextMenus = (enableContextMenu: boolean): void => {
     chrome.contextMenus.create({
       id: "fake-filler-form",
       title: "Fill this form",
-      contexts: ["editable"],
+      contexts: ["editable", "all"],
     });
 
     chrome.contextMenus.create({
       id: "fake-filler-input",
       title: "Fill this input",
-      contexts: ["editable"],
+      contexts: ["editable", "all"],
     });
   }
 };
