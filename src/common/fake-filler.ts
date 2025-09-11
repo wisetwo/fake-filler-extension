@@ -18,6 +18,10 @@ class FakeFiller {
   private readonly datePickerDropdownClassList = ["t-popup__content"];
   private readonly datePickerDropdownOptionClassList = ["t-date-picker__cell"];
   private pageOperator: PageOperator | null;
+  // 用于存储事件监听器引用，以便后续清理
+  private hoverEventHandler: ((event: Event) => void) | null = null;
+  // 用于延迟隐藏弹出框的计时器
+  private hidePopupTimer: NodeJS.Timeout | null = null;
 
   constructor(options: IFakeFillerOptions, profileIndex = -1) {
     this.pageOperator = new PageOperator();
@@ -215,6 +219,30 @@ class FakeFiller {
       element.classList.add("fake-filler-element-highlight");
     });
 
+    // 创建事件处理函数并存储引用
+    this.hoverEventHandler = (event: Event) => {
+      const target = event.target as HTMLElement;
+
+      if (event.type === "mouseenter") {
+        // 检查目标元素或其父级是否有高亮class
+        if (target.classList.contains("fake-filler-element-highlight")) {
+          // 取消任何pending的隐藏计时器
+          this.cancelHidePopupTimer();
+          this.showElementPopup(target, event as MouseEvent);
+        }
+      } else if (event.type === "mouseleave") {
+        // 检查目标元素或其父级是否有高亮class
+        if (target.classList.contains("fake-filler-element-highlight")) {
+          // 延迟隐藏弹出框，给用户时间移动到弹出框上
+          this.scheduleHidePopup();
+        }
+      }
+    };
+
+    // 使用事件代理在document上监听mouseenter和mouseleave事件
+    document.addEventListener("mouseenter", this.hoverEventHandler, true);
+    document.addEventListener("mouseleave", this.hoverEventHandler, true);
+
     console.log(`已高亮显示 ${fillableElements.length} 个可填充元素`);
   }
 
@@ -227,6 +255,17 @@ class FakeFiller {
     highlightedElements.forEach((element) => {
       element.classList.remove("fake-filler-element-highlight");
     });
+
+    // 移除事件监听器
+    if (this.hoverEventHandler) {
+      document.removeEventListener("mouseenter", this.hoverEventHandler, true);
+      document.removeEventListener("mouseleave", this.hoverEventHandler, true);
+      this.hoverEventHandler = null;
+    }
+
+    // 取消任何pending的隐藏计时器并隐藏弹出框
+    this.cancelHidePopupTimer();
+    this.hideElementPopup();
 
     console.log(`已清除 ${highlightedElements.length} 个元素的高亮显示`);
   }
@@ -248,8 +287,194 @@ class FakeFiller {
         background-color: rgba(255, 107, 107, 0.1) !important;
         transition: all 0.3s ease-in-out !important;
       }
+
+      .fake-filler-popup {
+        position: fixed !important;
+        background: #2d3748 !important;
+        color: #e2e8f0 !important;
+        border: 1px solid #4a5568 !important;
+        border-radius: 8px !important;
+        padding: 12px !important;
+        max-width: 500px !important;
+        max-height: 400px !important;
+        z-index: 999999 !important;
+        font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace !important;
+        font-size: 12px !important;
+        line-height: 1.4 !important;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3) !important;
+        backdrop-filter: blur(8px) !important;
+        opacity: 0 !important;
+        transform: translateY(-10px) !important;
+        transition: all 0.2s ease-in-out !important;
+        pointer-events: auto !important;
+        word-wrap: break-word !important;
+        overflow-wrap: break-word !important;
+      }
+
+      .fake-filler-popup.show {
+        opacity: 1 !important;
+        transform: translateY(0) !important;
+      }
+
+      .fake-filler-popup-header {
+        font-weight: bold !important;
+        margin-bottom: 8px !important;
+        color: #63b3ed !important;
+        border-bottom: 1px solid #4a5568 !important;
+        padding-bottom: 6px !important;
+      }
+
+      .fake-filler-popup-content {
+        max-height: 300px !important;
+        overflow-y: auto !important;
+        white-space: pre-wrap !important;
+        background: #1a202c !important;
+        border: 1px solid #4a5568 !important;
+        border-radius: 4px !important;
+        padding: 8px !important;
+        margin-top: 8px !important;
+        cursor: text !important;
+        user-select: all !important;
+      }
+
+      .fake-filler-popup-content::-webkit-scrollbar {
+        width: 6px !important;
+      }
+
+      .fake-filler-popup-content::-webkit-scrollbar-track {
+        background: #2d3748 !important;
+      }
+
+      .fake-filler-popup-content::-webkit-scrollbar-thumb {
+        background: #4a5568 !important;
+        border-radius: 3px !important;
+      }
+
+      .fake-filler-popup-tip {
+        font-size: 10px !important;
+        color: #a0aec0 !important;
+        margin-top: 6px !important;
+        font-style: italic !important;
+      }
     `;
     document.head.appendChild(style);
+  }
+
+  /**
+   * 显示弹出框展示元素的outerHTML
+   */
+  private showElementPopup(element: HTMLElement, mouseEvent: MouseEvent): void {
+    // 移除已存在的弹出框
+    this.hideElementPopup();
+
+    // 创建弹出框
+    const popup = document.createElement("div");
+    popup.id = "fake-filler-popup";
+    popup.className = "fake-filler-popup";
+
+    // 创建标题
+    const header = document.createElement("div");
+    header.className = "fake-filler-popup-header";
+    header.textContent = `${element.tagName.toLowerCase()} Element HTML`;
+
+    // 创建内容区域
+    const content = document.createElement("div");
+    content.className = "fake-filler-popup-content";
+    content.textContent = element.outerHTML;
+
+    // 创建提示文字
+    const tip = document.createElement("div");
+    tip.className = "fake-filler-popup-tip";
+    tip.textContent = "点击内容区域可选中全部文本进行复制";
+
+    popup.appendChild(header);
+    popup.appendChild(content);
+    popup.appendChild(tip);
+
+    // 为弹出框添加事件监听器
+    popup.addEventListener("mouseenter", () => {
+      // 当鼠标进入弹出框时，取消隐藏计时器
+      this.cancelHidePopupTimer();
+    });
+
+    popup.addEventListener("mouseleave", () => {
+      // 当鼠标离开弹出框时，立即隐藏
+      this.hideElementPopup();
+    });
+
+    document.body.appendChild(popup);
+
+    // 计算弹出框位置
+    const rect = element.getBoundingClientRect();
+    const popupRect = popup.getBoundingClientRect();
+
+    // 默认显示在元素右侧
+    const { right, left: rectLeft, top: rectTop } = rect;
+    let left = right + 10;
+    let top = rectTop;
+
+    // 如果右侧空间不够，显示在左侧
+    if (left + popupRect.width > window.innerWidth) {
+      left = rectLeft - popupRect.width - 10;
+    }
+
+    // 如果左侧也不够，显示在鼠标位置
+    if (left < 0) {
+      left = mouseEvent.clientX + 10;
+    }
+
+    // 确保不会超出屏幕底部
+    if (top + popupRect.height > window.innerHeight) {
+      top = window.innerHeight - popupRect.height - 10;
+    }
+
+    // 确保不会超出屏幕顶部
+    if (top < 0) {
+      top = 10;
+    }
+
+    popup.style.left = `${left}px`;
+    popup.style.top = `${top}px`;
+
+    // 显示动画
+    requestAnimationFrame(() => {
+      popup.classList.add("show");
+    });
+  }
+
+  /**
+   * 隐藏弹出框
+   */
+  private hideElementPopup(): void {
+    const existingPopup = document.getElementById("fake-filler-popup");
+    if (existingPopup) {
+      existingPopup.remove();
+    }
+    // 清除计时器
+    this.cancelHidePopupTimer();
+  }
+
+  /**
+   * 安排延迟隐藏弹出框
+   */
+  private scheduleHidePopup(): void {
+    // 清除之前的计时器
+    this.cancelHidePopupTimer();
+
+    // 设置300ms延迟隐藏
+    this.hidePopupTimer = setTimeout(() => {
+      this.hideElementPopup();
+    }, 300);
+  }
+
+  /**
+   * 取消隐藏弹出框的计时器
+   */
+  private cancelHidePopupTimer(): void {
+    if (this.hidePopupTimer) {
+      clearTimeout(this.hidePopupTimer);
+      this.hidePopupTimer = null;
+    }
   }
 
   private async fillAllElements(container: Document | HTMLElement): Promise<void> {
