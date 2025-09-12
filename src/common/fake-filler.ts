@@ -1,4 +1,5 @@
 import ElementFiller from "src/common/element-filler";
+import type { FillableElement } from "src/common/element-filler";
 import PageOperator from "src/common/page-operator";
 
 import { IFakeFillerOptions, FillElementFunction } from "src/types";
@@ -169,8 +170,15 @@ class FakeFiller {
       ...Array.from(container.querySelectorAll("[contenteditable]")),
     ];
 
-    // 2. 按位置排序（从上到下，从左到右）
-    return this.sortElementsByPosition(allElements);
+    // 2. 过滤掉被忽略的元素
+    const ignoredElements = allElements.filter((element) => {
+      // 过滤当前不可见（不含不在视口内的）的元素
+      return this.elementFiller.isElementVisible(element as FillableElement);
+    });
+
+    // 3. 按位置排序（从上到下，从左到右）
+    const sortedElements = this.sortElementsByPosition(ignoredElements);
+    return sortedElements;
   }
 
   /**

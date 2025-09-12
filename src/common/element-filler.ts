@@ -9,7 +9,7 @@ import { SanitizeText, DEFAULT_EMAIL_CUSTOM_FIELD, sleep } from "src/common/help
 import PageOperator from "src/common/page-operator";
 import { IFakeFillerOptions, ICustomField, CustomFieldTypes } from "src/types";
 
-type FillableElement = HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement;
+export type FillableElement = HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement;
 
 class ElementFiller {
   private generator: DataGenerator;
@@ -533,26 +533,7 @@ class ElementFiller {
     return false;
   }
 
-  private isElementVisible(element: FillableElement): boolean {
-    // BEGIN Docassemble specific code
-    if (element.className.includes("labelauty")) {
-      // this tells us it's a Docassemble input
-      // it's visible unless it's behind a showif
-      if (
-        element.parentNode &&
-        element.parentNode.parentNode &&
-        element.parentNode.parentNode.parentNode &&
-        element.parentNode.parentNode.parentNode.parentNode
-      ) {
-        const showifContainer = element.parentNode.parentNode.parentNode.parentNode as FillableElement;
-        if (showifContainer.className.includes("dashowif")) {
-          return this.isElementVisible(showifContainer); // check to see if the 4th grandparent container is visible
-        }
-      }
-      return true;
-    }
-    // END Docassemble specific code
-
+  public isElementVisible(element: FillableElement): boolean {
     // 检查基本尺寸
     if (!element.offsetHeight && !element.offsetWidth) {
       return false;
@@ -560,7 +541,9 @@ class ElementFiller {
 
     // 检查 CSS 样式
     const computedStyle = window.getComputedStyle(element);
-    if (computedStyle.visibility === "hidden" || computedStyle.display === "none" || computedStyle.opacity === "0") {
+    // tdesgin 的 input 元素 opacity 为 0
+    // || computedStyle.opacity === "0"
+    if (computedStyle.visibility === "hidden" || computedStyle.display === "none") {
       return false;
     }
 
@@ -574,12 +557,12 @@ class ElementFiller {
     }
 
     // 检查元素是否在视口内
-    const isInViewport =
-      rect.top < window.innerHeight && rect.bottom > 0 && rect.left < window.innerWidth && rect.right > 0;
+    // const isInViewport =
+    //   rect.top < window.innerHeight && rect.bottom > 0 && rect.left < window.innerWidth && rect.right > 0;
 
-    if (!isInViewport) {
-      return false;
-    }
+    // if (!isInViewport) {
+    //   return false;
+    // }
 
     // 检查元素是否被滚动容器裁剪
     // 遍历所有父级元素，检查是否有滚动容器裁剪了当前元素
