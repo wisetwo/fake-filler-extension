@@ -1,5 +1,6 @@
 import * as fileSaver from "file-saver";
-import React, { useState } from "react";
+import "bootstrap-icons/font/bootstrap-icons.css";
+import React, { useState, useEffect } from "react";
 import { NavLink } from "react-router-dom";
 
 import { GetMessage } from "src/common/helpers";
@@ -22,8 +23,30 @@ const ProfilesView: React.FC<Props> = (props) => {
   // Export/Import state
   const [showExportModal, setShowExportModal] = useState(false);
   const [selectedProfilesForExport, setSelectedProfilesForExport] = useState<boolean[]>([]);
+  const [selectAllChecked, setSelectAllChecked] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
+
+  // Auto-dismiss messages
+  useEffect(() => {
+    if (successMessage) {
+      const timer = setTimeout(() => {
+        setSuccessMessage("");
+      }, 3000); // 3 seconds for success messages
+      
+      return () => clearTimeout(timer);
+    }
+  }, [successMessage]);
+
+  useEffect(() => {
+    if (errorMessage && !showExportModal) {
+      const timer = setTimeout(() => {
+        setErrorMessage("");
+      }, 5000); // 5 seconds for error messages
+      
+      return () => clearTimeout(timer);
+    }
+  }, [errorMessage, showExportModal]);
 
   function handleDelete() {
     props.onDelete(profileIndex);
@@ -51,6 +74,7 @@ const ProfilesView: React.FC<Props> = (props) => {
       return;
     }
     setSelectedProfilesForExport(new Array(profiles.length).fill(true));
+    setSelectAllChecked(true);
     setShowExportModal(true);
     setErrorMessage("");
     setSuccessMessage("");
@@ -72,6 +96,7 @@ const ProfilesView: React.FC<Props> = (props) => {
 
       setSuccessMessage(GetMessage("profiles_export_success") || "Profiles exported successfully");
       setShowExportModal(false);
+      setErrorMessage("");
       props.onExportProfiles(selectedProfiles);
     } catch (e) {
       setErrorMessage(
@@ -135,14 +160,16 @@ const ProfilesView: React.FC<Props> = (props) => {
     const updated = [...selectedProfilesForExport];
     updated[index] = !updated[index];
     setSelectedProfilesForExport(updated);
+
+    // Update select all checkbox based on whether all items are selected
+    const allSelected = updated.every(Boolean);
+    setSelectAllChecked(allSelected);
   }
 
-  function selectAllProfiles() {
-    setSelectedProfilesForExport(new Array(profiles.length).fill(true));
-  }
-
-  function selectNoneProfiles() {
-    setSelectedProfilesForExport(new Array(profiles.length).fill(false));
+  function handleSelectAllChange() {
+    const newValue = !selectAllChecked;
+    setSelectAllChecked(newValue);
+    setSelectedProfilesForExport(new Array(profiles.length).fill(newValue));
   }
 
   return (
@@ -158,12 +185,7 @@ const ProfilesView: React.FC<Props> = (props) => {
               title={GetMessage("profiles_export") || "Export profiles"}
               aria-label={GetMessage("profiles_export") || "Export profiles"}
             >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6z" />
-                <polyline points="14,2 14,8 20,8" />
-                <line x1="12" y1="18" x2="12" y2="12" />
-                <polyline points="9,15 12,18 15,15" />
-              </svg>
+              <i className="bi bi-download" style={{ fontSize: "14px" }} />
             </button>
             <button
               type="button"
@@ -172,12 +194,7 @@ const ProfilesView: React.FC<Props> = (props) => {
               title={GetMessage("profiles_import") || "Import profiles"}
               aria-label={GetMessage("profiles_import") || "Import profiles"}
             >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6z" />
-                <polyline points="14,2 14,8 20,8" />
-                <line x1="12" y1="12" x2="12" y2="18" />
-                <polyline points="9,15 12,12 15,15" />
-              </svg>
+              <i className="bi bi-upload" style={{ fontSize: "14px" }} />
             </button>
           </div>
         </div>
@@ -246,18 +263,27 @@ const ProfilesView: React.FC<Props> = (props) => {
                 <button
                   type="button"
                   className="btn-close"
-                  onClick={() => setShowExportModal(false)}
+                  onClick={() => {
+                    setShowExportModal(false);
+                    setErrorMessage("");
+                  }}
                   aria-label="Close"
                 />
               </div>
               <div className="modal-body">
                 <div className="mb-3">
-                  <button type="button" className="btn btn-sm btn-outline-primary me-2" onClick={selectAllProfiles}>
-                    {GetMessage("profiles_export_selectAll") || "Select All"}
-                  </button>
-                  <button type="button" className="btn btn-sm btn-outline-secondary" onClick={selectNoneProfiles}>
-                    {GetMessage("profiles_export_selectNone") || "Select None"}
-                  </button>
+                  <div className="form-check">
+                    <input
+                      className="form-check-input"
+                      type="checkbox"
+                      id="selectAllProfiles"
+                      checked={selectAllChecked}
+                      onChange={handleSelectAllChange}
+                    />
+                    <label className="form-check-label" htmlFor="selectAllProfiles">
+                      {GetMessage("profiles_export_selectAll") || "Select All"}
+                    </label>
+                  </div>
                 </div>
 
                 <div className="list-group">
@@ -288,7 +314,14 @@ const ProfilesView: React.FC<Props> = (props) => {
                 {errorMessage && <div className="alert alert-danger mt-3">{errorMessage}</div>}
               </div>
               <div className="modal-footer">
-                <button type="button" className="btn btn-secondary" onClick={() => setShowExportModal(false)}>
+                <button
+                  type="button"
+                  className="btn btn-outline-secondary"
+                  onClick={() => {
+                    setShowExportModal(false);
+                    setErrorMessage("");
+                  }}
+                >
                   {GetMessage("cancel") || "Cancel"}
                 </button>
                 <button type="button" className="btn btn-primary" onClick={handleExportConfirm}>
