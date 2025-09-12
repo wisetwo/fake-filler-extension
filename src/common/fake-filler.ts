@@ -15,7 +15,7 @@ class FakeFiller {
   private readonly selectInputDropdownClassList = ["t-select__dropdown", "t-popup__content"];
   private readonly selectInputDropdownOptionClassList = ["t-select-option", "t-avatar"];
   private readonly cascaderDropdownClassList = ["t-popup__content"];
-  private readonly cascaderDropdownOptionClassList = ["t-cascader__item"];
+  private readonly cascaderDropdownOptionClassList = ["t-cascader__item--leaf"];
   private readonly datePickerDropdownClassList = ["t-popup__content"];
   private readonly datePickerDropdownOptionClassList = ["t-date-picker__cell"];
   private pageOperator: PageOperator | null;

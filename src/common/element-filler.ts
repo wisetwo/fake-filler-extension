@@ -406,9 +406,6 @@ class ElementFiller {
     } catch (error) {
       console.error("Failed to click using page operator, falling back to events", error);
       element.click();
-      // if (this.options.triggerClickEvents) {
-      //   this.fireEvents(element);
-      // }
     }
 
     // 等待下拉框出现并且有数据
@@ -443,7 +440,6 @@ class ElementFiller {
       return;
     }
 
-    // let selected = false;
     if (isMultiSelect) {
       // 多选模式：随机选择1-3个选项
       const numberOfOptionsToSelect = this.generator.randomNumber(1, Math.min(3, visibleOptions.length));
@@ -489,7 +485,6 @@ class ElementFiller {
         console.error("Failed to click using page operator, falling back to events", error);
         option.click();
       }
-      // selected = true;
     }
   }
 
