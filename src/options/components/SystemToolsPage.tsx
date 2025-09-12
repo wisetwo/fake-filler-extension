@@ -7,6 +7,14 @@ import { getKeyboardShortcuts, getOptions, saveOptions, MyThunkDispatch } from "
 import HtmlPhrase from "src/options/components/common/HtmlPhrase";
 import { IAppState, IFakeFillerOptions } from "src/types";
 
+// function utf8ToBase64(str: string): string {
+//   return window.btoa(unescape(encodeURIComponent(str)));
+// }
+
+// function base64ToUtf8(str: string): string {
+//   return decodeURIComponent(escape(window.atob(str)));
+// }
+
 function SystemToolsPage() {
   // Keyboard shortcuts state
   const keyboardShortcutsIsFetching = useSelector<IAppState, boolean>(

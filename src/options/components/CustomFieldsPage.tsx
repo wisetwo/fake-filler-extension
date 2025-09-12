@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useParams, Redirect, useHistory } from "react-router-dom";
 
 import { GetMessage } from "src/common/helpers";
-import { getOptions, createProfile, deleteProfile, saveProfile } from "src/options/actions";
+import { getOptions, createProfile, deleteProfile, saveProfile, saveOptions } from "src/options/actions";
 import CustomFieldsView from "src/options/components/custom-fields/CustomFieldsView";
 import Introduction from "src/options/components/custom-fields/Introduction";
 import ProfileModal from "src/options/components/custom-fields/ProfileModal";
@@ -76,6 +76,21 @@ export default function CustomFieldsPage(): JSX.Element {
     closeModal();
   };
 
+  const handleExportProfiles = (selectedProfiles: IProfile[]) => {
+    // Export is handled in ProfilesView, this callback can be used for additional logic if needed
+    console.log(`Exported ${selectedProfiles.length} profiles`);
+  };
+
+  const handleImportProfiles = (importedProfiles: IProfile[]) => {
+    // Add imported profiles to the end of the existing profiles list
+    const updatedOptions = {
+      ...options,
+      profiles: [...options.profiles, ...importedProfiles],
+    };
+
+    dispatch(saveOptions(updatedOptions));
+  };
+
   return (
     <>
       <h2>{GetMessage("customFields_title")}</h2>
@@ -87,6 +102,8 @@ export default function CustomFieldsPage(): JSX.Element {
         onDelete={handleDelete}
         onEdit={handleEdit}
         onNew={handleNew}
+        onExportProfiles={handleExportProfiles}
+        onImportProfiles={handleImportProfiles}
       >
         <CustomFieldsView customFields={customFieldsList} profileIndex={profileIndex} />
       </ProfilesView>
