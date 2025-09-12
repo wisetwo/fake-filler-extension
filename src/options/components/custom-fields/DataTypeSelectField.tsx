@@ -90,6 +90,7 @@ function DataTypeSelectField() {
                   <option value="alphanumeric">{GetMessage("customFields_dataType_alphaNumeric")}</option>
                   <option value="regex">{GetMessage("customFields_dataType_regEx")}</option>
                   <option value="randomized-list">{GetMessage("customFields_dataType_randomizedList")}</option>
+                  <option value="ignored">{GetMessage("customFields_dataType_ignored")}</option>
                 </optgroup>
               </select>
             );

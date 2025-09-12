@@ -622,6 +622,12 @@ class ElementFiller {
       return true;
     }
 
+    // Check if element matches a custom field with type "ignored"
+    const ignoredCustomField = this.findCustomField(this.getElementName(element), ["ignored"]);
+    if (ignoredCustomField) {
+      return true;
+    }
+
     // Ignore any elements that match an item in the the "ignoredFields" array.
     const elementName = this.getElementName(element);
     if (this.isAnyMatch(elementName, this.options.ignoredFields)) {

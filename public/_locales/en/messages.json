@@ -404,6 +404,9 @@
   "customFields_dataType_randomizedList": {
     "message": "Randomized List"
   },
+  "customFields_dataType_ignored": {
+    "message": "Ignored"
+  },
   "customFields_delete_confirm_message": {
     "message": "Are you sure you want to delete this custom field?"
   },

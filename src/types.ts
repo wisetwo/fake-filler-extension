@@ -13,6 +13,7 @@ export type CustomFieldTypes =
   | "email"
   | "first-name"
   | "full-name"
+  | "ignored"
   | "last-name"
   | "number"
   | "organization"

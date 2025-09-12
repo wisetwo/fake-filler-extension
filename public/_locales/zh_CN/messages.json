@@ -404,6 +404,9 @@
   "customFields_dataType_randomizedList": {
     "message": "随机列表"
   },
+  "customFields_dataType_ignored": {
+    "message": "忽略"
+  },
   "customFields_delete_confirm_message": {
     "message": "Are you sure you want to delete this custom field?"
   },
