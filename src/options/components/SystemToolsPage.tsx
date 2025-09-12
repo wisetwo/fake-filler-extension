@@ -7,14 +7,6 @@ import { getKeyboardShortcuts, getOptions, saveOptions, MyThunkDispatch } from "
 import HtmlPhrase from "src/options/components/common/HtmlPhrase";
 import { IAppState, IFakeFillerOptions } from "src/types";
 
-function utf8ToBase64(str: string): string {
-  return window.btoa(unescape(encodeURIComponent(str)));
-}
-
-function base64ToUtf8(str: string): string {
-  return decodeURIComponent(escape(window.atob(str)));
-}
-
 function SystemToolsPage() {
   // Keyboard shortcuts state
   const keyboardShortcutsIsFetching = useSelector<IAppState, boolean>(
@@ -59,15 +51,15 @@ function SystemToolsPage() {
   }
 
   function exportSettings() {
-    const encodedData = utf8ToBase64(JSON.stringify(options));
+    const jsonData = JSON.stringify(options, null, 2);
     const dateStamp = getDateString(new Date());
 
     try {
-      const blob = new Blob([encodedData], { type: "text/plain;charset=utf-8" });
-      fileSaver.saveAs(blob, `fake-filler-${dateStamp}.txt`);
+      const blob = new Blob([jsonData], { type: "application/json;charset=utf-8" });
+      fileSaver.saveAs(blob, `fake-filler-${dateStamp}.json`);
     } catch (e) {
       setErrorMessage(GetMessage("backupRestore_errorCreatingBackupFile", (e as Error).toString()));
-      setBackupData(encodedData);
+      setBackupData(jsonData);
     }
   }
 
@@ -82,8 +74,8 @@ function SystemToolsPage() {
         fileReader.onload = (e) => {
           try {
             const reader = e.target as FileReader;
-            const decodedData = base64ToUtf8(reader.result as string);
-            const decodedOptions = JSON.parse(decodedData) as IFakeFillerOptions;
+            const fileContent = reader.result as string;
+            const decodedOptions = JSON.parse(fileContent) as IFakeFillerOptions;
             const importedOptionsVersion = decodedOptions.version || 0;
 
             if (currentOptionsVersion === importedOptionsVersion) {
