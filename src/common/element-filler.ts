@@ -550,9 +550,8 @@ class ElementFiller {
     // 使用 getBoundingClientRect 检查元素是否真正可见
     const rect = element.getBoundingClientRect();
 
-    // 检查元素是否有实际的尺寸
-    // TODO 确认是否会误伤
-    if (rect.width === 0 || rect.height === 0) {
+    // 检查元素是否有实际的尺寸，都为0才不可见
+    if (rect.width === 0 && rect.height === 0) {
       return false;
     }
 
