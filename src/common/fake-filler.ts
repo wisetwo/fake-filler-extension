@@ -19,6 +19,7 @@ class FakeFiller {
   private readonly cascaderDropdownOptionLeafClassList = ["t-cascader__item--leaf"];
   private readonly cascaderDropdownOptionExpandedClassList = ["t-is-expanded"];
   private readonly cascaderDropdownCheckboxInputClassList = ["t-checkbox__former"];
+  private readonly cascaderDropdownCheckboxDisplayClassList = ["t-checkbox__input"];
   private readonly datePickerDropdownClassList = ["t-popup__content"];
   private readonly datePickerDropdownOptionClassList = ["t-date-picker__cell"];
   private pageOperator: PageOperator | null;
@@ -110,7 +111,8 @@ class FakeFiller {
           this.cascaderDropdownOptionClassList,
           this.cascaderDropdownOptionLeafClassList,
           this.cascaderDropdownOptionExpandedClassList,
-          this.cascaderDropdownCheckboxInputClassList
+          this.cascaderDropdownCheckboxInputClassList,
+          this.cascaderDropdownCheckboxDisplayClassList
         );
       } else {
         // 普通的wrapped select

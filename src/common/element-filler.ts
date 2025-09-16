@@ -450,7 +450,8 @@ class ElementFiller {
     dropdownOptionClassList: string[],
     dropdownOptionClassLeafList?: string[],
     dropdownOptionExpandedClassList?: string[],
-    dropdownCheckboxInputClassList?: string[]
+    dropdownCheckboxInputClassList?: string[],
+    dropdownCheckboxDisplayClassList?: string[]
   ): Promise<void> {
     console.log("fillWrapedDropdownElement", inputElement, isMultiSelect, dropdownClassList);
     if (this.shouldIgnoreElement(inputElement)) {
@@ -492,7 +493,8 @@ class ElementFiller {
         dropdownOptionClassList,
         dropdownOptionClassLeafList || [],
         dropdownOptionExpandedClassList || [],
-        dropdownCheckboxInputClassList || []
+        dropdownCheckboxInputClassList || [],
+        dropdownCheckboxDisplayClassList || []
       );
       return;
     }
@@ -576,6 +578,7 @@ class ElementFiller {
    * @param dropdownOptionClassLeafList 叶子节点类名列表
    * @param dropdownOptionExpandedClassList 已展开节点类名列表
    * @param dropdownCheckboxInputClassList checkbox input类名列表
+   * @param dropdownCheckboxDisplayClassList checkbox可见显示元素类名列表
    */
   private async fillCascaderElement(
     dropdownElement: Element,
@@ -583,13 +586,18 @@ class ElementFiller {
     dropdownOptionClassList: string[],
     dropdownOptionClassLeafList: string[],
     dropdownOptionExpandedClassList: string[],
-    dropdownCheckboxInputClassList: string[]
+    dropdownCheckboxInputClassList: string[],
+    dropdownCheckboxDisplayClassList: string[]
   ): Promise<void> {
     console.log("fillCascaderElement - 开始处理cascader", { isMultiSelect });
 
     if (isMultiSelect) {
       // 多选模式：查找所有带checkbox的选项并随机选择
-      await this.fillCascaderMultiSelect(dropdownElement, dropdownCheckboxInputClassList);
+      await this.fillCascaderMultiSelect(
+        dropdownElement,
+        dropdownCheckboxInputClassList,
+        dropdownCheckboxDisplayClassList
+      );
     } else {
       // 单选模式：递归展开直到找到叶子节点
       await this.fillCascaderSingleSelect(
@@ -605,10 +613,12 @@ class ElementFiller {
    * 处理cascader多选模式
    * @param dropdownElement 下拉框元素
    * @param dropdownCheckboxInputClassList checkbox input类名列表
+   * @param dropdownCheckboxDisplayClassList checkbox可见显示元素类名列表
    */
   private async fillCascaderMultiSelect(
     dropdownElement: Element,
-    dropdownCheckboxInputClassList: string[]
+    dropdownCheckboxInputClassList: string[],
+    dropdownCheckboxDisplayClassList: string[]
   ): Promise<void> {
     console.log("fillCascaderMultiSelect - 处理多选模式");
 
@@ -622,20 +632,57 @@ class ElementFiller {
       return newInputs;
     }, []);
 
-    const visibleCheckboxInputs = checkboxInputs.filter((input) => this.isElementVisible(input as FillableElement));
+    if (checkboxInputs.length === 0) {
+      console.log("未找到checkbox输入框");
+      return;
+    }
 
-    if (visibleCheckboxInputs.length === 0) {
-      console.log("未找到可见的checkbox输入框");
+    // 为每个checkbox input查找对应的可见显示元素
+    const checkboxPairs: Array<{ input: HTMLInputElement; display: HTMLElement }> = [];
+
+    for (const input of checkboxInputs) {
+      const inputElement = input as HTMLInputElement;
+
+      // 查找对应的可见显示元素
+      let displayElement: HTMLElement | null = null;
+
+      // 策略1：查找同级的下一个兄弟元素
+      for (const displayClass of dropdownCheckboxDisplayClassList) {
+        const nextSibling = inputElement.nextElementSibling;
+        if (nextSibling && nextSibling.classList.contains(displayClass)) {
+          displayElement = nextSibling as HTMLElement;
+          break;
+        }
+
+        // 策略2：在父元素内查找
+        const parent = inputElement.parentElement;
+        if (parent) {
+          const displayInParent = parent.querySelector(`.${displayClass}`);
+          if (displayInParent) {
+            displayElement = displayInParent as HTMLElement;
+            break;
+          }
+        }
+      }
+
+      if (displayElement && this.isElementVisible(displayElement as FillableElement)) {
+        checkboxPairs.push({ input: inputElement, display: displayElement });
+        console.log(`找到checkbox对应关系:`, { input: inputElement, display: displayElement });
+      }
+    }
+
+    if (checkboxPairs.length === 0) {
+      console.log("未找到可见的checkbox显示元素");
       return;
     }
 
     // 随机选择1-3个checkbox进行勾选
-    const numberOfOptionsToSelect = this.generator.randomNumber(1, Math.min(3, visibleCheckboxInputs.length));
+    const numberOfOptionsToSelect = this.generator.randomNumber(1, Math.min(3, checkboxPairs.length));
     console.log(`随机选择 ${numberOfOptionsToSelect} 个选项进行勾选`);
 
     // 生成不重复的随机索引
     const selectedIndices: number[] = [];
-    const availableIndices = Array.from({ length: visibleCheckboxInputs.length }, (_, i) => i);
+    const availableIndices = Array.from({ length: checkboxPairs.length }, (_, i) => i);
 
     for (let i = availableIndices.length - 1; i > 0; i -= 1) {
       const j = Math.floor(Math.random() * (i + 1));
@@ -643,21 +690,28 @@ class ElementFiller {
     }
     selectedIndices.push(...availableIndices.slice(0, numberOfOptionsToSelect));
 
-    // 依次点击选中的checkbox
+    // 依次点击选中的checkbox显示元素
     for (let i = 0; i < selectedIndices.length; i += 1) {
       const optionIndex = selectedIndices[i];
-      const checkboxInput = visibleCheckboxInputs[optionIndex] as HTMLInputElement;
+      const { input, display } = checkboxPairs[optionIndex];
 
-      console.log(`点击第 ${i + 1}/${selectedIndices.length} 个checkbox，索引: ${optionIndex}`);
+      console.log(`点击第 ${i + 1}/${selectedIndices.length} 个checkbox显示元素，索引: ${optionIndex}`);
 
       await sleep(200);
 
-      // 尝试使用PageOperator点击checkbox
-      const clickSuccess = await this.clickCheckboxWithPageOperator(checkboxInput, true);
+      // 点击可见的显示元素
+      try {
+        await this.simulateClick(display);
+        console.log("成功点击checkbox显示元素");
 
-      if (!clickSuccess) {
-        // 回退到直接设置属性
-        checkboxInput.checked = true;
+        // 验证input状态是否发生变化
+        await sleep(100);
+        console.log(`Checkbox状态: ${input.checked ? "已选中" : "未选中"}`);
+      } catch (error) {
+        console.error("点击checkbox显示元素失败, 尝试直接设置input状态:", error);
+
+        // 回退策略：直接设置input状态
+        input.checked = true;
         console.log("使用直接设置方式勾选checkbox");
       }
 
