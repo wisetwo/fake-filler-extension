@@ -388,21 +388,40 @@ class ElementFiller {
     });
   }
 
-  public async fillWrapedDropdownElement(
-    element: HTMLInputElement,
-    isMultiSelect: boolean,
-    dropdownClassList: string[],
-    dropdownOptionClassList: string[]
-  ): Promise<void> {
-    console.log("fillWrapedDropdownElement", element, isMultiSelect, dropdownClassList);
-    if (this.shouldIgnoreElement(element)) {
-      console.log("element ignored");
-      return;
-    }
+  /**
+   * 生成随机字母 (a-z)
+   */
+  private generateRandomLetter(): string {
+    const letters = "abcdefghijklmnopqrstuvwxyz";
+    return letters[Math.floor(Math.random() * letters.length)];
+  }
 
-    // 点击输入框触发下拉框
+  /**
+   * 尝试触发下拉框并等待有数据的下拉框出现
+   * @param element 输入框元素
+   * @param dropdownClassList 下拉框的类名列表
+   * @param dropdownOptionClassList 下拉框选项的类名列表
+   * @param shouldInputChar 是否需要先输入字符才能触发数据
+   * @returns 下拉框元素或null
+   */
+  private async tryTriggerDropdownWithData(
+    element: HTMLInputElement,
+    dropdownClassList: string[],
+    dropdownOptionClassList: string[],
+    shouldInputChar = false
+  ): Promise<Element | null> {
     try {
-      await this.simulateClick(element);
+      // 如果需要输入字符，先清空并输入随机字母
+      if (shouldInputChar) {
+        const randomLetter = this.generateRandomLetter();
+        console.log(`输入随机字母触发搜索: ${randomLetter}`);
+        await this.setElementValue(element, randomLetter);
+        // 给一点时间让输入事件生效
+        await sleep(200);
+      } else {
+        // 点击输入框触发下拉框
+        await this.simulateClick(element);
+      }
     } catch (error) {
       console.error("Failed to click using page operator, falling back to events", error);
       element.click();
@@ -418,20 +437,59 @@ class ElementFiller {
       return hasOptions;
     });
 
+    return dropdownElement;
+  }
+
+  public async fillWrapedDropdownElement(
+    element: HTMLInputElement,
+    isMultiSelect: boolean,
+    dropdownClassList: string[],
+    dropdownOptionClassList: string[]
+  ): Promise<void> {
+    console.log("fillWrapedDropdownElement", element, isMultiSelect, dropdownClassList);
+    if (this.shouldIgnoreElement(element)) {
+      console.log("element ignored");
+      return;
+    }
+
+    // 先尝试直接点击触发下拉框
+    console.log("尝试直接点击触发下拉框");
+    let dropdownElement = await this.tryTriggerDropdownWithData(
+      element,
+      dropdownClassList,
+      dropdownOptionClassList,
+      false
+    );
+
+    // 如果没有数据，尝试输入随机字母触发搜索
+    if (!dropdownElement) {
+      console.log("直接点击未找到数据，尝试输入随机字母触发搜索");
+      dropdownElement = await this.tryTriggerDropdownWithData(
+        element,
+        dropdownClassList,
+        dropdownOptionClassList,
+        true
+      );
+    }
+
     console.log("dropdownElement", dropdownElement);
     if (!dropdownElement) {
-      console.warn("dropdownElement not found");
+      console.warn("dropdownElement not found after both attempts");
       return;
     }
 
     // 尝试使用不同的类名查找选项
     const options = dropdownOptionClassList.reduce<Element[]>((foundOptions, optionClass) => {
+      // 已经找到，不会处理后面的类名（同一个列表不会重复插入）
       if (foundOptions.length > 0) {
         return foundOptions;
       }
-      const newOptions = Array.from(dropdownElement.querySelectorAll(`.${optionClass}:not(.disabled)`));
-      console.log(`try to find options with ${optionClass}:`, newOptions);
-      return newOptions;
+      if (dropdownElement) {
+        const newOptions = Array.from(dropdownElement.querySelectorAll(`.${optionClass}:not(.disabled)`));
+        console.log(`try to find options with ${optionClass}:`, newOptions);
+        return newOptions;
+      }
+      return foundOptions;
     }, []);
     const visibleOptions = options.filter((option) => this.isElementVisible(option as FillableElement));
 
