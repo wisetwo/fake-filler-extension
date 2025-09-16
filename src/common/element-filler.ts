@@ -443,9 +443,11 @@ class ElementFiller {
 
   public async fillWrapedDropdownElement(
     inputElement: HTMLInputElement,
+    elementType: "date-picker" | "cascader" | "select",
     isMultiSelect: boolean,
     dropdownClassList: string[],
-    dropdownOptionClassList: string[]
+    dropdownOptionClassList: string[],
+    dropdownOptionClassLeafList?: string[]
   ): Promise<void> {
     console.log("fillWrapedDropdownElement", inputElement, isMultiSelect, dropdownClassList);
     if (this.shouldIgnoreElement(inputElement)) {
@@ -463,7 +465,7 @@ class ElementFiller {
     );
 
     // 如果没有数据，尝试输入随机字母触发搜索
-    if (!dropdownElement && !inputElement.disabled) {
+    if (!dropdownElement && !inputElement.disabled && elementType === "select") {
       console.log("直接点击未找到数据，尝试输入随机字母触发搜索");
       dropdownElement = await this.tryTriggerDropdownWithData(
         inputElement,

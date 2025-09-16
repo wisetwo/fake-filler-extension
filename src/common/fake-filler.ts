@@ -15,7 +15,8 @@ class FakeFiller {
   private readonly selectInputDropdownClassList = ["t-select__dropdown", "t-popup__content"];
   private readonly selectInputDropdownOptionClassList = ["t-select-option", "t-avatar"];
   private readonly cascaderDropdownClassList = ["t-popup__content"];
-  private readonly cascaderDropdownOptionClassList = ["t-cascader__item--leaf"];
+  private readonly cascaderDropdownOptionClassList = ["t-cascader__item"];
+  private readonly cascaderDropdownOptionLeafClassList = ["t-cascader__item--leaf"];
   private readonly datePickerDropdownClassList = ["t-popup__content"];
   private readonly datePickerDropdownOptionClassList = ["t-date-picker__cell"];
   private pageOperator: PageOperator | null;
@@ -92,6 +93,7 @@ class FakeFiller {
         // 日期选择器优先级最高
         await this.elementFiller.fillWrapedDropdownElement(
           element,
+          "date-picker",
           false, // 单日期选择
           this.datePickerDropdownClassList,
           this.datePickerDropdownOptionClassList
@@ -100,14 +102,17 @@ class FakeFiller {
         // Cascader优先级次高
         await this.elementFiller.fillWrapedDropdownElement(
           element,
-          false, // cascader通常是单选
+          "cascader",
+          isMultiSelect,
           this.cascaderDropdownClassList,
-          this.cascaderDropdownOptionClassList
+          this.cascaderDropdownOptionClassList,
+          this.cascaderDropdownOptionLeafClassList
         );
       } else {
         // 普通的wrapped select
         await this.elementFiller.fillWrapedDropdownElement(
           element,
+          "select",
           isMultiSelect,
           this.selectInputDropdownClassList,
           this.selectInputDropdownOptionClassList
