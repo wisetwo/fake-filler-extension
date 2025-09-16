@@ -421,6 +421,7 @@ class ElementFiller {
       } else {
         // 点击输入框触发下拉框
         await this.simulateClick(element);
+        await sleep(200);
       }
     } catch (error) {
       console.error("Failed to click using page operator, falling back to events", error);
@@ -441,13 +442,13 @@ class ElementFiller {
   }
 
   public async fillWrapedDropdownElement(
-    element: HTMLInputElement,
+    inputElement: HTMLInputElement,
     isMultiSelect: boolean,
     dropdownClassList: string[],
     dropdownOptionClassList: string[]
   ): Promise<void> {
-    console.log("fillWrapedDropdownElement", element, isMultiSelect, dropdownClassList);
-    if (this.shouldIgnoreElement(element)) {
+    console.log("fillWrapedDropdownElement", inputElement, isMultiSelect, dropdownClassList);
+    if (this.shouldIgnoreElement(inputElement)) {
       console.log("element ignored");
       return;
     }
@@ -455,17 +456,17 @@ class ElementFiller {
     // 先尝试直接点击触发下拉框
     console.log("尝试直接点击触发下拉框");
     let dropdownElement = await this.tryTriggerDropdownWithData(
-      element,
+      inputElement,
       dropdownClassList,
       dropdownOptionClassList,
       false
     );
 
     // 如果没有数据，尝试输入随机字母触发搜索
-    if (!dropdownElement) {
+    if (!dropdownElement && !inputElement.disabled) {
       console.log("直接点击未找到数据，尝试输入随机字母触发搜索");
       dropdownElement = await this.tryTriggerDropdownWithData(
-        element,
+        inputElement,
         dropdownClassList,
         dropdownOptionClassList,
         true
@@ -524,11 +525,13 @@ class ElementFiller {
 
         await sleep(200);
         await this.simulateClick(option);
+        await sleep(200);
         // 关闭
-        await this.clickAtBlankArea(element);
+        await this.clickAtBlankArea(inputElement);
+        await sleep(200);
         // 再次打开（如果不是最后一个选项）
         if (i < selectedIndices.length - 1) {
-          await this.simulateClick(element);
+          await this.simulateClick(inputElement);
         }
       }
       // selected = true;
