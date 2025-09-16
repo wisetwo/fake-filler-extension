@@ -109,7 +109,7 @@ class ElementFiller {
    * @returns Promise<boolean> 是否成功使用PageOperator输入
    */
   private async fillElementWithPageOperator(element: FillableElement, value: string): Promise<boolean> {
-    if (!this.pageOperator || !value) {
+    if (!this.pageOperator || value === undefined || value === null) {
       return false;
     }
 
@@ -151,9 +151,10 @@ class ElementFiller {
       }
 
       // 点击checkbox来切换状态，使用准确的全局坐标
-      const { x, y } = this.getElementCenterCoordinates(element);
+      // const { x, y } = this.getElementCenterCoordinates(element);
 
-      await this.pageOperator.click(x, y);
+      // await this.pageOperator.click(x, y);
+      await this.simulateClick(element);
       await sleep(100); // 等待状态更新
 
       // 验证状态是否正确更新
@@ -447,7 +448,9 @@ class ElementFiller {
     isMultiSelect: boolean,
     dropdownClassList: string[],
     dropdownOptionClassList: string[],
-    dropdownOptionClassLeafList?: string[]
+    dropdownOptionClassLeafList?: string[],
+    dropdownOptionExpandedClassList?: string[],
+    dropdownCheckboxInputClassList?: string[]
   ): Promise<void> {
     console.log("fillWrapedDropdownElement", inputElement, isMultiSelect, dropdownClassList);
     if (this.shouldIgnoreElement(inputElement)) {
@@ -465,7 +468,7 @@ class ElementFiller {
     );
 
     // 如果没有数据，尝试输入随机字母触发搜索
-    if (!dropdownElement && !inputElement.disabled && elementType === "select") {
+    if (elementType === "select" && !dropdownElement && !inputElement.disabled) {
       console.log("直接点击未找到数据，尝试输入随机字母触发搜索");
       dropdownElement = await this.tryTriggerDropdownWithData(
         inputElement,
@@ -481,6 +484,20 @@ class ElementFiller {
       return;
     }
 
+    // 针对cascader类型的特殊处理
+    if (elementType === "cascader") {
+      await this.fillCascaderElement(
+        dropdownElement,
+        isMultiSelect,
+        dropdownOptionClassList,
+        dropdownOptionClassLeafList || [],
+        dropdownOptionExpandedClassList || [],
+        dropdownCheckboxInputClassList || []
+      );
+      return;
+    }
+
+    // 原有的通用下拉框处理逻辑（date-picker和select）
     // 尝试使用不同的类名查找选项
     const options = dropdownOptionClassList.reduce<Element[]>((foundOptions, optionClass) => {
       // 已经找到，不会处理后面的类名（同一个列表不会重复插入）
@@ -549,6 +566,200 @@ class ElementFiller {
         option.click();
       }
     }
+  }
+
+  /**
+   * 专门处理cascader组件的选择逻辑
+   * @param dropdownElement 下拉框元素
+   * @param isMultiSelect 是否多选模式
+   * @param dropdownOptionClassList 选项类名列表
+   * @param dropdownOptionClassLeafList 叶子节点类名列表
+   * @param dropdownOptionExpandedClassList 已展开节点类名列表
+   * @param dropdownCheckboxInputClassList checkbox input类名列表
+   */
+  private async fillCascaderElement(
+    dropdownElement: Element,
+    isMultiSelect: boolean,
+    dropdownOptionClassList: string[],
+    dropdownOptionClassLeafList: string[],
+    dropdownOptionExpandedClassList: string[],
+    dropdownCheckboxInputClassList: string[]
+  ): Promise<void> {
+    console.log("fillCascaderElement - 开始处理cascader", { isMultiSelect });
+
+    if (isMultiSelect) {
+      // 多选模式：查找所有带checkbox的选项并随机选择
+      await this.fillCascaderMultiSelect(dropdownElement, dropdownCheckboxInputClassList);
+    } else {
+      // 单选模式：递归展开直到找到叶子节点
+      await this.fillCascaderSingleSelect(
+        dropdownElement,
+        dropdownOptionClassList,
+        dropdownOptionClassLeafList,
+        dropdownOptionExpandedClassList
+      );
+    }
+  }
+
+  /**
+   * 处理cascader多选模式
+   * @param dropdownElement 下拉框元素
+   * @param dropdownCheckboxInputClassList checkbox input类名列表
+   */
+  private async fillCascaderMultiSelect(
+    dropdownElement: Element,
+    dropdownCheckboxInputClassList: string[]
+  ): Promise<void> {
+    console.log("fillCascaderMultiSelect - 处理多选模式");
+
+    // 查找所有checkbox input元素
+    const checkboxInputs = dropdownCheckboxInputClassList.reduce<Element[]>((foundInputs, inputClass) => {
+      if (foundInputs.length > 0) {
+        return foundInputs;
+      }
+      const newInputs = Array.from(dropdownElement.querySelectorAll(`.${inputClass}`));
+      console.log(`找到checkbox input (${inputClass}):`, newInputs);
+      return newInputs;
+    }, []);
+
+    const visibleCheckboxInputs = checkboxInputs.filter((input) => this.isElementVisible(input as FillableElement));
+
+    if (visibleCheckboxInputs.length === 0) {
+      console.log("未找到可见的checkbox输入框");
+      return;
+    }
+
+    // 随机选择1-3个checkbox进行勾选
+    const numberOfOptionsToSelect = this.generator.randomNumber(1, Math.min(3, visibleCheckboxInputs.length));
+    console.log(`随机选择 ${numberOfOptionsToSelect} 个选项进行勾选`);
+
+    // 生成不重复的随机索引
+    const selectedIndices: number[] = [];
+    const availableIndices = Array.from({ length: visibleCheckboxInputs.length }, (_, i) => i);
+
+    for (let i = availableIndices.length - 1; i > 0; i -= 1) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [availableIndices[i], availableIndices[j]] = [availableIndices[j], availableIndices[i]];
+    }
+    selectedIndices.push(...availableIndices.slice(0, numberOfOptionsToSelect));
+
+    // 依次点击选中的checkbox
+    for (let i = 0; i < selectedIndices.length; i += 1) {
+      const optionIndex = selectedIndices[i];
+      const checkboxInput = visibleCheckboxInputs[optionIndex] as HTMLInputElement;
+
+      console.log(`点击第 ${i + 1}/${selectedIndices.length} 个checkbox，索引: ${optionIndex}`);
+
+      await sleep(200);
+
+      // 尝试使用PageOperator点击checkbox
+      const clickSuccess = await this.clickCheckboxWithPageOperator(checkboxInput, true);
+
+      if (!clickSuccess) {
+        // 回退到直接设置属性
+        checkboxInput.checked = true;
+        console.log("使用直接设置方式勾选checkbox");
+      }
+
+      await sleep(200);
+    }
+  }
+
+  /**
+   * 处理cascader单选模式
+   * @param dropdownElement 下拉框元素
+   * @param dropdownOptionClassList 选项类名列表
+   * @param dropdownOptionClassLeafList 叶子节点类名列表
+   * @param dropdownOptionExpandedClassList 已展开节点类名列表
+   */
+  private async fillCascaderSingleSelect(
+    dropdownElement: Element,
+    dropdownOptionClassList: string[],
+    dropdownOptionClassLeafList: string[],
+    dropdownOptionExpandedClassList: string[]
+  ): Promise<void> {
+    console.log("fillCascaderSingleSelect - 处理单选模式");
+
+    const maxDepth = 5; // 最大递归深度，防止无限循环
+    let currentDepth = 0;
+
+    while (currentDepth < maxDepth) {
+      currentDepth += 1;
+      console.log(`第 ${currentDepth} 层级处理`);
+
+      // 查找当前可见的叶子节点
+      const leafOptions = dropdownOptionClassLeafList.reduce<Element[]>((foundLeafs, leafClass) => {
+        if (foundLeafs.length > 0) {
+          return foundLeafs;
+        }
+        const newLeafs = Array.from(dropdownElement.querySelectorAll(`.${leafClass}`));
+        console.log(`找到叶子节点 (${leafClass}):`, newLeafs);
+        return newLeafs;
+      }, []);
+
+      const visibleLeafOptions = leafOptions.filter((option) => this.isElementVisible(option as FillableElement));
+
+      if (visibleLeafOptions.length > 0) {
+        // 找到叶子节点，随机选择一个并点击
+        const randomIndex = this.generator.randomNumber(0, visibleLeafOptions.length - 1);
+        const leafOption = visibleLeafOptions[randomIndex] as HTMLElement;
+
+        console.log(`找到叶子节点，点击完成选择:`, leafOption);
+
+        await sleep(200);
+        await this.simulateClick(leafOption);
+        await sleep(200);
+
+        return; // 完成选择，退出
+      }
+
+      // 没有找到叶子节点，寻找可展开的非叶子节点
+      const allOptions = dropdownOptionClassList.reduce<Element[]>((foundOptions, optionClass) => {
+        if (foundOptions.length > 0) {
+          return foundOptions;
+        }
+        const newOptions = Array.from(dropdownElement.querySelectorAll(`.${optionClass}`));
+        return newOptions;
+      }, []);
+
+      // 过滤出未展开的、可见的、非叶子节点
+      const expandableOptions = allOptions.filter((option) => {
+        // 检查是否是叶子节点
+        const isLeaf = dropdownOptionClassLeafList.some((leafClass) => option.classList.contains(leafClass));
+
+        // 检查是否已展开
+        const isExpanded = dropdownOptionExpandedClassList.some((expandedClass) =>
+          option.classList.contains(expandedClass)
+        );
+
+        // 检查是否可见
+        const isVisible = this.isElementVisible(option as FillableElement);
+
+        return !isLeaf && !isExpanded && isVisible;
+      });
+
+      console.log(`找到可展开的选项:`, expandableOptions);
+
+      if (expandableOptions.length === 0) {
+        console.log("没有找到可展开的选项，选择结束");
+        break;
+      }
+
+      // 随机选择一个可展开的选项进行点击
+      const randomIndex = this.generator.randomNumber(0, expandableOptions.length - 1);
+      const optionToExpand = expandableOptions[randomIndex] as HTMLElement;
+
+      console.log(`点击展开选项:`, optionToExpand);
+
+      await sleep(200);
+      await this.simulateClick(optionToExpand);
+      await sleep(500); // 等待展开动画完成
+
+      // 重新获取更新后的dropdown元素（因为DOM可能已更新）
+      // 这里简化处理，实际可能需要重新查找dropdown元素
+    }
+
+    console.log("cascader单选处理完成");
   }
 
   private isAnyMatch(haystacks: string[], needles: string[]): boolean {
@@ -731,9 +942,10 @@ class ElementFiller {
 
     try {
       // 点击radio按钮，使用准确的全局坐标
-      const { x, y } = this.getElementCenterCoordinates(element);
+      // const { x, y } = this.getElementCenterCoordinates(element);
 
-      await this.pageOperator.click(x, y);
+      // await this.pageOperator.click(x, y);
+      await this.simulateClick(element);
       await sleep(100); // 等待状态更新
 
       // 验证是否选中

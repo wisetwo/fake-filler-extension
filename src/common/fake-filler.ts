@@ -17,6 +17,8 @@ class FakeFiller {
   private readonly cascaderDropdownClassList = ["t-popup__content"];
   private readonly cascaderDropdownOptionClassList = ["t-cascader__item"];
   private readonly cascaderDropdownOptionLeafClassList = ["t-cascader__item--leaf"];
+  private readonly cascaderDropdownOptionExpandedClassList = ["t-is-expanded"];
+  private readonly cascaderDropdownCheckboxInputClassList = ["t-checkbox__former"];
   private readonly datePickerDropdownClassList = ["t-popup__content"];
   private readonly datePickerDropdownOptionClassList = ["t-date-picker__cell"];
   private pageOperator: PageOperator | null;
@@ -106,7 +108,9 @@ class FakeFiller {
           isMultiSelect,
           this.cascaderDropdownClassList,
           this.cascaderDropdownOptionClassList,
-          this.cascaderDropdownOptionLeafClassList
+          this.cascaderDropdownOptionLeafClassList,
+          this.cascaderDropdownOptionExpandedClassList,
+          this.cascaderDropdownCheckboxInputClassList
         );
       } else {
         // 普通的wrapped select
