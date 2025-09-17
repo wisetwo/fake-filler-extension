@@ -220,7 +220,7 @@ function GeneralSettingsForm(props: Props) {
             label={GetMessage("generalSettings_contextMenuLabel")}
             title={GetMessage("generalSettings_contextMenu")}
           />
-
+          <div className="form-text text-muted mb-3">{GetMessage("generalSettings_star_help")}</div>
           <div className="row">
             <div className="col-sm-3">&nbsp;</div>
             <div className="col-sm-9">

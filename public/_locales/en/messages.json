@@ -474,7 +474,7 @@
     "message": "Ignore all hidden/invisible fields"
   },
   "generalSettings_ignoreFieldsWithContentLabel": {
-    "message": "Ignore fields that already have content"
+    "message": "Ignore fields that already have content *"
   },
   "generalSettings_note": {
     "message": "Note"
@@ -531,7 +531,7 @@
     "message": "Upload Files"
   },
   "generalSettings_uploadFilesLabel": {
-    "message": "Upload example files on file input fields"
+    "message": "Upload example files on file input fields *"
   },
   "generalSettings_contextMenu": {
     "message": "Context Menu"
@@ -577,6 +577,9 @@
   },
   "generalSettings_matchFields_help": {
     "message": "Please refer to the custom fields section to learn how input elements are matched."
+  },
+  "generalSettings_star_help": {
+    "message": "Options marked with * work only with traditional input fields."
   },
   "generalSettings_password": {
     "message": "Password"
