@@ -122,7 +122,7 @@ class ElementFiller {
 
       // 清空现有内容并输入新值
       await this.pageOperator.clearAndType(value, element);
-      await sleep(50); // 等待输入完成
+      await sleep(100); // 等待输入完成
 
       return true;
     } catch (error) {
@@ -169,19 +169,38 @@ class ElementFiller {
    * 统一的元素值设置方法，优先使用PageOperator，失败时回退到直接赋值
    * @param element 目标元素
    * @param value 要设置的值
+   * @param fallback 可选的回调函数，当设置值失败时执行
    */
-  private async setElementValue(element: FillableElement, value: string): Promise<void> {
+  private async setElementValue(
+    element: FillableElement,
+    value: string,
+    fallback?: () => Promise<void>
+  ): Promise<void> {
     // 尝试使用PageOperator进行真实用户输入
     const pageOperatorSuccess = await this.fillElementWithPageOperator(element, value);
 
     if (!pageOperatorSuccess) {
       // 回退到直接赋值方式
-      (element as HTMLInputElement | HTMLTextAreaElement).value = value;
+      const inputElement = element as HTMLInputElement | HTMLTextAreaElement;
+      const originalValue = inputElement.value;
 
-      // 触发必要的事件
-      // if (this.options.triggerClickEvents) {
-      //   this.fireEvents(element);
-      // }
+      try {
+        inputElement.value = value;
+        // 检查设置是否成功（例如，对于number类型的input，设置非数字值会失败）
+        if (inputElement.value !== value && fallback) {
+          // 如果设置失败且有fallback，则执行fallback
+          inputElement.value = originalValue; // 恢复原值
+          await fallback();
+        }
+      } catch (error) {
+        // 如果设置过程中出错且有fallback，则执行fallback
+        if (fallback) {
+          inputElement.value = originalValue; // 恢复原值
+          await fallback();
+          return;
+        }
+        throw error;
+      }
     }
   }
 
@@ -821,8 +840,8 @@ class ElementFiller {
   }
 
   private isAnyMatch(haystacks: string[], needles: string[]): boolean {
-    console.log("#isAnyMatch#");
-    console.log("haystacks:", haystacks, "needles:", needles);
+    // console.log("#isAnyMatch#");
+    // console.log("haystacks:", haystacks, "needles:", needles);
 
     for (let i = 0, haystackCount = haystacks.length; i < haystackCount; i += 1) {
       const haystack = haystacks[i];
@@ -1382,12 +1401,14 @@ class ElementFiller {
   }
 
   public async fillInputElement(element: HTMLInputElement): Promise<void> {
+    console.log("#fillInputElement#");
     if (this.shouldIgnoreElement(element)) {
       console.log("element ignored");
       return;
     }
 
     const elementType = element.type ? element.type.toLowerCase() : "";
+    console.log("elementType->", elementType);
 
     switch (elementType) {
       case "checkbox": {
@@ -1733,7 +1754,41 @@ class ElementFiller {
           this.previousValue = this.generateDummyDataForCustomField(customField, element);
           defaultValue = this.previousValue;
         }
-        await this.setElementValue(element, defaultValue);
+
+        // 创建fallback函数，当设置值失败时按照number类型处理
+        const numberFallback = async (): Promise<void> => {
+          console.log("numberFallback");
+          let min = element.min ? parseInt(element.min, 10) : 1;
+          let max = element.max ? parseInt(element.max, 10) : 100;
+
+          const numberCustomField = this.findCustomField(this.getElementName(element), ["number"]);
+
+          if (numberCustomField) {
+            min = numberCustomField.min || min;
+            max = numberCustomField.max || max;
+
+            if (element.min && element.max) {
+              min = Number(element.min) > min ? Number(element.min) : min;
+              max = Number(element.max) < max ? Number(element.max) : max;
+            }
+          }
+
+          let decimalPlaces = 0;
+
+          if (element.step) {
+            // Doesn't work properly for non-powers of 10
+            decimalPlaces = Math.floor(-Math.log10(Number(element.step)));
+          } else if (numberCustomField) {
+            decimalPlaces = numberCustomField.decimalPlaces || 0;
+          }
+
+          const numberValue = String(this.generator.randomNumber(min, max, decimalPlaces));
+          console.log("numberValue", numberValue);
+          // 不传递fallback参数，避免无限递归
+          await this.setElementValue(element, numberValue);
+        };
+
+        await this.setElementValue(element, defaultValue, numberFallback);
         break;
       }
     }
