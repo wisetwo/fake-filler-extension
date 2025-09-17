@@ -21,12 +21,14 @@ function App() {
       <ScrollToTop />
       <Navbar bg="dark" variant="dark" expand="lg">
         <Navbar.Brand>
-          <img
-            src="images/magic-star-256.png"
-            alt={GetMessage("extensionName")}
-            style={{ padding: "0 0 2px 25px", height: "18px" }}
-          />
-          <span style={{ paddingLeft: "8px" }}>Auto Filler</span>
+          <Nav.Link as={NavLink} to="/" exact>
+            <img
+              src="images/magic-star-256.png"
+              alt={GetMessage("extensionName")}
+              style={{ padding: "0 0 2px 25px", height: "18px" }}
+            />
+            <span style={{ paddingLeft: "8px" }}>Auto Filler</span>
+          </Nav.Link>
         </Navbar.Brand>
         <Navbar.Toggle aria-controls="main-navbar-nav" />
         <Navbar.Collapse id="main-navbar-nav">
