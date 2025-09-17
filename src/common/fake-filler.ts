@@ -330,19 +330,19 @@ class FakeFiller {
 
       .fake-filler-index-label {
         position: absolute !important;
-        background: #f5ba18 !important;
+        background: rgba(245, 186, 24, 0.5) !important;
         color: #000 !important;
-        border-radius: 50% !important;
+        border: 1px solid #f5ba18 !important;
         width: 20px !important;
-        height: 20px !important;
+        height: 14px !important;
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
         font-family: Arial, sans-serif !important;
-        font-size: 11px !important;
+        font-size: 10px !important;
         font-weight: bold !important;
         z-index: 999998 !important;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2) !important;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2) !important;
         pointer-events: none !important;
       }
 
@@ -696,8 +696,9 @@ class FakeFiller {
     const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft;
     const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
 
-    label.style.left = `${rect.left + scrollLeft - 8}px`;
-    label.style.top = `${rect.top + scrollTop - 8}px`;
+    // 将标签放在高亮区域左上角外部，避免重叠
+    label.style.left = `${rect.left + scrollLeft - 2}px`;
+    label.style.top = `${rect.top + scrollTop - 18}px`;
 
     // 添加到body中
     document.body.appendChild(label);
