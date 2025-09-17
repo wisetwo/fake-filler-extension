@@ -237,10 +237,12 @@ class FakeFiller {
     // 先确保CSS样式已添加
     this.addHighlightStyles();
 
-    // 获取所有可填充的元素并添加高亮class
+    // 获取所有可填充的元素并添加高亮class和序号标签
     const fillableElements = this.getFillableElements();
-    fillableElements.forEach((element) => {
+    fillableElements.forEach((element, index) => {
       element.classList.add("fake-filler-element-highlight");
+      // 为元素创建独立的序号标签
+      this.createIndexLabel(element as HTMLElement, index + 1);
     });
 
     // 创建事件处理函数并存储引用
@@ -286,6 +288,9 @@ class FakeFiller {
       element.classList.remove("fake-filler-element-highlight");
     });
 
+    // 移除所有序号标签
+    this.removeAllIndexLabels();
+
     // 移除事件监听器
     if (this.hoverEventHandler) {
       document.removeEventListener("mouseenter", this.hoverEventHandler, true);
@@ -321,6 +326,24 @@ class FakeFiller {
         outline: 2px solid #f5ba18 !important;
         background-color: rgba(245, 186, 24, 0.1) !important;
         transition: all 0.3s ease-in-out !important;
+      }
+
+      .fake-filler-index-label {
+        position: absolute !important;
+        background: #f5ba18 !important;
+        color: #000 !important;
+        border-radius: 50% !important;
+        width: 20px !important;
+        height: 20px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        font-family: Arial, sans-serif !important;
+        font-size: 11px !important;
+        font-weight: bold !important;
+        z-index: 999998 !important;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2) !important;
+        pointer-events: none !important;
       }
 
       .fake-filler-popup {
@@ -390,6 +413,7 @@ class FakeFiller {
         margin-top: 6px !important;
         font-style: italic !important;
       }
+
     `;
     document.head.appendChild(style);
   }
@@ -654,6 +678,52 @@ class FakeFiller {
 
   // 添加鼠标位置跟踪
   private lastMousePosition: { x: number; y: number } | null = null;
+
+  /**
+   * 为元素创建序号标签（使用独立元素）
+   * @param element 目标元素
+   * @param index 序号
+   */
+  private createIndexLabel(element: HTMLElement, index: number): void {
+    const label = document.createElement("div");
+    label.className = "fake-filler-index-label";
+    label.textContent = index.toString();
+    label.setAttribute("data-fake-filler-label", "true");
+    label.setAttribute("data-target-element", this.getElementId(element));
+
+    // 获取元素相对于文档的位置（包含滚动偏移）
+    const rect = element.getBoundingClientRect();
+    const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft;
+    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+
+    label.style.left = `${rect.left + scrollLeft - 8}px`;
+    label.style.top = `${rect.top + scrollTop - 8}px`;
+
+    // 添加到body中
+    document.body.appendChild(label);
+  }
+
+  /**
+   * 获取或创建元素的唯一ID
+   * @param element 元素
+   * @returns 唯一ID
+   */
+  private getElementId(element: HTMLElement): string {
+    if (!element.id) {
+      element.id = `fake-filler-target-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    }
+    return element.id;
+  }
+
+  /**
+   * 移除所有序号标签
+   */
+  private removeAllIndexLabels(): void {
+    const labels = document.querySelectorAll(".fake-filler-index-label");
+    labels.forEach((label) => {
+      label.remove();
+    });
+  }
 
   /**
    * 取消隐藏弹出框的计时器
