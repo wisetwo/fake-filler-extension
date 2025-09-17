@@ -688,8 +688,8 @@ class FakeFiller {
     const label = document.createElement("div");
     label.className = "fake-filler-index-label";
     label.textContent = index.toString();
-    label.setAttribute("data-fake-filler-label", "true");
-    label.setAttribute("data-target-element", this.getElementId(element));
+    // label.setAttribute("data-fake-filler-label", "true");
+    // label.setAttribute("data-target-element", this.getElementId(element));
 
     // 获取元素相对于文档的位置（包含滚动偏移）
     const rect = element.getBoundingClientRect();
@@ -709,12 +709,12 @@ class FakeFiller {
    * @param element 元素
    * @returns 唯一ID
    */
-  private getElementId(element: HTMLElement): string {
-    if (!element.id) {
-      element.id = `fake-filler-target-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-    }
-    return element.id;
-  }
+  // private getElementId(element: HTMLElement): string {
+  //   if (!element.id) {
+  //     element.id = `fake-filler-target-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+  //   }
+  //   return element.id;
+  // }
 
   /**
    * 移除所有序号标签
