@@ -347,7 +347,7 @@ class ElementFiller {
   private async waitForElementWithData(
     selectorList: string[],
     dataCheckFn: (element: Element) => boolean,
-    timeout = 2000
+    timeout = 5000
   ): Promise<Element | null> {
     console.log("waitForElementWithData: starting, selectorList:", selectorList);
     return new Promise((resolve) => {
@@ -362,6 +362,7 @@ class ElementFiller {
         let activeElement: Element | null = null;
         for (let i = 0; i < selectorList.length; i += 1) {
           const selector = selectorList[i];
+          console.log("visibleElementList.selector——> ", selector);
           const elementList = document.querySelectorAll(`.${selector}`);
           const visibleElementList = Array.from(elementList).filter((element) =>
             this.isElementVisible(element as FillableElement)
@@ -375,6 +376,7 @@ class ElementFiller {
             Array.from(visibleElementList).map((el) => (el as HTMLElement).innerText)
           );
           if (visibleElementList.length > 0) {
+            // 这里选择了第一个
             [activeElement] = visibleElementList;
             break;
           }
@@ -385,7 +387,7 @@ class ElementFiller {
           console.log("waitForElementWithData: found element", activeElement);
           resolve(activeElement);
         }
-      }, 100);
+      }, 500);
     });
   }
 
@@ -482,6 +484,8 @@ class ElementFiller {
     console.log("dropdownElement", dropdownElement);
     if (!dropdownElement) {
       console.warn("dropdownElement not found after both attempts");
+      await this.clickAtBlankArea(inputElement);
+      await sleep(200);
       return;
     }
 
