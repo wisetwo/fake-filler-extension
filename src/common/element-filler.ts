@@ -228,7 +228,9 @@ class ElementFiller {
         // 如果PageOperator执行成功但值没有正确设置，说明浏览器拒绝了这个值
         // 恢复原值并执行fallback
         inputElement.value = originalValue;
-        await fallback();
+        if (fallback) {
+          await fallback();
+        }
       }
     } else {
       // 回退到直接赋值方式
@@ -238,12 +240,14 @@ class ElementFiller {
         if (!this.isValueSetSuccessfully(inputElement, value, inputElement.value, originalValue) && fallback) {
           // 如果设置失败且有fallback，则执行fallback
           inputElement.value = originalValue; // 恢复原值
-          await fallback();
+          if (fallback) {
+            await fallback();
+          }
         }
       } catch (error) {
         // 如果设置过程中出错且有fallback，则执行fallback
+        inputElement.value = originalValue; // 恢复原值
         if (fallback) {
-          inputElement.value = originalValue; // 恢复原值
           await fallback();
           return;
         }
@@ -414,7 +418,7 @@ class ElementFiller {
   private async waitForElementWithData(
     selectorList: string[],
     dataCheckFn: (element: Element) => boolean,
-    timeout = 5000
+    timeout = 3000
   ): Promise<Element | null> {
     console.log("waitForElementWithData: starting, selectorList:", selectorList);
     return new Promise((resolve) => {
@@ -537,6 +541,8 @@ class ElementFiller {
       false
     );
 
+    let triedInputChar = false;
+
     // 如果没有数据，尝试输入随机字母触发搜索
     if (elementType === "select" && !dropdownElement && !inputElement.disabled) {
       console.log("直接点击未找到数据，尝试输入随机字母触发搜索");
@@ -546,10 +552,15 @@ class ElementFiller {
         dropdownOptionClassList,
         true
       );
+      triedInputChar = true;
     }
 
     console.log("dropdownElement", dropdownElement);
     if (!dropdownElement) {
+      if (triedInputChar) {
+        await this.setElementValue(inputElement, "");
+        await sleep(200);
+      }
       console.warn("dropdownElement not found after both attempts");
       await this.clickAtBlankArea(inputElement);
       await sleep(200);
