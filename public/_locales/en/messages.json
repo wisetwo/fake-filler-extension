@@ -645,7 +645,7 @@
     "message": "Click buttons or use right-click menu to start filling"
   },
   "popup_fillAllInputs": {
-    "message": "🚀 Fill All Inputs"
+    "message": "Fill All Inputs"
   },
   "popup_filling": {
     "message": "Filling..."
@@ -654,13 +654,13 @@
     "message": "Stop Filling"
   },
   "popup_highlightElements": {
-    "message": "🔍 Identify Form"
+    "message": "Identify Form"
   },
   "popup_identifying": {
     "message": "Identifying..."
   },
   "popup_clearHighlight": {
-    "message": "🧹 Clear Identification"
+    "message": "Clear Identification"
   },
   "popup_clearing": {
     "message": "Clearing..."
