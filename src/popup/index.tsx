@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { render } from "react-dom";
 import "bootstrap-icons/font/bootstrap-icons.css";
+
+import { GetMessage } from "src/common/helpers";
 import "./index.scss";
 
 interface Message {
@@ -18,25 +20,25 @@ const SidePanel: React.FC = () => {
 
   const sendMessage = async (action: string, loadingKey: keyof typeof loadingStates) => {
     setLoadingStates((prev) => ({ ...prev, [loadingKey]: true }));
-    setMessage(null); // 清除之前的消息
+    setMessage(null); // Clear previous message
     try {
       const response = await chrome.runtime.sendMessage({ type: action });
       if (response.error || !response.success) {
-        const errorMsg = response.error || "操作失败";
+        const errorMsg = response.error || GetMessage("popup_operationFailed");
         console.error("Error:", errorMsg);
         setMessage({ type: "error", text: errorMsg });
       } else {
-        console.log("操作成功完成");
-        setMessage({ type: "success", text: "操作成功完成" });
+        console.log("Operation completed successfully");
+        setMessage({ type: "success", text: GetMessage("popup_operationSuccess") });
       }
     } catch (error) {
       console.error("Failed to send message:", error);
-      const errorMsg = error instanceof Error ? error.message : "未知错误";
+      const errorMsg = error instanceof Error ? error.message : "Unknown error";
       setMessage({
         type: "error",
         text: errorMsg.includes("Could not establish connection")
-          ? "无法连接到页面，请确保当前页面允许扩展运行"
-          : `通信错误: ${errorMsg}`,
+          ? GetMessage("popup_connectionError")
+          : GetMessage("popup_communicationError", errorMsg),
       });
     } finally {
       setLoadingStates((prev) => ({ ...prev, [loadingKey]: false }));
@@ -49,10 +51,10 @@ const SidePanel: React.FC = () => {
     try {
       await chrome.runtime.sendMessage({ type: "STOP_FILLING" });
       setLoadingStates((prev) => ({ ...prev, fillAll: false }));
-      setMessage({ type: "info", text: "已请求停止填充" });
+      setMessage({ type: "info", text: GetMessage("popup_stopFillingRequested") });
     } catch (error) {
       console.error("Failed to stop filling:", error);
-      setMessage({ type: "error", text: "停止填充失败" });
+      setMessage({ type: "error", text: GetMessage("popup_stopFillingFailed") });
     }
   };
 
@@ -65,7 +67,7 @@ const SidePanel: React.FC = () => {
       chrome.runtime.openOptionsPage();
     } else {
       console.log("chrome.runtime.openOptionsPage not available");
-      // 方法2：使用chrome.tabs.create作为备选
+      // Fallback: use chrome.tabs.create
       chrome.tabs.create({
         url: chrome.runtime.getURL("options.html"),
       });
@@ -75,16 +77,22 @@ const SidePanel: React.FC = () => {
   return (
     <div className="popup-container">
       <div className="header">
-        <button type="button" onClick={handleOpenSettings} className="settings-button" title="设置" aria-label="设置">
+        <button
+          type="button"
+          onClick={handleOpenSettings}
+          className="settings-button"
+          title={GetMessage("popup_settings")}
+          aria-label={GetMessage("popup_settings")}
+        >
           <i className="bi bi-gear" />
         </button>
         <h2 className="title">Auto Filler</h2>
-        <p className="description">点击按钮或使用右键菜单来开始填充</p>
+        <p className="description">{GetMessage("popup_description")}</p>
       </div>
 
       <div className="main-actions">
         <button type="button" onClick={handleFillAllInputs} disabled={loadingStates.fillAll} className="fill-button">
-          {loadingStates.fillAll ? "正在填充..." : "🚀 填充所有输入框"}
+          {loadingStates.fillAll ? GetMessage("popup_filling") : GetMessage("popup_fillAllInputs")}
         </button>
 
         {loadingStates.fillAll && (
@@ -92,8 +100,8 @@ const SidePanel: React.FC = () => {
             type="button"
             onClick={handleStopFilling}
             className="stop-button"
-            title="停止填充"
-            aria-label="停止填充"
+            title={GetMessage("popup_stopFilling")}
+            aria-label={GetMessage("popup_stopFilling")}
           >
             ⏹
           </button>
@@ -107,7 +115,7 @@ const SidePanel: React.FC = () => {
           disabled={loadingStates.highlight}
           className="action-button highlight-button"
         >
-          {loadingStates.highlight ? "识别中..." : "🔍 识别表单"}
+          {loadingStates.highlight ? GetMessage("popup_identifying") : GetMessage("popup_highlightElements")}
         </button>
 
         <button
@@ -116,7 +124,7 @@ const SidePanel: React.FC = () => {
           disabled={loadingStates.clear}
           className="action-button clear-button"
         >
-          {loadingStates.clear ? "清除中..." : "🧹 清除识别"}
+          {loadingStates.clear ? GetMessage("popup_clearing") : GetMessage("popup_clearHighlight")}
         </button>
       </div>
 

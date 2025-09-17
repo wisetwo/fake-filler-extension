@@ -637,5 +637,50 @@
   },
   "matchedBlockedURL": {
     "message": "Matched a Blocked URL"
+  },
+  "popup_settings": {
+    "message": "Settings"
+  },
+  "popup_description": {
+    "message": "Click buttons or use right-click menu to start filling"
+  },
+  "popup_fillAllInputs": {
+    "message": "🚀 Fill All Inputs"
+  },
+  "popup_filling": {
+    "message": "Filling..."
+  },
+  "popup_stopFilling": {
+    "message": "Stop Filling"
+  },
+  "popup_highlightElements": {
+    "message": "🔍 Identify Form"
+  },
+  "popup_identifying": {
+    "message": "Identifying..."
+  },
+  "popup_clearHighlight": {
+    "message": "🧹 Clear Identification"
+  },
+  "popup_clearing": {
+    "message": "Clearing..."
+  },
+  "popup_operationFailed": {
+    "message": "Operation failed"
+  },
+  "popup_operationSuccess": {
+    "message": "Operation completed successfully"
+  },
+  "popup_connectionError": {
+    "message": "Cannot connect to page, please ensure the extension is allowed to run on current page"
+  },
+  "popup_communicationError": {
+    "message": "Communication error: $1"
+  },
+  "popup_stopFillingRequested": {
+    "message": "Stop filling requested"
+  },
+  "popup_stopFillingFailed": {
+    "message": "Failed to stop filling"
   }
 }
