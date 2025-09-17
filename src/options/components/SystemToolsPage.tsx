@@ -180,16 +180,16 @@ function SystemToolsPage() {
       {/* Backup and Restore Section */}
       <div>
         <h3>{GetMessage("backupRestore_title")}</h3>
-        <p>
+        <div className="mb-1">
           <button type="button" className="btn btn-link" onClick={exportSettings}>
             {GetMessage("backupRestore_exportSettings")}
           </button>
-        </p>
-        <p>
+        </div>
+        <div className="mb-1">
           <button type="button" className="btn btn-link" onClick={triggerImportSettings}>
             {GetMessage("backupRestore_importSettings")}
           </button>
-        </p>
+        </div>
         {backupDataElements}
         <input type="file" className="invisible" id="file" onChange={importSettings} />
         {errorMessage && <p className="alert alert-danger">{errorMessage}</p>}

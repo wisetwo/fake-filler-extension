@@ -130,7 +130,7 @@ function GeneralSettingsForm(props: Props) {
               {GetMessage("generalSettings_ignoreFieldsMatch")}
             </label>
             <div className="col-sm-9">
-              <TextField name="ignoredFields" placeholder={GetMessage("enterCsv")} />
+              <TextField name="ignoredFields" className="mb-1" placeholder={GetMessage("enterCsv")} />
               <CheckboxField name="ignoreHiddenFields" label={GetMessage("generalSettings_ignoreHiddenFieldsLabel")} />
               <CheckboxField
                 name="ignoreFieldsWithContent"
