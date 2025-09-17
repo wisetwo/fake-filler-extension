@@ -166,6 +166,46 @@ class ElementFiller {
   }
 
   /**
+   * 检查元素值是否设置成功
+   * @param element 输入元素
+   * @param expectedValue 期望设置的值
+   * @param currentValue 当前元素的值
+   * @param originalValue 设置前的原始值
+   * @returns 是否设置成功
+   */
+  private isValueSetSuccessfully(
+    element: HTMLInputElement | HTMLTextAreaElement,
+    expectedValue: string,
+    currentValue: string,
+    originalValue: string
+  ): boolean {
+    // 如果值有变化，认为设置成功（浏览器可能做了格式化）
+    if (currentValue !== originalValue) {
+      return true;
+    }
+
+    // 如果无变化，检查转字符串后是否等于设置的参数值
+    if (currentValue === expectedValue) {
+      return true;
+    }
+
+    // 对于number类型，还需要考虑数值相等的情况
+    const inputElement = element as HTMLInputElement;
+    const elementType = inputElement.type ? inputElement.type.toLowerCase() : "text";
+
+    if (elementType === "number" || elementType === "range") {
+      const expectedNum = parseFloat(expectedValue);
+      const currentNum = parseFloat(currentValue);
+
+      if (!isNaN(expectedNum) && !isNaN(currentNum)) {
+        return Math.abs(expectedNum - currentNum) < Number.EPSILON;
+      }
+    }
+
+    return false;
+  }
+
+  /**
    * 统一的元素值设置方法，优先使用PageOperator，失败时回退到直接赋值
    * @param element 目标元素
    * @param value 要设置的值
@@ -176,18 +216,26 @@ class ElementFiller {
     value: string,
     fallback?: () => Promise<void>
   ): Promise<void> {
+    const inputElement = element as HTMLInputElement | HTMLTextAreaElement;
+    const originalValue = inputElement.value;
+
     // 尝试使用PageOperator进行真实用户输入
     const pageOperatorSuccess = await this.fillElementWithPageOperator(element, value);
 
-    if (!pageOperatorSuccess) {
+    if (pageOperatorSuccess) {
+      // 即使PageOperator返回成功，也要验证值是否真的设置成功
+      if (!this.isValueSetSuccessfully(inputElement, value, inputElement.value, originalValue) && fallback) {
+        // 如果PageOperator执行成功但值没有正确设置，说明浏览器拒绝了这个值
+        // 恢复原值并执行fallback
+        inputElement.value = originalValue;
+        await fallback();
+      }
+    } else {
       // 回退到直接赋值方式
-      const inputElement = element as HTMLInputElement | HTMLTextAreaElement;
-      const originalValue = inputElement.value;
-
       try {
         inputElement.value = value;
         // 检查设置是否成功（例如，对于number类型的input，设置非数字值会失败）
-        if (inputElement.value !== value && fallback) {
+        if (!this.isValueSetSuccessfully(inputElement, value, inputElement.value, originalValue) && fallback) {
           // 如果设置失败且有fallback，则执行fallback
           inputElement.value = originalValue; // 恢复原值
           await fallback();
