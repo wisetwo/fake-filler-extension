@@ -99,7 +99,7 @@
     "message": "Settings imported successfully! You will need to reload all your tabs for the settings to take effect."
   },
   "backupRestore_confirmRestore": {
-    "message": "Are you sure you want to restore the settings?\n\nNote: Existing settings will be replaced."
+    "message": "Are you sure you want to restore the settings?\n\nNote: Existing settings (including all custom fields) will be replaced."
   },
   "backupRestore_errorImporting": {
     "message": "Error importing from file: $1"
