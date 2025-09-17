@@ -1,6 +1,6 @@
 // 基础容器样式
 .popup-container {
-  padding: 20px;
+  padding: 20px 15px;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
@@ -28,7 +28,7 @@
 
   .description {
     margin: 0;
-    font-size: 14px;
+    font-size: 12px;
     color: #666;
     line-height: 1.4;
   }
@@ -149,22 +149,86 @@
   font-size: 14px;
   font-weight: 500;
   border: 1px solid;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+
+  .message-text {
+    flex: 1;
+    margin-right: 8px;
+  }
+
+  .message-close {
+    background: none;
+    border: none;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    padding: 0;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.2s ease;
+    opacity: 0.7;
+    line-height: 1;
+
+    &:hover {
+      opacity: 1;
+      background-color: rgba(0, 0, 0, 0.1);
+      transform: scale(1.1);
+    }
+
+    &:focus {
+      outline: 2px solid currentColor;
+      outline-offset: 2px;
+    }
+  }
 
   &.message-success {
     background-color: #d4edda;
     color: #155724;
     border-color: #c3e6cb;
+
+    .message-close {
+      color: #155724;
+    }
   }
 
   &.message-error {
     background-color: #f8d7da;
     color: #721c24;
     border-color: #f5c6cb;
+
+    .message-close {
+      color: #721c24;
+    }
   }
 
   &.message-info {
     background-color: #d1ecf1;
     color: #0c5460;
     border-color: #bee5eb;
+
+    .message-close {
+      color: #0c5460;
+    }
+  }
+
+  // Add a subtle animation when message appears
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }

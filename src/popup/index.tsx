@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { render } from "react-dom";
 import "bootstrap-icons/font/bootstrap-icons.css";
 
@@ -17,6 +17,21 @@ const SidePanel: React.FC = () => {
     clear: false,
   });
   const [message, setMessage] = useState<Message | null>(null);
+
+  // Auto-clear success and info messages after 3 seconds
+  useEffect(() => {
+    if (message && (message.type === "success" || message.type === "info")) {
+      const timer = setTimeout(() => {
+        setMessage(null);
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+    return undefined;
+  }, [message]);
+
+  const clearMessage = () => {
+    setMessage(null);
+  };
 
   const sendMessage = async (action: string, loadingKey: keyof typeof loadingStates) => {
     setLoadingStates((prev) => ({ ...prev, [loadingKey]: true }));
@@ -128,7 +143,20 @@ const SidePanel: React.FC = () => {
         </button>
       </div>
 
-      {message && <div className={`message message-${message.type}`}>{message.text}</div>}
+      {message && (
+        <div className={`message message-${message.type}`} role="alert" aria-live="polite">
+          <span className="message-text">{message.text}</span>
+          <button
+            type="button"
+            className="message-close"
+            onClick={clearMessage}
+            aria-label="Close message"
+            title="Close message"
+          >
+            ×
+          </button>
+        </div>
+      )}
     </div>
   );
 };
