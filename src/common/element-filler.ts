@@ -1191,15 +1191,15 @@ class ElementFiller {
     if (this.options.ignoreHiddenFields && !this.isElementVisible(element)) {
       return true;
     }
+    const elementName = this.getElementName(element);
 
     // Check if element matches a custom field with type "ignored"
-    const ignoredCustomField = this.findCustomField(this.getElementName(element), ["ignored"]);
+    const ignoredCustomField = this.findCustomField(elementName, ["ignored"]);
     if (ignoredCustomField) {
       return true;
     }
 
     // Ignore any elements that match an item in the the "ignoredFields" array.
-    const elementName = this.getElementName(element);
     if (this.isAnyMatch(elementName, this.options.ignoredFields)) {
       return true;
     }
