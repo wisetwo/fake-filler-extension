@@ -114,10 +114,7 @@ class ElementFiller {
     }
 
     try {
-      // 先点击元素以获取焦点，使用准确的全局坐标
-      const { x, y } = this.getElementCenterCoordinates(element);
-
-      await this.pageOperator.click(x, y);
+      await this.simulateClick(element);
       await sleep(100); // 等待焦点设置
 
       // 清空现有内容并输入新值
@@ -151,9 +148,6 @@ class ElementFiller {
       }
 
       // 点击checkbox来切换状态，使用准确的全局坐标
-      // const { x, y } = this.getElementCenterCoordinates(element);
-
-      // await this.pageOperator.click(x, y);
       await this.simulateClick(element);
       await sleep(100); // 等待状态更新
 
@@ -1078,9 +1072,6 @@ class ElementFiller {
 
     try {
       // 点击radio按钮，使用准确的全局坐标
-      // const { x, y } = this.getElementCenterCoordinates(element);
-
-      // await this.pageOperator.click(x, y);
       await this.simulateClick(element);
       await sleep(100); // 等待状态更新
 
