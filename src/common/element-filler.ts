@@ -440,7 +440,7 @@ class ElementFiller {
   }
 
   private async simulateClick(element: HTMLElement, x?: number, y?: number): Promise<void> {
-    // console.log("-simulateClick-", element, x, y);
+    console.log("-simulateClick-", element, x, y, new Date().toISOString());
     if (this.pageOperator) {
       let finalX: number;
       let finalY: number;
@@ -601,15 +601,16 @@ class ElementFiller {
   private async waitForElementWithData(
     selectorList: string[],
     dataCheckFn: (element: Element) => boolean,
-    timeout = 3000
+    timeout = 4000
   ): Promise<Element | null> {
     console.log("waitForElementWithData: starting, selectorList:", selectorList);
     return new Promise((resolve) => {
       const startTime = Date.now();
       const interval = setInterval(() => {
+        console.log("waitForElementWithData: interval => ", new Date().toISOString());
         if (Date.now() - startTime >= timeout) {
           clearInterval(interval);
-          console.log("waitForElementWithData: timeout");
+          console.log(`waitForElementWithData: timeout for ${timeout} ms`);
           resolve(null);
         }
 
@@ -641,7 +642,7 @@ class ElementFiller {
           console.log("waitForElementWithData: found element", activeElement);
           resolve(activeElement);
         }
-      }, 500);
+      }, 800);
     });
   }
 
@@ -667,6 +668,7 @@ class ElementFiller {
     dropdownOptionClassList: string[],
     shouldInputChar = false
   ): Promise<Element | null> {
+    console.log("#tryTriggerDropdownWithData#");
     try {
       // 如果需要输入字符，先清空并输入随机字母
       if (shouldInputChar) {
