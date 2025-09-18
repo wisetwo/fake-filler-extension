@@ -675,16 +675,23 @@ class ElementFiller {
         const randomLetter = this.generateRandomLetter();
         console.log(`输入随机字母触发搜索: ${randomLetter}`);
         await this.setElementValue(element, randomLetter);
-        // 给一点时间让输入事件生效
-        await sleep(200);
+        // 给更多时间让输入事件生效和下拉框渲染
+        await sleep(500);
       } else {
         // 点击输入框触发下拉框
-        await this.simulateClick(element);
-        await sleep(200);
+        console.log("点击输入框触发下拉框");
+        // simulateClick可能表现为点击两次？偶现，暂时用element.click();替换
+        // await this.simulateClick(element);
+        const coordinates = this.getElementCenterCoordinates(element);
+        this.pageOperator?.move(coordinates.x, coordinates.y);
+        element.click();
+        // 等待下拉框完全展开
+        await sleep(300);
       }
     } catch (error) {
       console.error("Failed to click using page operator, falling back to events", error);
       element.click();
+      await sleep(300);
     }
 
     // 等待下拉框出现并且有数据
@@ -731,6 +738,12 @@ class ElementFiller {
     // 如果没有数据，尝试输入随机字母触发搜索
     if (elementType === "select" && !dropdownElement && !inputElement.disabled) {
       console.log("直接点击未找到数据，尝试输入随机字母触发搜索");
+
+      // 在尝试输入字符前，先确保之前的下拉框已经完全关闭
+      // 点击空白区域关闭可能存在的下拉框
+      await this.clickAtBlankArea(inputElement);
+      await sleep(300); // 等待下拉框完全关闭
+
       dropdownElement = await this.tryTriggerDropdownWithData(
         inputElement,
         dropdownClassList,
