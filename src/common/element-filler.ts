@@ -90,15 +90,204 @@ class ElementFiller {
   }
 
   /**
-   * 获取元素中心点的全局坐标
+   * 获取元素中心点的全局坐标，优先考虑可见区域
    * @param element 目标元素
    * @returns {x, y} 全局坐标
    */
   private getElementCenterCoordinates(element: Element): { x: number; y: number } {
+    const visibleRect = this.getElementVisibleRect(element);
+    if (visibleRect && visibleRect.width > 0 && visibleRect.height > 0) {
+      // 使用可见区域计算中心点
+      return {
+        x: visibleRect.left + visibleRect.width / 2,
+        y: visibleRect.top + visibleRect.height / 2,
+      };
+    }
+
+    // 回退机制1: 尝试找到可见区域内的最佳点击位置
+    const bestVisiblePoint = this.findBestClickablePoint(element);
+    if (bestVisiblePoint) {
+      return bestVisiblePoint;
+    }
+
+    // 回退机制2: 使用原始方法
     const rect = this.getElementGlobalRect(element);
     return {
       x: rect.left + rect.width / 2,
       y: rect.top + rect.height / 2,
+    };
+  }
+
+  /**
+   * 寻找元素内最佳的可点击位置
+   * @param element 目标元素
+   * @returns 最佳点击位置，如果找不到则返回null
+   */
+  private findBestClickablePoint(element: Element): { x: number; y: number } | null {
+    const elementRect = this.getElementGlobalRect(element);
+
+    // 将元素分为9个区域进行检测（3x3网格）
+    const testPoints = [
+      // 中心点
+      { x: elementRect.left + elementRect.width / 2, y: elementRect.top + elementRect.height / 2 },
+      // 四个角落的内侧一点
+      { x: elementRect.left + elementRect.width * 0.25, y: elementRect.top + elementRect.height * 0.25 },
+      { x: elementRect.left + elementRect.width * 0.75, y: elementRect.top + elementRect.height * 0.25 },
+      { x: elementRect.left + elementRect.width * 0.25, y: elementRect.top + elementRect.height * 0.75 },
+      { x: elementRect.left + elementRect.width * 0.75, y: elementRect.top + elementRect.height * 0.75 },
+      // 边缘中点
+      { x: elementRect.left + elementRect.width / 2, y: elementRect.top + elementRect.height * 0.25 },
+      { x: elementRect.left + elementRect.width / 2, y: elementRect.top + elementRect.height * 0.75 },
+      { x: elementRect.left + elementRect.width * 0.25, y: elementRect.top + elementRect.height / 2 },
+      { x: elementRect.left + elementRect.width * 0.75, y: elementRect.top + elementRect.height / 2 },
+    ];
+
+    // 检测每个点是否在可见区域内
+    for (const point of testPoints) {
+      if (this.isPointVisible(point, element)) {
+        return point;
+      }
+    }
+
+    return null;
+  }
+
+  /**
+   * 检查指定点是否在元素的可见区域内
+   * @param point 要检查的点
+   * @param element 元素
+   * @returns 是否可见
+   */
+  private isPointVisible(point: { x: number; y: number }, element: Element): boolean {
+    // 检查点是否在视窗内
+    if (point.x < 0 || point.y < 0 || point.x > window.innerWidth || point.y > window.innerHeight) {
+      return false;
+    }
+
+    // 检查点是否被父容器遮挡
+    let currentElement = element.parentElement;
+    while (currentElement) {
+      const computedStyle = window.getComputedStyle(currentElement);
+
+      if (this.isClippingContainer(computedStyle)) {
+        const containerRect = this.getElementGlobalRect(currentElement);
+
+        if (
+          point.x < containerRect.left ||
+          point.x > containerRect.right ||
+          point.y < containerRect.top ||
+          point.y > containerRect.bottom
+        ) {
+          return false;
+        }
+      }
+
+      currentElement = currentElement.parentElement;
+    }
+
+    return true;
+  }
+
+  /**
+   * 获取元素的实际可见区域，考虑被父容器遮挡的情况
+   * @param element 目标元素
+   * @returns 可见区域的矩形信息，如果不可见则返回null
+   */
+  private getElementVisibleRect(element: Element): DOMRect | null {
+    const elementRect = this.getElementGlobalRect(element);
+    let visibleRect = {
+      left: elementRect.left,
+      top: elementRect.top,
+      right: elementRect.right,
+      bottom: elementRect.bottom,
+      width: elementRect.width,
+      height: elementRect.height,
+    };
+
+    // 检查所有可能遮挡元素的父容器
+    let currentElement = element.parentElement;
+    while (currentElement) {
+      const computedStyle = window.getComputedStyle(currentElement);
+
+      // 检查是否是滚动容器或具有overflow裁剪的容器
+      if (this.isClippingContainer(computedStyle)) {
+        const containerRect = this.getElementGlobalRect(currentElement);
+
+        // 计算与容器的交集
+        const intersection = this.getIntersection(visibleRect, containerRect);
+        if (!intersection) {
+          // 完全被遮挡
+          return null;
+        }
+
+        visibleRect = intersection;
+      }
+
+      currentElement = currentElement.parentElement;
+    }
+
+    // 还需要检查视窗边界
+    const viewportRect = {
+      left: 0,
+      top: 0,
+      right: window.innerWidth,
+      bottom: window.innerHeight,
+      width: window.innerWidth,
+      height: window.innerHeight,
+    };
+
+    const finalIntersection = this.getIntersection(visibleRect, viewportRect);
+    if (!finalIntersection || finalIntersection.width <= 0 || finalIntersection.height <= 0) {
+      return null;
+    }
+
+    return new DOMRect(
+      finalIntersection.left,
+      finalIntersection.top,
+      finalIntersection.width,
+      finalIntersection.height
+    );
+  }
+
+  /**
+   * 检查容器是否具有裁剪效果
+   * @param computedStyle 容器的计算样式
+   * @returns 是否是裁剪容器
+   */
+  private isClippingContainer(computedStyle: CSSStyleDeclaration): boolean {
+    const { overflow, overflowX, overflowY } = computedStyle;
+
+    // 检查是否有裁剪效果的overflow值
+    const clippingValues = ["hidden", "scroll", "auto"];
+
+    return (
+      clippingValues.includes(overflow) || clippingValues.includes(overflowX) || clippingValues.includes(overflowY)
+    );
+  }
+
+  /**
+   * 计算两个矩形的交集
+   * @param rect1 矩形1
+   * @param rect2 矩形2
+   * @returns 交集矩形，如果没有交集则返回null
+   */
+  private getIntersection(rect1: any, rect2: any): any | null {
+    const left = Math.max(rect1.left, rect2.left);
+    const top = Math.max(rect1.top, rect2.top);
+    const right = Math.min(rect1.right, rect2.right);
+    const bottom = Math.min(rect1.bottom, rect2.bottom);
+
+    if (left >= right || top >= bottom) {
+      return null; // 没有交集
+    }
+
+    return {
+      left,
+      top,
+      right,
+      bottom,
+      width: right - left,
+      height: bottom - top,
     };
   }
 
