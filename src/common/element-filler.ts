@@ -1649,10 +1649,25 @@ class ElementFiller {
     const elementType = element.type ? element.type.toLowerCase() : "";
     console.log("elementType->", elementType);
 
+    // 提取常用的变量，避免重复计算
+    const elementName = this.getElementName(element);
+    const isConfirmField = this.isAnyMatch(elementName, this.options.confirmFields);
+    const isAgreeTermsField = this.isAnyMatch(elementName, this.options.agreeTermsFields);
+
+    // 创建一个辅助函数来查找自定义字段
+    const findCustomFieldForElement = (fieldTypes?: any[]) => {
+      return this.findCustomField(elementName, fieldTypes);
+    };
+
+    // 创建一个辅助函数来生成自定义字段数据
+    const generateCustomFieldData = (customField: any) => {
+      return this.generateDummyDataForCustomField(customField, element);
+    };
+
     switch (elementType) {
       case "checkbox": {
         let shouldCheck: boolean;
-        if (this.isAnyMatch(this.getElementName(element), this.options.agreeTermsFields)) {
+        if (isAgreeTermsField) {
           shouldCheck = true;
         } else {
           shouldCheck = Math.random() > 0.5;
@@ -1678,11 +1693,11 @@ class ElementFiller {
       }
 
       case "date": {
-        const dateCustomField = this.findCustomField(this.getElementName(element), ["date"]);
+        const dateCustomField = findCustomFieldForElement(["date"]);
 
         let dateValue: string;
         if (dateCustomField) {
-          dateValue = this.generateDummyDataForCustomField(dateCustomField, element);
+          dateValue = generateCustomFieldData(dateCustomField);
         } else {
           let minDate: Date | undefined;
           let maxDate: Date | undefined;
@@ -1706,15 +1721,11 @@ class ElementFiller {
       }
 
       case "datetime": {
-        const datetimeCustomField = this.findCustomField(this.getElementName(element), [
-          "alphanumeric",
-          "regex",
-          "randomized-list",
-        ]);
+        const datetimeCustomField = findCustomFieldForElement(["alphanumeric", "regex", "randomized-list"]);
 
         let datetimeValue: string;
         if (datetimeCustomField) {
-          datetimeValue = this.generateDummyDataForCustomField(datetimeCustomField, element);
+          datetimeValue = generateCustomFieldData(datetimeCustomField);
         } else {
           datetimeValue = `${this.generator.date()}T${this.generator.time()}Z`;
         }
@@ -1723,15 +1734,11 @@ class ElementFiller {
       }
 
       case "datetime-local": {
-        const datetimeLocalCustomField = this.findCustomField(this.getElementName(element), [
-          "alphanumeric",
-          "regex",
-          "randomized-list",
-        ]);
+        const datetimeLocalCustomField = findCustomFieldForElement(["alphanumeric", "regex", "randomized-list"]);
 
         let datetimeLocalValue: string;
         if (datetimeLocalCustomField) {
-          datetimeLocalValue = this.generateDummyDataForCustomField(datetimeLocalCustomField, element);
+          datetimeLocalValue = generateCustomFieldData(datetimeLocalCustomField);
         } else {
           datetimeLocalValue = `${this.generator.date()}T${this.generator.time()}`;
         }
@@ -1740,15 +1747,11 @@ class ElementFiller {
       }
 
       case "time": {
-        const timeCustomField = this.findCustomField(this.getElementName(element), [
-          "alphanumeric",
-          "regex",
-          "randomized-list",
-        ]);
+        const timeCustomField = findCustomFieldForElement(["alphanumeric", "regex", "randomized-list"]);
 
         let timeValue: string;
         if (timeCustomField) {
-          timeValue = this.generateDummyDataForCustomField(timeCustomField, element);
+          timeValue = generateCustomFieldData(timeCustomField);
         } else {
           timeValue = this.generator.time();
         }
@@ -1757,15 +1760,11 @@ class ElementFiller {
       }
 
       case "month": {
-        const monthCustomField = this.findCustomField(this.getElementName(element), [
-          "alphanumeric",
-          "regex",
-          "randomized-list",
-        ]);
+        const monthCustomField = findCustomFieldForElement(["alphanumeric", "regex", "randomized-list"]);
 
         let monthValue: string;
         if (monthCustomField) {
-          monthValue = this.generateDummyDataForCustomField(monthCustomField, element);
+          monthValue = generateCustomFieldData(monthCustomField);
         } else {
           monthValue = `${this.generator.year()}-${this.generator.month()}`;
         }
@@ -1774,15 +1773,11 @@ class ElementFiller {
       }
 
       case "week": {
-        const weekCustomField = this.findCustomField(this.getElementName(element), [
-          "alphanumeric",
-          "regex",
-          "randomized-list",
-        ]);
+        const weekCustomField = findCustomFieldForElement(["alphanumeric", "regex", "randomized-list"]);
 
         let weekValue: string;
         if (weekCustomField) {
-          weekValue = this.generateDummyDataForCustomField(weekCustomField, element);
+          weekValue = generateCustomFieldData(weekCustomField);
         } else {
           weekValue = `${this.generator.year()}-W${this.generator.weekNumber()}`;
         }
@@ -1792,15 +1787,15 @@ class ElementFiller {
 
       case "email": {
         let emailValue: string;
-        if (this.isAnyMatch(this.getElementName(element), this.options.confirmFields)) {
+        if (isConfirmField) {
           emailValue = this.previousValue;
         } else {
-          let emailCustomField = this.findCustomField(this.getElementName(element), ["email"]);
+          let emailCustomField = findCustomFieldForElement(["email"]);
           if (!emailCustomField) {
             emailCustomField = DEFAULT_EMAIL_CUSTOM_FIELD;
           }
 
-          this.previousValue = this.generateDummyDataForCustomField(emailCustomField, element);
+          this.previousValue = generateCustomFieldData(emailCustomField);
           emailValue = this.previousValue;
         }
         await this.setElementValue(element, emailValue);
@@ -1812,7 +1807,7 @@ class ElementFiller {
         let min = element.min ? parseInt(element.min, 10) : 1;
         let max = element.max ? parseInt(element.max, 10) : 100;
 
-        const numberCustomField = this.findCustomField(this.getElementName(element), ["number"]);
+        const numberCustomField = findCustomFieldForElement(["number"]);
 
         if (numberCustomField) {
           min = numberCustomField.min || min;
@@ -1840,7 +1835,7 @@ class ElementFiller {
 
       case "password": {
         let passwordValue: string;
-        if (this.isAnyMatch(this.getElementName(element), this.options.confirmFields)) {
+        if (isConfirmField) {
           passwordValue = this.previousPassword;
         } else {
           if (this.options.passwordSettings.mode === "defined") {
@@ -1859,7 +1854,7 @@ class ElementFiller {
 
       case "radio": {
         if (element.name) {
-          const matchingCustomField = this.findCustomField(this.getElementName(element), ["randomized-list"]);
+          const matchingCustomField = findCustomFieldForElement(["randomized-list"]);
           const valuesList = matchingCustomField?.list ? matchingCustomField?.list : [];
           await this.selectRandomRadio(element.name, valuesList);
         }
@@ -1867,15 +1862,11 @@ class ElementFiller {
       }
 
       case "tel": {
-        const telephoneCustomField = this.findCustomField(this.getElementName(element), [
-          "telephone",
-          "regex",
-          "randomized-list",
-        ]);
+        const telephoneCustomField = findCustomFieldForElement(["telephone", "regex", "randomized-list"]);
 
         let telephoneValue: string;
         if (telephoneCustomField) {
-          telephoneValue = this.generateDummyDataForCustomField(telephoneCustomField, element);
+          telephoneValue = generateCustomFieldData(telephoneCustomField);
         } else {
           telephoneValue = this.generator.phoneNumber();
         }
@@ -1884,16 +1875,11 @@ class ElementFiller {
       }
 
       case "url": {
-        const urlCustomField = this.findCustomField(this.getElementName(element), [
-          "alphanumeric",
-          "url",
-          "regex",
-          "randomized-list",
-        ]);
+        const urlCustomField = findCustomFieldForElement(["alphanumeric", "url", "regex", "randomized-list"]);
 
         let urlValue: string;
         if (urlCustomField) {
-          urlValue = this.generateDummyDataForCustomField(urlCustomField, element);
+          urlValue = generateCustomFieldData(urlCustomField);
         } else {
           urlValue = this.generator.website();
         }
@@ -1902,15 +1888,11 @@ class ElementFiller {
       }
 
       case "color": {
-        const colorCustomField = this.findCustomField(this.getElementName(element), [
-          "alphanumeric",
-          "regex",
-          "randomized-list",
-        ]);
+        const colorCustomField = findCustomFieldForElement(["alphanumeric", "regex", "randomized-list"]);
 
         let colorValue: string;
         if (colorCustomField) {
-          colorValue = this.generateDummyDataForCustomField(colorCustomField, element);
+          colorValue = generateCustomFieldData(colorCustomField);
         } else {
           colorValue = this.generator.color();
         }
@@ -1919,16 +1901,11 @@ class ElementFiller {
       }
 
       case "search": {
-        const searchCustomField = this.findCustomField(this.getElementName(element), [
-          "alphanumeric",
-          "regex",
-          "randomized-list",
-          "text",
-        ]);
+        const searchCustomField = findCustomFieldForElement(["alphanumeric", "regex", "randomized-list", "text"]);
 
         let searchValue: string;
         if (searchCustomField) {
-          searchValue = this.generateDummyDataForCustomField(searchCustomField, element);
+          searchValue = generateCustomFieldData(searchCustomField);
         } else {
           searchValue = this.generator.words(1);
         }
@@ -1986,11 +1963,11 @@ class ElementFiller {
 
       default: {
         let defaultValue: string;
-        if (this.isAnyMatch(this.getElementName(element), this.options.confirmFields)) {
+        if (isConfirmField) {
           defaultValue = this.previousValue;
         } else {
-          const customField = this.findCustomField(this.getElementName(element));
-          this.previousValue = this.generateDummyDataForCustomField(customField, element);
+          const customField = findCustomFieldForElement();
+          this.previousValue = generateCustomFieldData(customField);
           defaultValue = this.previousValue;
         }
 
@@ -2000,7 +1977,7 @@ class ElementFiller {
           let min = element.min ? parseInt(element.min, 10) : 1;
           let max = element.max ? parseInt(element.max, 10) : 100;
 
-          const numberCustomField = this.findCustomField(this.getElementName(element), ["number"]);
+          const numberCustomField = findCustomFieldForElement(["number"]);
 
           if (numberCustomField) {
             min = numberCustomField.min || min;
