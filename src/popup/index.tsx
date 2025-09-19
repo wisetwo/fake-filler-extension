@@ -17,6 +17,13 @@ const SidePanel: React.FC = () => {
     clear: false,
   });
   const [message, setMessage] = useState<Message | null>(null);
+  const [version, setVersion] = useState<string>("");
+
+  // Get extension version
+  useEffect(() => {
+    const manifest = chrome.runtime.getManifest();
+    setVersion(manifest.version);
+  }, []);
 
   // Auto-clear success and info messages after 3 seconds
   useEffect(() => {
@@ -91,72 +98,76 @@ const SidePanel: React.FC = () => {
 
   return (
     <div className="popup-container">
-      <div className="header">
-        <button
-          type="button"
-          onClick={handleOpenSettings}
-          className="settings-button"
-          title={GetMessage("popup_settings")}
-          aria-label={GetMessage("popup_settings")}
-        >
-          <i className="bi bi-gear" />
-        </button>
-        <h2 className="title">Auto Filler</h2>
-        <p className="description">{GetMessage("popup_description")}</p>
-      </div>
-
-      <div className="main-actions">
-        <button type="button" onClick={handleFillAllInputs} disabled={loadingStates.fillAll} className="fill-button">
-          {loadingStates.fillAll ? GetMessage("popup_filling") : GetMessage("popup_fillAllInputs")}
-        </button>
-
-        {loadingStates.fillAll && (
+      <div className="main-content">
+        <div className="header">
           <button
             type="button"
-            onClick={handleStopFilling}
-            className="stop-button"
-            title={GetMessage("popup_stopFilling")}
-            aria-label={GetMessage("popup_stopFilling")}
+            onClick={handleOpenSettings}
+            className="settings-button"
+            title={GetMessage("popup_settings")}
+            aria-label={GetMessage("popup_settings")}
           >
-            ⏹
+            <i className="bi bi-gear" />
           </button>
+          <h2 className="title">Auto Filler</h2>
+          <p className="description">{GetMessage("popup_description")}</p>
+        </div>
+
+        <div className="main-actions">
+          <button type="button" onClick={handleFillAllInputs} disabled={loadingStates.fillAll} className="fill-button">
+            {loadingStates.fillAll ? GetMessage("popup_filling") : GetMessage("popup_fillAllInputs")}
+          </button>
+
+          {loadingStates.fillAll && (
+            <button
+              type="button"
+              onClick={handleStopFilling}
+              className="stop-button"
+              title={GetMessage("popup_stopFilling")}
+              aria-label={GetMessage("popup_stopFilling")}
+            >
+              ⏹
+            </button>
+          )}
+        </div>
+
+        <div className="secondary-actions">
+          <button
+            type="button"
+            onClick={handleHighlightElements}
+            disabled={loadingStates.highlight}
+            className="action-button highlight-button"
+          >
+            {loadingStates.highlight ? GetMessage("popup_identifying") : GetMessage("popup_highlightElements")}
+          </button>
+
+          <button
+            type="button"
+            onClick={handleClearHighlight}
+            disabled={loadingStates.clear}
+            className="action-button clear-button"
+          >
+            {loadingStates.clear ? GetMessage("popup_clearing") : GetMessage("popup_clearHighlight")}
+          </button>
+        </div>
+
+        {message && (
+          <div className={`message message-${message.type}`} role="alert" aria-live="polite">
+            <span className="message-text">{message.text}</span>
+            <button
+              type="button"
+              className="message-close"
+              onClick={clearMessage}
+              aria-label="Close message"
+              title="Close message"
+            >
+              ×
+            </button>
+          </div>
         )}
       </div>
 
-      <div className="secondary-actions">
-        <button
-          type="button"
-          onClick={handleHighlightElements}
-          disabled={loadingStates.highlight}
-          className="action-button highlight-button"
-        >
-          {loadingStates.highlight ? GetMessage("popup_identifying") : GetMessage("popup_highlightElements")}
-        </button>
-
-        <button
-          type="button"
-          onClick={handleClearHighlight}
-          disabled={loadingStates.clear}
-          className="action-button clear-button"
-        >
-          {loadingStates.clear ? GetMessage("popup_clearing") : GetMessage("popup_clearHighlight")}
-        </button>
-      </div>
-
-      {message && (
-        <div className={`message message-${message.type}`} role="alert" aria-live="polite">
-          <span className="message-text">{message.text}</span>
-          <button
-            type="button"
-            className="message-close"
-            onClick={clearMessage}
-            aria-label="Close message"
-            title="Close message"
-          >
-            ×
-          </button>
-        </div>
-      )}
+      {version && <div className="version-display">v{version}</div>}
     </div>
   );
 };
