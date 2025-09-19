@@ -219,7 +219,7 @@ export default class ChromeExtensionProxyPage implements AbstractPage {
     const tabIdToDetach = tabId || this.tabIdOfDebuggerAttached;
     console.log("detaching debugger", tabIdToDetach);
     if (!tabIdToDetach) {
-      console.warn("No tab id to detach");
+      console.log("No tab id to detach");
       return;
     }
 
@@ -227,7 +227,7 @@ export default class ChromeExtensionProxyPage implements AbstractPage {
       await this.disableWaterFlowAnimation(tabIdToDetach);
       await sleep(200); // wait for the animation to stop
     } catch (error) {
-      console.warn("Failed to disable water flow animation", error);
+      console.log("Failed to disable water flow animation", error);
     }
 
     try {
@@ -237,7 +237,7 @@ export default class ChromeExtensionProxyPage implements AbstractPage {
       });
     } catch (error) {
       // maybe tab is closed ?
-      console.warn("Failed to detach debugger", error);
+      console.log("Failed to detach debugger", error);
     }
     this.tabIdOfDebuggerAttached = null;
     this.waterFlowAnimationInitialized = false; // 重置状态，下次需要重新初始化
@@ -314,7 +314,7 @@ export default class ChromeExtensionProxyPage implements AbstractPage {
       });
       // console.log("disableWaterFlowAnimation: script executed successfully");
     } catch (error) {
-      console.warn("disableWaterFlowAnimation: failed to disable water flow animation:", error);
+      console.log("disableWaterFlowAnimation: failed to disable water flow animation:", error);
       // 不要抛出错误，因为这通常在页面关闭时发生
     }
   }
@@ -348,7 +348,7 @@ export default class ChromeExtensionProxyPage implements AbstractPage {
         this.waterFlowAnimationInitialized = true;
         // console.log("sendCommandToDebugger: water flow animation initialized successfully");
       } catch (error) {
-        console.warn("sendCommandToDebugger: failed to initialize water flow animation:", error);
+        console.log("sendCommandToDebugger: failed to initialize water flow animation:", error);
         // 继续执行，不要因为动画初始化失败而阻止其他操作
       }
     }
@@ -566,7 +566,7 @@ export default class ChromeExtensionProxyPage implements AbstractPage {
 
   async clearInput(element: ElementInfo) {
     if (!element) {
-      console.warn("No element to clear input");
+      console.log("No element to clear input");
       return;
     }
 

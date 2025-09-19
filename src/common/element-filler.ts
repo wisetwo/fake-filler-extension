@@ -81,7 +81,7 @@ class ElementFiller {
         currentWindow = currentWindow.parent as typeof window;
       } catch (error) {
         // 跨域iframe无法访问，跳出循环
-        console.warn("Cross-origin iframe detected, cannot calculate accurate coordinates:", error);
+        console.log("Cross-origin iframe detected, cannot calculate accurate coordinates:", error);
         break;
       }
     }
@@ -312,7 +312,7 @@ class ElementFiller {
 
       return true;
     } catch (error) {
-      console.warn("PageOperator input failed, will fallback to direct assignment:", error);
+      console.log("PageOperator input failed, will fallback to direct assignment:", error);
       return false;
     }
   }
@@ -343,7 +343,7 @@ class ElementFiller {
       // 验证状态是否正确更新
       return element.checked === shouldCheck;
     } catch (error) {
-      console.warn("PageOperator checkbox click failed, will fallback to direct assignment:", error);
+      console.log("PageOperator checkbox click failed, will fallback to direct assignment:", error);
       return false;
     }
   }
@@ -488,7 +488,7 @@ class ElementFiller {
       await this.simulateClick(document.body, safePosition.x, safePosition.y);
       await sleep(200);
     } else {
-      console.warn("No safe position found");
+      console.log("No safe position found");
     }
   }
 
@@ -623,7 +623,7 @@ class ElementFiller {
             this.isElementVisible(element as FillableElement)
           );
           if (visibleElementList.length > 1) {
-            console.warn("visibleElementList > 1, ", visibleElementList);
+            console.log("visibleElementList > 1, ", visibleElementList);
           }
           // console.log("visibleElementList——> ", visibleElementList);
           console.log(
@@ -760,7 +760,7 @@ class ElementFiller {
         await this.setElementValue(inputElement, "");
         await sleep(200);
       }
-      console.warn("dropdownElement not found after both attempts");
+      console.log("dropdownElement not found after both attempts");
       await this.clickAtBlankArea(inputElement);
       await sleep(200);
       return;
@@ -1120,7 +1120,7 @@ class ElementFiller {
               return true;
             }
           } catch (error) {
-            console.warn("Invalid regex pattern:", needle, error);
+            console.log("Invalid regex pattern:", needle, error);
             // 如果正则表达式无效，回退到普通匹配
             if (new RegExp(needle, "iu").test(haystack)) {
               console.log("Fallback regex match found!");
@@ -1283,7 +1283,7 @@ class ElementFiller {
       // 验证是否选中
       return element.checked;
     } catch (error) {
-      console.warn("PageOperator radio click failed, will fallback to direct assignment:", error);
+      console.log("PageOperator radio click failed, will fallback to direct assignment:", error);
       return false;
     }
   }

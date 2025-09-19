@@ -99,7 +99,7 @@ class ChromeDebugger {
   private async detachDebugger(tabId?: number): Promise<void> {
     const tabIdToDetach = tabId || this.tabIdOfDebuggerAttached;
     if (!tabIdToDetach) {
-      console.warn("No tab id to detach");
+      console.log("No tab id to detach");
       return;
     }
 

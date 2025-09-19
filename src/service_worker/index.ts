@@ -123,7 +123,7 @@ async function handleMessage(message: any): Promise<any> {
           return { success: true };
         } catch (error) {
           // maybe tab is closed ?
-          console.warn("Failed to detach debugger:", error);
+          console.log("Failed to detach debugger:", error);
           return { success: true }; // 即使失败也返回成功，因为可能是tab已经关闭
         }
       }

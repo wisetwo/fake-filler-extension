@@ -39,7 +39,7 @@ class PageOperator {
         await this.page.setActiveTabId(parseInt(activeTab.id, 10));
       }
     } catch (error) {
-      console.warn("Failed to set active tab, continuing...", error);
+      console.log("Failed to set active tab, continuing...", error);
     }
 
     this.initialized = true;
@@ -160,7 +160,7 @@ class PageOperator {
       try {
         await this.page.waitUntilNetworkIdle();
       } catch (error) {
-        console.warn("waitUntilNetworkIdle failed:", error);
+        console.log("waitUntilNetworkIdle failed:", error);
       }
     }
   }
