@@ -78,7 +78,7 @@
     "message": "Issue Tracker"
   },
   "leftNav_confirmResetSettings": {
-    "message": "Are you sure you want to reset to the default settings?"
+    "message": "Are you sure you want to reset to the default settings? This will also clear all custom fields."
   },
   "leftNav_sendFeedback": {
     "message": "If you have any suggestions to make this extension better, or find any issues, please send me an <a href=\"mailto:$1\">email</a>."
