@@ -16,7 +16,7 @@ const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, "utf8"));
 const { version } = packageJson;
 
 // Create extension directory
-const extensionDir = path.resolve(__dirname, "../extension_output");
+const extensionDir = path.resolve(__dirname, "../release");
 if (!fs.existsSync(extensionDir)) {
   fs.mkdirSync(extensionDir, {
     recursive: true,
@@ -48,6 +48,19 @@ output.on("close", () => {
   console.log(
     `Extension packed successfully: ${zipFileName} (${archive.pointer()} total bytes saved in extension directory)`
   );
+
+  // Create a copy as auto-filler-latest.zip
+  const latestZipFileName = "auto-filler-latest.zip";
+  const latestZipFilePath = path.resolve(extensionDir, latestZipFileName);
+
+  // Delete existing latest zip file if it exists
+  if (fs.existsSync(latestZipFilePath)) {
+    fs.unlinkSync(latestZipFilePath);
+  }
+
+  // Copy the versioned zip to latest zip
+  fs.copyFileSync(zipFilePath, latestZipFilePath);
+  console.log(`Latest version copied: ${latestZipFileName}`);
 });
 
 // Handle warnings and errors
