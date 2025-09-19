@@ -516,7 +516,7 @@
     "message": "Model Env Config"
   },
   "generalSettings_modelEnvConfigHelp": {
-    "message": "The format is KEY=VALUE and separated by new lines. These data will be saved locally in your browser."
+    "message": "The format is KEY=VALUE and separated by new lines."
   },
   "generalSettings_triggerEvents": {
     "message": "Trigger Events"

@@ -176,12 +176,12 @@ function GeneralSettingsForm(props: Props) {
             helpText={GetMessage("generalSettings_urlBlockingHelp")}
           />
 
-          <h2>{GetMessage("generalSettings_modelConfig")}</h2>
+          {/* <h2>{GetMessage("generalSettings_modelConfig")}</h2>
           <TextAreaField
             name="modelEnvConfig"
             label={GetMessage("generalSettings_modelEnvConfigLabel")}
             helpText={GetMessage("generalSettings_modelEnvConfigHelp")}
-          />
+          /> */}
           <h2>{GetMessage("generalSettings_passwordSettings")}</h2>
 
           <div className="form-group row mb-3">
