@@ -16,8 +16,6 @@
     "clean": "rimraf ./dist",
     "lint": "eslint src/**/*"
   },
-  "author": "Jim Hays",
-  "license": "MIT",
   "private": true,
   "dependencies": {
     "@faker-js/faker": "^10.0.0",
