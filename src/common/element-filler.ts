@@ -680,12 +680,12 @@ class ElementFiller {
       } else {
         // 点击输入框触发下拉框
         console.log("点击输入框触发下拉框");
-        // simulateClick可能表现为点击两次？偶现，暂时用element.click();替换
-        // await this.simulateClick(element);
+        // simulateClick可能表现为点击两次？对于下拉框偶现，但用element.click();可能对日期选择等组件不生效
+        await this.simulateClick(element);
         // 显示定位，不操作
-        const coordinates = this.getElementCenterCoordinates(element);
-        this.pageOperator?.move(coordinates.x, coordinates.y);
-        element.click();
+        // const coordinates = this.getElementCenterCoordinates(element);
+        // this.pageOperator?.move(coordinates.x, coordinates.y);
+        // element.click();
         // 等待下拉框完全展开
         await sleep(300);
       }
