@@ -102,56 +102,7 @@ function GeneralSettingsForm(props: Props) {
     >
       {({ isSubmitting, isValid }) => (
         <Form>
-          <h2>{GetMessage("generalSettings_passwordSettings")}</h2>
-
-          <div className="form-group row mb-3">
-            <label className="col-sm-3 col-form-label text-sm-end pt-0" htmlFor="passwordSettingsMode">
-              {GetMessage("generalSettings_password")}
-            </label>
-            <div className="col-sm-9">
-              <RadioButtonField
-                name="passwordSettingsMode"
-                value="random"
-                label={GetMessage("generalSettings_password_randomLabel")}
-              />
-              <RadioButtonField
-                name="passwordSettingsMode"
-                value="defined"
-                label={GetMessage("generalSettings_password_useThisLabel")}
-              />
-              <TextField name="passwordSettingsPassword" />
-            </div>
-          </div>
-
           <h2>{GetMessage("generalSettings_fieldOptions")}</h2>
-
-          <div className="form-group row mb-3">
-            <label className="col-sm-3 col-form-label text-sm-end" htmlFor="ignoredFields">
-              {GetMessage("generalSettings_ignoreFieldsMatch")}
-            </label>
-            <div className="col-sm-9">
-              <TextField name="ignoredFields" className="mb-1" placeholder={GetMessage("enterCsv")} />
-              <CheckboxField name="ignoreHiddenFields" label={GetMessage("generalSettings_ignoreHiddenFieldsLabel")} />
-              <CheckboxField
-                name="ignoreFieldsWithContent"
-                label={GetMessage("generalSettings_ignoreFieldsWithContentLabel")}
-              />
-            </div>
-          </div>
-
-          <TextField
-            name="confirmFields"
-            label={GetMessage("generalSettings_confirmationFieldsMatch")}
-            placeholder={GetMessage("enterCsv")}
-            helpText={GetMessage("generalSettings_confirmFieldsHelp")}
-          />
-
-          <TextField
-            name="agreeTermsFields"
-            label={GetMessage("generalSettings_agreeToTermsMatch")}
-            placeholder={GetMessage("enterCsv")}
-            helpText={GetMessage("generalSettings_agreeToTermsMatchHelp")}
-          />
 
           <div className="form-group row mb-3">
             <div className="col-sm-3 text-sm-end pt-0">{GetMessage("generalSettings_matchFieldsUsing")}</div>
@@ -183,6 +134,34 @@ function GeneralSettingsForm(props: Props) {
             helpText={GetMessage("generalSettings_customAttributesHelp")}
           />
 
+          <div className="form-group row mb-3">
+            <label className="col-sm-3 col-form-label text-sm-end" htmlFor="ignoredFields">
+              {GetMessage("generalSettings_ignoreFieldsMatch")}
+            </label>
+            <div className="col-sm-9">
+              <TextField name="ignoredFields" className="mb-1" placeholder={GetMessage("enterCsv")} />
+              <CheckboxField name="ignoreHiddenFields" label={GetMessage("generalSettings_ignoreHiddenFieldsLabel")} />
+              <CheckboxField
+                name="ignoreFieldsWithContent"
+                label={GetMessage("generalSettings_ignoreFieldsWithContentLabel")}
+              />
+            </div>
+          </div>
+
+          <TextField
+            name="confirmFields"
+            label={GetMessage("generalSettings_confirmationFieldsMatch")}
+            placeholder={GetMessage("enterCsv")}
+            helpText={GetMessage("generalSettings_confirmFieldsHelp")}
+          />
+
+          <TextField
+            name="agreeTermsFields"
+            label={GetMessage("generalSettings_agreeToTermsMatch")}
+            placeholder={GetMessage("enterCsv")}
+            helpText={GetMessage("generalSettings_agreeToTermsMatchHelp")}
+          />
+
           <TextField
             name="defaultMaxLength"
             type="number"
@@ -203,6 +182,26 @@ function GeneralSettingsForm(props: Props) {
             label={GetMessage("generalSettings_modelEnvConfigLabel")}
             helpText={GetMessage("generalSettings_modelEnvConfigHelp")}
           />
+          <h2>{GetMessage("generalSettings_passwordSettings")}</h2>
+
+          <div className="form-group row mb-3">
+            <label className="col-sm-3 col-form-label text-sm-end pt-0" htmlFor="passwordSettingsMode">
+              {GetMessage("generalSettings_password")}
+            </label>
+            <div className="col-sm-9">
+              <RadioButtonField
+                name="passwordSettingsMode"
+                value="random"
+                label={GetMessage("generalSettings_password_randomLabel")}
+              />
+              <RadioButtonField
+                name="passwordSettingsMode"
+                value="defined"
+                label={GetMessage("generalSettings_password_useThisLabel")}
+              />
+              <TextField name="passwordSettingsPassword" />
+            </div>
+          </div>
 
           <h2>{GetMessage("generalSettings")}</h2>
           {/* <CheckboxField
