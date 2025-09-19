@@ -682,6 +682,7 @@ class ElementFiller {
         console.log("点击输入框触发下拉框");
         // simulateClick可能表现为点击两次？偶现，暂时用element.click();替换
         // await this.simulateClick(element);
+        // 显示定位，不操作
         const coordinates = this.getElementCenterCoordinates(element);
         this.pageOperator?.move(coordinates.x, coordinates.y);
         element.click();
@@ -801,8 +802,8 @@ class ElementFiller {
     }
 
     if (isMultiSelect) {
-      // 多选模式：随机选择1-3个选项
-      const numberOfOptionsToSelect = this.generator.randomNumber(1, Math.min(3, visibleOptions.length));
+      // 多选模式：随机选择1-2个选项
+      const numberOfOptionsToSelect = this.generator.randomNumber(1, Math.min(2, visibleOptions.length));
       console.log("numberOfOptionsToSelect->", numberOfOptionsToSelect);
 
       // 生成不重复的随机索引数组
